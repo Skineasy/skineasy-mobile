@@ -1,247 +1,126 @@
-import { format, isValid, parse } from 'date-fns'
-import { forwardRef, useEffect, useRef, useState } from 'react'
-import { Animated, Text, TextInput, View, type TextInputProps } from 'react-native'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { format, isValid, parse, subYears, type Locale } from 'date-fns'
+import { enUS, fr } from 'date-fns/locale'
+import { Calendar } from 'lucide-react-native'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Keyboard, Platform, Text, View } from 'react-native'
 
-import { useScrollContext } from '@shared/components/ScreenHeader'
-import { cn } from '@shared/utils/cn'
+import { BottomSheet } from '@shared/components/BottomSheet'
+import { Button } from '@shared/components/Button'
+import { GlassContainer } from '@shared/components/GlassContainer'
+import { Pressable } from '@shared/components/Pressable'
 import { haptic } from '@shared/utils/haptic'
 import { colors } from '@theme/colors'
 
-interface DateInputProps extends Omit<TextInputProps, 'value' | 'onChangeText' | 'placeholder'> {
+interface DateInputProps {
   label?: string
   error?: string
-  /**
-   * Value in YYYY-MM-DD format (API format), can also be ISO format
-   */
   value?: string
-  /**
-   * Callback with value in YYYY-MM-DD format
-   */
   onChangeText?: (value: string) => void
-  /**
-   * Enable haptic feedback on focus (default: true)
-   */
-  enableHaptic?: boolean
+  maximumDate?: Date
+  initialDate?: Date
+  disabled?: boolean
 }
 
-/**
- * Converts YYYY-MM-DD (or ISO format) to DD-MM-YYYY for display
- */
-function toDisplayFormat(apiDate: string | undefined): string {
-  if (!apiDate) return ''
-
-  // Handle ISO format by extracting date part
-  const dateOnly = apiDate.includes('T') ? apiDate.split('T')[0] : apiDate
-
+function parseValue(value: string | undefined): Date | null {
+  if (!value) return null
+  const dateOnly = value.includes('T') ? value.split('T')[0] : value
   const parsed = parse(dateOnly, 'yyyy-MM-dd', new Date())
-  if (!isValid(parsed)) return ''
-
-  return format(parsed, 'dd-MM-yyyy')
+  return isValid(parsed) ? parsed : null
 }
 
-/**
- * Converts DD-MM-YYYY to YYYY-MM-DD for API
- */
-function toApiFormat(displayDate: string): string {
-  const parsed = parse(displayDate, 'dd-MM-yyyy', new Date())
-  if (!isValid(parsed)) return ''
-
-  return format(parsed, 'yyyy-MM-dd')
+function formatDisplay(date: Date, locale: Locale): string {
+  return format(date, 'dd MMM yyyy', { locale })
 }
 
-/**
- * Formats input as DD-MM-YYYY while typing
- */
-function formatAsUserTypes(input: string): string {
-  // Remove any non-digit characters
-  const digits = input.replace(/\D/g, '')
+export function DateInput({
+  label,
+  error,
+  value,
+  onChangeText,
+  maximumDate = new Date(),
+  initialDate = subYears(new Date(), 25),
+  disabled = false,
+}: DateInputProps): React.ReactElement {
+  const { t, i18n } = useTranslation()
+  const [sheetVisible, setSheetVisible] = useState(false)
+  const [tempDate, setTempDate] = useState<Date>(parseValue(value) ?? initialDate ?? new Date())
 
-  // Limit to 8 digits (DDMMYYYY)
-  const limited = digits.slice(0, 8)
+  const locale = i18n.language === 'fr' ? fr : enUS
+  const parsedValue = parseValue(value)
 
-  // Add dashes as user types
-  if (limited.length <= 2) {
-    return limited
-  } else if (limited.length <= 4) {
-    return `${limited.slice(0, 2)}-${limited.slice(2)}`
-  } else {
-    return `${limited.slice(0, 2)}-${limited.slice(2, 4)}-${limited.slice(4)}`
+  const handleOpen = (): void => {
+    if (disabled) return
+    Keyboard.dismiss()
+    haptic.light()
+    setTempDate(parsedValue ?? initialDate)
+    setSheetVisible(true)
   }
-}
 
-export const DateInput = forwardRef<TextInput, DateInputProps>(
-  (
-    {
-      label,
-      error,
-      className,
-      style,
-      onFocus,
-      onBlur,
-      enableHaptic = true,
-      value,
-      onChangeText,
-      ...props
-    },
-    ref
-  ) => {
-    const scrollContext = useScrollContext()
-    const containerRef = useRef<View>(null)
-    const [isFocused, setIsFocused] = useState(false)
-    const [displayValue, setDisplayValue] = useState(toDisplayFormat(value))
-
-    // Sync display value when value prop changes (e.g., form loads with default values)
-    useEffect(() => {
-      const formatted = toDisplayFormat(value)
-      setDisplayValue(formatted)
-    }, [value])
-
-    // Floating label animation
-    const labelAnimation = useRef(new Animated.Value(value ? 1 : 0)).current
-
-    const handleFocus = (event: Parameters<NonNullable<TextInputProps['onFocus']>>[0]) => {
-      setIsFocused(true)
-
-      // Animate label up
-      Animated.timing(labelAnimation, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: false,
-      }).start()
-
-      // Trigger selection haptic on focus
-      if (enableHaptic) {
-        haptic.selection()
-      }
-
-      // Scroll to make input visible above keyboard (if in ScreenHeader context)
-      if (scrollContext) {
-        scrollContext.scrollToPosition(200)
-      }
-
-      // Call original onFocus handler
-      if (onFocus) {
-        onFocus(event)
-      }
+  const handleChange = (_event: unknown, selectedDate?: Date): void => {
+    if (selectedDate) {
+      setTempDate(selectedDate)
     }
-
-    const handleBlur = (event: Parameters<NonNullable<TextInputProps['onBlur']>>[0]) => {
-      setIsFocused(false)
-
-      // Animate label down if no value
-      if (!displayValue) {
-        Animated.timing(labelAnimation, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false,
-        }).start()
+    if (Platform.OS === 'android') {
+      if (selectedDate) {
+        onChangeText?.(format(selectedDate, 'yyyy-MM-dd'))
       }
-
-      // Call original onBlur handler
-      if (onBlur) {
-        onBlur(event)
-      }
+      setSheetVisible(false)
     }
+  }
 
-    const handleChangeText = (text: string) => {
-      const formatted = formatAsUserTypes(text)
-      setDisplayValue(formatted)
+  const handleConfirm = (): void => {
+    onChangeText?.(format(tempDate, 'yyyy-MM-dd'))
+    setSheetVisible(false)
+  }
 
-      // Only call onChangeText with API format when we have a complete date
-      if (onChangeText) {
-        if (formatted.length === 10) {
-          // Complete date DD-MM-YYYY
-          onChangeText(toApiFormat(formatted))
-        } else if (formatted.length === 0) {
-          onChangeText('')
-        }
-      }
-    }
+  return (
+    <View className="w-full mb-6">
+      {label && <Text className="text-xs font-medium text-textMuted mb-1.5 ml-1">{label}</Text>}
 
-    // Label position interpolation (RN Animated API - refs are valid here)
-    /* eslint-disable react-hooks/refs */
-    const labelTop = labelAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [13, -8],
-    })
-
-    const labelFontSize = labelAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [16, 12],
-    })
-
-    const labelLineHeight = labelAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [24, 16],
-    })
-    /* eslint-enable react-hooks/refs */
-
-    const labelColor = isFocused ? colors.primary : error ? colors.error : colors.textMuted
-
-    return (
-      <View ref={containerRef} className="w-full mb-6">
-        <View
-          className={cn(
-            'relative bg-surface rounded-xl',
-            isFocused
-              ? 'border-2 border-primary'
-              : error
-                ? 'border-2 border-error'
-                : 'border border-border',
-            className
-          )}
+      <Pressable onPress={handleOpen} haptic="light" disabled={disabled}>
+        <GlassContainer
           style={{
-            height: 24 + 40, // Icon Size + padding vertical
-            shadowColor: isFocused ? colors.primary : '#000',
-            shadowOffset: { width: 0, height: isFocused ? 4 : 2 },
-            shadowOpacity: isFocused ? 0.15 : 0.05,
-            shadowRadius: isFocused ? 8 : 4,
-            elevation: isFocused ? 4 : 1,
+            paddingVertical: 14,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            opacity: disabled ? 0.5 : 1,
+            borderColor: error ? colors.error : undefined,
           }}
         >
-          {/* Floating Label */}
+          <Text className={parsedValue ? 'text-base text-text' : 'text-base text-textMuted'}>
+            {parsedValue ? formatDisplay(parsedValue, locale) : t('profile.selectDate')}
+          </Text>
+          <Calendar size={20} color={colors.textMuted} />
+        </GlassContainer>
+      </Pressable>
+
+      {error && <Text className="text-xs text-error mt-1 ml-4">{error}</Text>}
+
+      <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)}>
+        <View>
           {label && (
-            <Animated.View
-              pointerEvents="none"
-              className="absolute left-5 bg-surface px-1 rounded-full"
-              style={{
-                top: labelTop,
-              }}
-            >
-              <Animated.Text
-                style={{
-                  fontSize: labelFontSize,
-                  lineHeight: labelLineHeight,
-                  color: labelColor,
-                  fontWeight: '500',
-                }}
-              >
-                {label}
-              </Animated.Text>
-            </Animated.View>
+            <Text className="text-lg font-semibold text-text text-center mb-4">{label}</Text>
           )}
-
-          {/* Input */}
-          <TextInput
-            ref={ref}
-            className="w-full h-full pr-4 pl-4 text-text"
-            textAlignVertical="center"
-            style={[{ fontSize: 14, lineHeight: 18 }, style]}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            value={displayValue}
-            onChangeText={handleChangeText}
-            keyboardType="number-pad"
-            maxLength={10}
-            {...props}
-          />
+          <View className="items-center">
+            <DateTimePicker
+              value={tempDate}
+              mode="date"
+              display="inline"
+              onChange={handleChange}
+              maximumDate={maximumDate}
+              locale={i18n.language}
+              textColor={colors.text}
+            />
+          </View>
+          <View className="px-4 mt-4">
+            <Button title={t('common.confirm')} onPress={handleConfirm} />
+          </View>
         </View>
-
-        {/* Error Message */}
-        {error && <Text className="text-xs text-error mt-1 ml-4">{error}</Text>}
-      </View>
-    )
-  }
-)
-
-DateInput.displayName = 'DateInput'
+      </BottomSheet>
+    </View>
+  )
+}

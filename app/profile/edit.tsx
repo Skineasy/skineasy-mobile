@@ -161,14 +161,13 @@ export default function EditProfileScreen() {
       <Controller
         control={control}
         name="birthday"
-        render={({ field: { onChange, onBlur, value } }) => (
+        render={({ field: { onChange, value } }) => (
           <DateInput
             label={t('profile.birthday')}
             value={value}
             onChangeText={onChange}
-            onBlur={onBlur}
             error={errors.birthday?.message}
-            editable={!isLoading}
+            disabled={isLoading}
           />
         )}
       />

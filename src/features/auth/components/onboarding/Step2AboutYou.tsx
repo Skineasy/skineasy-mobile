@@ -41,15 +41,8 @@ export function Step2AboutYou({ onNext, control, errors, isValid }: Step2AboutYo
           <Controller
             control={control}
             name="birthday"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <DateInput
-                label={t('profile.birthday')}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoFocus
-                onSubmitEditing={onNext}
-              />
+            render={({ field: { onChange, value } }) => (
+              <DateInput label={t('profile.birthday')} value={value} onChangeText={onChange} />
             )}
           />
 

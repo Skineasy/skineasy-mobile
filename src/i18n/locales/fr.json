@@ -387,6 +387,7 @@
     "emailReadOnly": "L'email ne peut pas être modifié",
     "birthday": "Date de naissance",
     "selectBirthday": "Sélectionner la date de naissance",
+    "selectDate": "Sélectionner une date",
     "changePhoto": "Changer la photo",
     "takePhoto": "Prendre une photo",
     "chooseFromGallery": "Choisir dans la galerie",
