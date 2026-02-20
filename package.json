@@ -2,6 +2,9 @@
   "name": "skineasy-mobile",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "lint-staged": {
+    "*.{ts,tsx,json,md}": "prettier --write"
+  },
   "scripts": {
     "generate:assets": "node scripts/generate-assets.js",
     "start": "expo start",
@@ -16,7 +19,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\" \"!node_modules/**\" \"!.expo/**\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\" \"!node_modules/**\" \"!.expo/**\"",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run format:check && npm run typecheck"
+    "check": "npm run lint && npm run format:check && npm run typecheck",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dev-plugins/react-query": "^0.4.0",
@@ -85,7 +89,9 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
     "jsdom": "^27.3.0",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.2",
