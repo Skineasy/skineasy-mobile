@@ -1,69 +1,70 @@
-import * as Device from 'expo-device'
-import { ArrowLeft, Link } from 'lucide-react-native'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Image, Platform, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Toast from 'react-native-toast-message'
+import * as Device from 'expo-device';
+import { ArrowLeft, Link } from 'lucide-react-native';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Platform, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import assets from '@assets'
-import { Background } from '@shared/components/Background'
-import { Button } from '@shared/components/Button'
-import { GlassContainer } from '@shared/components/GlassContainer'
-import { Pressable } from '@shared/components/Pressable'
-import { healthkitService } from '@shared/services/healthkit.service'
-import { useHealthKitStore } from '@shared/stores/healthkit.store'
-import { colors } from '@theme/colors'
+import { toast } from '@lib/toast';
+
+import assets from '@assets';
+import { Background } from '@shared/components/background';
+import { Button } from '@shared/components/button';
+import { GlassContainer } from '@shared/components/glass-container';
+import { Pressable } from '@shared/components/pressable';
+import { healthkitService } from '@shared/services/healthkit.service';
+import { useHealthKitStore } from '@shared/stores/healthkit.store';
+import { colors } from '@theme/colors';
 
 interface Step3HealthSyncProps {
-  onNext: () => void
-  onSkip: () => void
-  onBack: () => void
+  onNext: () => void;
+  onSkip: () => void;
+  onBack: () => void;
 }
 
 const BENEFITS = [
   { titleKey: 'onboarding.step3.benefit1Title', descKey: 'onboarding.step3.benefit1Desc' },
   { titleKey: 'onboarding.step3.benefit2Title', descKey: 'onboarding.step3.benefit2Desc' },
   { titleKey: 'onboarding.step3.benefit3Title', descKey: 'onboarding.step3.benefit3Desc' },
-] as const
+] as const;
 
 export function Step3HealthSync({
   onNext,
   onSkip,
   onBack,
 }: Step3HealthSyncProps): React.ReactElement {
-  const { t } = useTranslation()
-  const [isConnecting, setIsConnecting] = useState(false)
-  const setAuthorized = useHealthKitStore((state) => state.setAuthorized)
+  const { t } = useTranslation();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const setAuthorized = useHealthKitStore((state) => state.setAuthorized);
 
   const handleConnect = async (): Promise<void> => {
     if (Platform.OS !== 'ios') {
-      Toast.show({ type: 'error', text1: t('healthkit.notAvailable') })
-      onNext()
-      return
+      toast.error(t('healthkit.notAvailable'));
+      onNext();
+      return;
     }
 
     // Check if running in simulator
     if (!Device.isDevice) {
-      Toast.show({ type: 'error', text1: t('healthkit.simulatorError') })
-      onNext()
-      return
+      toast.error(t('healthkit.simulatorError'));
+      onNext();
+      return;
     }
 
-    setIsConnecting(true)
+    setIsConnecting(true);
     try {
-      const authorized = await healthkitService.requestAuthorization()
-      await setAuthorized(authorized)
+      const authorized = await healthkitService.requestAuthorization();
+      await setAuthorized(authorized);
       if (!authorized) {
-        Toast.show({ type: 'error', text1: t('healthkit.permissionDenied') })
+        toast.error(t('healthkit.permissionDenied'));
       }
     } catch {
-      Toast.show({ type: 'error', text1: t('healthkit.syncError') })
+      toast.error(t('healthkit.syncError'));
     } finally {
-      setIsConnecting(false)
-      onNext()
+      setIsConnecting(false);
+      onNext();
     }
-  }
+  };
 
   return (
     <Background variant="brownGradient">
@@ -139,5 +140,5 @@ export function Step3HealthSync({
         </View>
       </SafeAreaView>
     </Background>
-  )
+  );
 }

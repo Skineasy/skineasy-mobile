@@ -1,29 +1,29 @@
-import { Baby, ChevronDown, Droplets, Package } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Image, ScrollView, Text, View } from 'react-native'
+import { Baby, ChevronDown, Droplets, Package } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, ScrollView, Text, View } from 'react-native';
 import Animated, {
   FadeInDown,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated'
+} from 'react-native-reanimated';
 
 import type {
   ProductCategory,
   ProductSelectionDto,
   RoutineSummaryDto,
   SkinAnalysisDto,
-} from '@features/routine/types/routine.types'
-import { CATEGORY_LABELS } from '@features/routine/types/routine.types'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+} from '@features/routine/types/routine.types';
+import { CATEGORY_LABELS } from '@features/routine/types/routine.types';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
 interface ProductCarouselItemProps {
-  category: string
-  productName: string
-  imageUrl: string | null
+  category: string;
+  productName: string;
+  imageUrl: string | null;
 }
 
 function ProductCarouselItem({ category, productName, imageUrl }: ProductCarouselItemProps) {
@@ -48,15 +48,15 @@ function ProductCarouselItem({ category, productName, imageUrl }: ProductCarouse
         {productName}
       </Text>
     </View>
-  )
+  );
 }
 
-const CAROUSEL_HEIGHT = 130
+const CAROUSEL_HEIGHT = 130;
 
 interface RoutineSummaryCardProps {
-  summary: RoutineSummaryDto
-  analysis: SkinAnalysisDto
-  productSelection: ProductSelectionDto
+  summary: RoutineSummaryDto;
+  analysis: SkinAnalysisDto;
+  productSelection: ProductSelectionDto;
 }
 
 export function RoutineSummaryCard({
@@ -64,12 +64,12 @@ export function RoutineSummaryCard({
   analysis,
   productSelection,
 }: RoutineSummaryCardProps) {
-  const { t } = useTranslation()
-  const [isExpanded, setIsExpanded] = useState(false)
-  const animationProgress = useSharedValue(0)
+  const { t } = useTranslation();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const animationProgress = useSharedValue(0);
 
-  const concerns = summary.primaryConcerns.join(' · ')
-  const isPregnancySafe = analysis.healthConditions.isPregnancySafe
+  const concerns = summary.primaryConcerns.join(' · ');
+  const isPregnancySafe = analysis.healthConditions.isPregnancySafe;
 
   // Flatten all products from all categories with images
   const allProducts = useMemo(() => {
@@ -81,26 +81,26 @@ export function RoutineSummaryCard({
           name: product.name,
           id: product.id,
           imageUrl: product.illustrationUrl || null,
-        }))
+        })),
       )
-      .filter((p) => p.name)
-  }, [productSelection.products])
+      .filter((p) => p.name);
+  }, [productSelection.products]);
 
   const toggleExpand = () => {
-    const newExpanded = !isExpanded
-    setIsExpanded(newExpanded)
-    animationProgress.value = withTiming(newExpanded ? 1 : 0, { duration: 300 })
-  }
+    const newExpanded = !isExpanded;
+    setIsExpanded(newExpanded);
+    animationProgress.value = withTiming(newExpanded ? 1 : 0, { duration: 300 });
+  };
 
   const carouselAnimatedStyle = useAnimatedStyle(() => ({
     height: interpolate(animationProgress.value, [0, 1], [0, CAROUSEL_HEIGHT]),
     opacity: animationProgress.value,
     overflow: 'hidden' as const,
-  }))
+  }));
 
   const chevronAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${interpolate(animationProgress.value, [0, 1], [0, 180])}deg` }],
-  }))
+  }));
 
   return (
     <Animated.View
@@ -165,5 +165,5 @@ export function RoutineSummaryCard({
         </>
       )}
     </Animated.View>
-  )
+  );
 }

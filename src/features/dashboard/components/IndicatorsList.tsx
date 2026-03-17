@@ -1,33 +1,33 @@
-import { useRouter } from 'expo-router'
-import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Dimensions, Text, View } from 'react-native'
+import { useRouter } from 'expo-router';
+import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, Text, View } from 'react-native';
 
-import { IndicatorCard } from '@features/dashboard/components/IndicatorCard'
-import { appConfig } from '@shared/config/appConfig'
-import { colors } from '@theme/colors'
+import { IndicatorCard } from '@features/dashboard/components/IndicatorCard';
+import { appConfig } from '@shared/config/appConfig';
+import { colors } from '@theme/colors';
 import type {
   MealEntry,
   ObservationEntry,
   SleepEntry,
   SportEntry,
   StressEntry,
-} from '@shared/types/journal.types'
+} from '@shared/types/journal.types';
 
-type IndicatorStatus = 'empty' | 'partial' | 'complete'
+type IndicatorStatus = 'empty' | 'partial' | 'complete';
 
-const SCREEN_WIDTH = Dimensions.get('window').width
-const HORIZONTAL_PADDING = 16
-const GAP = 8
-const CARD_WIDTH = (SCREEN_WIDTH - HORIZONTAL_PADDING * 2 - GAP) / 2
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const HORIZONTAL_PADDING = 16;
+const GAP = 8;
+const CARD_WIDTH = (SCREEN_WIDTH - HORIZONTAL_PADDING * 2 - GAP) / 2;
 
 interface IndicatorsListProps {
-  sleepEntries: SleepEntry[]
-  mealEntries: MealEntry[]
-  sportEntries: SportEntry[]
-  stressEntries: StressEntry[]
-  observationEntries: ObservationEntry[]
-  date: string
+  sleepEntries: SleepEntry[];
+  mealEntries: MealEntry[];
+  sportEntries: SportEntry[];
+  stressEntries: StressEntry[];
+  observationEntries: ObservationEntry[];
+  date: string;
 }
 
 const STRESS_LEVEL_KEYS: Record<number, string> = {
@@ -36,7 +36,7 @@ const STRESS_LEVEL_KEYS: Record<number, string> = {
   3: 'moderate',
   4: 'high',
   5: 'intense',
-}
+};
 
 const STRESS_EMOJIS: Record<number, string> = {
   1: '😌',
@@ -44,7 +44,7 @@ const STRESS_EMOJIS: Record<number, string> = {
   3: '😐',
   4: '😟',
   5: '😰',
-}
+};
 
 export function IndicatorsList({
   sleepEntries,
@@ -54,31 +54,31 @@ export function IndicatorsList({
   observationEntries,
   date,
 }: IndicatorsListProps): React.ReactElement {
-  const layout = appConfig.ui.indicatorLayout
-  const { t } = useTranslation()
-  const router = useRouter()
+  const layout = appConfig.ui.indicatorLayout;
+  const { t } = useTranslation();
+  const router = useRouter();
 
   // Calculate values from entries
-  const sleepHours = sleepEntries.length > 0 ? sleepEntries[0].hours : 0
+  const sleepHours = sleepEntries.length > 0 ? sleepEntries[0].hours : 0;
   const sleepValue =
     sleepHours > 0
       ? `${Math.floor(sleepHours)}h${Math.round((sleepHours % 1) * 60)
           .toString()
           .padStart(2, '0')}`
-      : '-'
+      : '-';
 
-  const mealCount = mealEntries.length
-  const mealValue = mealCount > 0 ? `${mealCount}/4` : '-'
+  const mealCount = mealEntries.length;
+  const mealValue = mealCount > 0 ? `${mealCount}/4` : '-';
 
-  const totalSportMinutes = sportEntries.reduce((acc, entry) => acc + (entry.duration || 0), 0)
-  const sportValue = totalSportMinutes > 0 ? `${totalSportMinutes} min` : '-'
+  const totalSportMinutes = sportEntries.reduce((acc, entry) => acc + (entry.duration || 0), 0);
+  const sportValue = totalSportMinutes > 0 ? `${totalSportMinutes} min` : '-';
 
-  const stressLevel = stressEntries.length > 0 ? stressEntries[0].level : 0
+  const stressLevel = stressEntries.length > 0 ? stressEntries[0].level : 0;
   const stressValue =
-    stressLevel > 0 ? t(`journal.stress.level.${STRESS_LEVEL_KEYS[stressLevel]}`) : '-'
+    stressLevel > 0 ? t(`journal.stress.level.${STRESS_LEVEL_KEYS[stressLevel]}`) : '-';
 
   const navigateToJournal = (
-    type: 'sleep' | 'nutrition' | 'sport' | 'stress' | 'observations'
+    type: 'sleep' | 'nutrition' | 'sport' | 'stress' | 'observations',
   ): void => {
     const paths = {
       sleep: '/journal/sleep',
@@ -86,63 +86,63 @@ export function IndicatorsList({
       sport: '/journal/sport',
       stress: '/journal/stress',
       observations: '/journal/observations',
-    }
-    router.push({ pathname: paths[type], params: { date } })
-  }
+    };
+    router.push({ pathname: paths[type], params: { date } });
+  };
 
   // Compute status for each card
-  const sleepStatus: IndicatorStatus = sleepEntries.length > 0 ? 'complete' : 'empty'
+  const sleepStatus: IndicatorStatus = sleepEntries.length > 0 ? 'complete' : 'empty';
   const nutritionStatus: IndicatorStatus =
-    mealCount >= 3 ? 'complete' : mealCount > 0 ? 'partial' : 'empty'
-  const sportStatus: IndicatorStatus = sportEntries.length > 0 ? 'complete' : 'empty'
-  const stressStatus: IndicatorStatus = stressEntries.length > 0 ? 'complete' : 'empty'
-  const observationStatus: IndicatorStatus = observationEntries.length > 0 ? 'complete' : 'empty'
+    mealCount >= 3 ? 'complete' : mealCount > 0 ? 'partial' : 'empty';
+  const sportStatus: IndicatorStatus = sportEntries.length > 0 ? 'complete' : 'empty';
+  const stressStatus: IndicatorStatus = stressEntries.length > 0 ? 'complete' : 'empty';
+  const observationStatus: IndicatorStatus = observationEntries.length > 0 ? 'complete' : 'empty';
 
-  const observation = observationEntries[0]
+  const observation = observationEntries[0];
   const observationValue = observation
     ? `${observation.positives.length + observation.negatives.length}`
-    : '-'
+    : '-';
 
   // Display value for nutrition partial state
   const nutritionValue =
     nutritionStatus === 'partial'
       ? t('dashboard.indicators.mealsEntered', { count: mealCount })
-      : mealValue
+      : mealValue;
 
   // Sleep: quality stars ★★★☆☆
-  const sleepQuality = sleepEntries[0]?.quality ?? 0
+  const sleepQuality = sleepEntries[0]?.quality ?? 0;
   const sleepVisual =
-    sleepQuality > 0 ? '★'.repeat(sleepQuality) + '☆'.repeat(5 - sleepQuality) : undefined
+    sleepQuality > 0 ? '★'.repeat(sleepQuality) + '☆'.repeat(5 - sleepQuality) : undefined;
 
   // Nutrition: meal types as secondary text, first photo as thumbnail
-  const mealTypes = [...new Set(mealEntries.map((m) => m.meal_type).filter(Boolean))] as string[]
+  const mealTypes = [...new Set(mealEntries.map((m) => m.meal_type).filter(Boolean))] as string[];
   const nutritionSecondary =
     mealTypes.length > 0
       ? mealTypes.map((type) => t(`dashboard.summary.mealType.${type}`)).join(', ')
-      : undefined
-  const nutritionThumbnail = mealEntries.find((m) => m.photo_url)?.photo_url ?? undefined
+      : undefined;
+  const nutritionThumbnail = mealEntries.find((m) => m.photo_url)?.photo_url ?? undefined;
 
   // Sport: activity name as secondary, intensity dots as visual
-  const activityCount = sportEntries.length
+  const activityCount = sportEntries.length;
   const avgIntensity =
     activityCount > 0
       ? Math.round(sportEntries.reduce((sum, s) => sum + s.intensity, 0) / activityCount)
-      : 0
+      : 0;
   const sportVisual =
-    activityCount > 0 ? '●'.repeat(avgIntensity) + '○'.repeat(5 - avgIntensity) : undefined
+    activityCount > 0 ? '●'.repeat(avgIntensity) + '○'.repeat(5 - avgIntensity) : undefined;
   const sportNames = [
     ...new Set(sportEntries.map((s) => s.sportType?.name).filter(Boolean)),
-  ] as string[]
+  ] as string[];
   const sportSecondary =
     sportNames.length > 0
       ? sportNames.map((name) => t(`journal.sport.activities.${name}`)).join(', ')
-      : undefined
+      : undefined;
 
   // Stress: emoji as visual, note as secondary
-  const stressVisual = stressEntries[0] ? STRESS_EMOJIS[stressEntries[0].level] : undefined
-  const stressSecondary = stressEntries[0]?.note?.substring(0, 40) ?? undefined
+  const stressVisual = stressEntries[0] ? STRESS_EMOJIS[stressEntries[0].level] : undefined;
+  const stressSecondary = stressEntries[0]?.note?.substring(0, 40) ?? undefined;
 
-  const MAX_CHIPS = 3
+  const MAX_CHIPS = 3;
   const observationChips = observation
     ? [
         ...observation.positives.map((key) => ({
@@ -156,9 +156,9 @@ export function IndicatorsList({
           type: 'negative' as const,
         })),
       ]
-    : []
-  const visibleChips = observationChips.slice(0, MAX_CHIPS)
-  const overflowCount = observationChips.length - MAX_CHIPS
+    : [];
+  const visibleChips = observationChips.slice(0, MAX_CHIPS);
+  const overflowCount = observationChips.length - MAX_CHIPS;
 
   const observationCustomContent =
     observationChips.length > 0 ? (
@@ -185,14 +185,14 @@ export function IndicatorsList({
           </Text>
         )}
       </View>
-    ) : undefined
+    ) : undefined;
 
   // Only show cards with data
-  const showSleep = sleepEntries.length > 0
-  const showNutrition = mealEntries.length > 0
-  const showSport = sportEntries.length > 0
-  const showStress = stressEntries.length > 0
-  const showObservations = observationEntries.length > 0
+  const showSleep = sleepEntries.length > 0;
+  const showNutrition = mealEntries.length > 0;
+  const showSport = sportEntries.length > 0;
+  const showStress = stressEntries.length > 0;
+  const showObservations = observationEntries.length > 0;
 
   if (layout === 'grid') {
     return (
@@ -259,7 +259,7 @@ export function IndicatorsList({
           </View>
         </View>
       </View>
-    )
+    );
   }
 
   return (
@@ -323,5 +323,5 @@ export function IndicatorsList({
         />
       )}
     </View>
-  )
+  );
 }

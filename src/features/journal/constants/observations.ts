@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react-native'
+import type { LucideIcon } from 'lucide-react-native';
 import {
   Activity,
   AlertCircle,
@@ -15,14 +15,14 @@ import {
   ShieldAlert,
   Sun,
   Waves,
-} from 'lucide-react-native'
+} from 'lucide-react-native';
 
 export const POSITIVE_OBSERVATIONS = [
   'skinHydrated',
   'fewerPimples',
   'glowingSkin',
   'smootherSkin',
-] as const
+] as const;
 
 export const NEGATIVE_OBSERVATIONS = [
   'acne',
@@ -36,17 +36,17 @@ export const NEGATIVE_OBSERVATIONS = [
   'sensitiveSkin',
   'wrinkles',
   'dullComplexion',
-] as const
+] as const;
 
-export type PositiveObservation = (typeof POSITIVE_OBSERVATIONS)[number]
-export type NegativeObservation = (typeof NEGATIVE_OBSERVATIONS)[number]
+export type PositiveObservation = (typeof POSITIVE_OBSERVATIONS)[number];
+export type NegativeObservation = (typeof NEGATIVE_OBSERVATIONS)[number];
 
 export const POSITIVE_OBSERVATION_ICONS: Record<PositiveObservation, LucideIcon> = {
   skinHydrated: Droplet,
   fewerPimples: CircleOff,
   glowingSkin: Sun,
   smootherSkin: AlignCenter,
-}
+};
 
 export const NEGATIVE_OBSERVATION_ICONS: Record<NegativeObservation, LucideIcon> = {
   acne: CircleDot,
@@ -60,4 +60,4 @@ export const NEGATIVE_OBSERVATION_ICONS: Record<NegativeObservation, LucideIcon>
   sensitiveSkin: ShieldAlert,
   wrinkles: Activity,
   dullComplexion: Cloud,
-}
+};

@@ -125,12 +125,12 @@ OTA updates **CANNOT** change:
 ### Debugging
 
 ```typescript
-import * as Updates from 'expo-updates'
+import * as Updates from 'expo-updates';
 
 // Check current update info
-console.log('Update ID:', Updates.updateId)
-console.log('Is embedded:', Updates.isEmbeddedLaunch)
-console.log('Channel:', Updates.channel)
+console.log('Update ID:', Updates.updateId);
+console.log('Is embedded:', Updates.isEmbeddedLaunch);
+console.log('Channel:', Updates.channel);
 ```
 
 ### Sentry Tracking

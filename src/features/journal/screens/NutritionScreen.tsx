@@ -9,8 +9,8 @@
  * Connected to real backend API with image upload and validation
  */
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Camera,
   Clock,
@@ -22,11 +22,11 @@ import {
   Sun,
   Utensils,
   X,
-} from 'lucide-react-native'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { Alert, Image, Text, View } from 'react-native'
+} from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Alert, Image, Text, View } from 'react-native';
 
 import {
   useCreateMeal,
@@ -34,51 +34,51 @@ import {
   useMealEntries,
   useUpdateMeal,
   useUploadMealImage,
-} from '@features/journal/hooks/useJournal'
-import { mealFormSchema, type MealFormInput } from '@features/journal/schemas/journal.schema'
-import { Button } from '@shared/components/Button'
-import { Input } from '@shared/components/Input'
-import { Pressable } from '@shared/components/Pressable'
-import { ScreenHeader } from '@shared/components/ScreenHeader'
-import { SectionHeader } from '@shared/components/SectionHeader'
-import { cn } from '@shared/utils/cn'
-import { getTodayUTC, toISODateString } from '@shared/utils/date'
-import { pickImageFromGallery, takePhoto } from '@shared/utils/image'
-import { colors } from '@theme/colors'
+} from '@features/journal/hooks/useJournal';
+import { mealFormSchema, type MealFormInput } from '@features/journal/schemas/journal.schema';
+import { Button } from '@shared/components/button';
+import { Input } from '@shared/components/input';
+import { Pressable } from '@shared/components/pressable';
+import { ScreenHeader } from '@shared/components/screen-header';
+import { SectionHeader } from '@shared/components/section-header';
+import { cn } from '@shared/utils/cn';
+import { getTodayUTC, toISODateString } from '@shared/utils/date';
+import { pickImageFromGallery, takePhoto } from '@shared/utils/image';
+import { colors } from '@theme/colors';
 
 const MEAL_TYPES = [
   { id: 'breakfast', icon: Coffee },
   { id: 'lunch', icon: Sun },
   { id: 'dinner', icon: Moon },
   { id: 'snack', icon: Cookie },
-] as const
+] as const;
 
 export default function NutritionScreen() {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const params = useLocalSearchParams<{ id?: string; date?: string; mealType?: string }>()
-  const uploadImage = useUploadMealImage()
-  const createMeal = useCreateMeal()
-  const updateMeal = useUpdateMeal()
-  const deleteMeal = useDeleteMeal()
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string; date?: string; mealType?: string }>();
+  const uploadImage = useUploadMealImage();
+  const createMeal = useCreateMeal();
+  const updateMeal = useUpdateMeal();
+  const deleteMeal = useDeleteMeal();
 
   // If editing, fetch existing entry
-  const dateToUse = params.date || getTodayUTC()
-  const { data: mealEntries } = useMealEntries(dateToUse)
-  const existingEntry = mealEntries?.find((e) => e.id === Number(params.id))
-  const isEditMode = !!params.id
+  const dateToUse = params.date || getTodayUTC();
+  const { data: mealEntries } = useMealEntries(dateToUse);
+  const existingEntry = mealEntries?.find((e) => e.id === Number(params.id));
+  const isEditMode = !!params.id;
 
   // Track if user has changed the image from the original
-  const [localImageUri, setLocalImageUri] = useState<string | null>(null)
-  const [imageWasModified, setImageWasModified] = useState(false)
+  const [localImageUri, setLocalImageUri] = useState<string | null>(null);
+  const [imageWasModified, setImageWasModified] = useState(false);
 
   // Compute effective image URI: use local if modified, else use existing entry's image
-  const imageUri = imageWasModified ? localImageUri : (existingEntry?.photo_url ?? null)
+  const imageUri = imageWasModified ? localImageUri : (existingEntry?.photo_url ?? null);
 
   const setImageUri = (uri: string | null) => {
-    setImageWasModified(true)
-    setLocalImageUri(uri)
-  }
+    setImageWasModified(true);
+    setLocalImageUri(uri);
+  };
 
   const {
     control,
@@ -88,7 +88,7 @@ export default function NutritionScreen() {
   } = useForm<MealFormInput>({
     resolver: zodResolver(mealFormSchema),
     mode: 'onChange',
-  })
+  });
 
   // Populate form when editing or with pre-selected meal type
   useEffect(() => {
@@ -97,46 +97,46 @@ export default function NutritionScreen() {
         food_name: existingEntry.food_name || '',
         note: existingEntry.note || '',
         meal_type: existingEntry.meal_type,
-      })
+      });
     } else if (params.mealType) {
       reset({
         food_name: existingEntry?.food_name || '',
         note: existingEntry?.note || '',
         meal_type: params.mealType as 'breakfast' | 'lunch' | 'dinner' | 'snack',
-      })
+      });
     }
-  }, [existingEntry, params.mealType, reset])
+  }, [existingEntry, params.mealType, reset]);
 
   const handlePickImage = async () => {
     const uri = await pickImageFromGallery(() => {
-      Alert.alert(t('common.error'), t('journal.nutrition.galleryPermissionRequired'))
-    })
-    if (uri) setImageUri(uri)
-  }
+      Alert.alert(t('common.error'), t('journal.nutrition.galleryPermissionRequired'));
+    });
+    if (uri) setImageUri(uri);
+  };
 
   const handleTakePhoto = async () => {
     const uri = await takePhoto(() => {
-      Alert.alert(t('common.error'), t('journal.nutrition.cameraPermissionRequired'))
-    })
-    if (uri) setImageUri(uri)
-  }
+      Alert.alert(t('common.error'), t('journal.nutrition.cameraPermissionRequired'));
+    });
+    if (uri) setImageUri(uri);
+  };
 
   const removeImage = () => {
-    setImageUri(null)
-  }
+    setImageUri(null);
+  };
 
   const onSubmit = async (data: MealFormInput) => {
     try {
-      let photoUrl: string | null = existingEntry?.photo_url || null
+      let photoUrl: string | null = existingEntry?.photo_url || null;
 
       // Only process image changes if user modified it
       if (imageWasModified) {
         if (localImageUri) {
           // Upload new local image
-          photoUrl = await uploadImage.mutateAsync(localImageUri)
+          photoUrl = await uploadImage.mutateAsync(localImageUri);
         } else {
           // Image was removed
-          photoUrl = null
+          photoUrl = null;
         }
       }
 
@@ -146,7 +146,7 @@ export default function NutritionScreen() {
         food_name: data.food_name,
         note: data.note || null,
         meal_type: data.meal_type,
-      }
+      };
 
       if (isEditMode && existingEntry) {
         // Update existing entry
@@ -154,27 +154,27 @@ export default function NutritionScreen() {
           { id: existingEntry.id, dto, date: dateToUse },
           {
             onSuccess: () => {
-              router.back()
+              router.back();
             },
-          }
-        )
+          },
+        );
       } else {
         // Create new entry
         createMeal.mutate(dto, {
           onSuccess: () => {
-            router.back()
+            router.back();
           },
-        })
+        });
       }
     } catch {
       // Error is already handled by uploadImage mutation
     }
-  }
+  };
 
-  const isLoading = uploadImage.isPending || createMeal.isPending || updateMeal.isPending
+  const isLoading = uploadImage.isPending || createMeal.isPending || updateMeal.isPending;
 
   const handleDelete = (): void => {
-    if (!existingEntry) return
+    if (!existingEntry) return;
 
     Alert.alert(t('common.deleteConfirmTitle'), t('common.deleteConfirmMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
@@ -184,12 +184,12 @@ export default function NutritionScreen() {
         onPress: () => {
           deleteMeal.mutate(
             { id: existingEntry.id, date: dateToUse },
-            { onSuccess: () => router.back() }
-          )
+            { onSuccess: () => router.back() },
+          );
         },
       },
-    ])
-  }
+    ]);
+  };
 
   return (
     <ScreenHeader
@@ -225,8 +225,8 @@ export default function NutritionScreen() {
           render={({ field: { onChange, value } }) => (
             <View className="flex-row gap-2">
               {MEAL_TYPES.map((mealType) => {
-                const Icon = mealType.icon
-                const isSelected = value === mealType.id
+                const Icon = mealType.icon;
+                const isSelected = value === mealType.id;
                 return (
                   <Pressable
                     key={mealType.id}
@@ -234,7 +234,7 @@ export default function NutritionScreen() {
                     haptic="light"
                     className={cn(
                       'flex-1 items-center justify-center py-3 rounded-xl border',
-                      isSelected ? 'bg-secondary border-secondary' : 'bg-surface border-border'
+                      isSelected ? 'bg-secondary border-secondary' : 'bg-surface border-border',
                     )}
                     accessibilityLabel={t(`dashboard.summary.mealType.${mealType.id}`)}
                   >
@@ -246,13 +246,13 @@ export default function NutritionScreen() {
                     <Text
                       className={cn(
                         'text-xs mt-1',
-                        isSelected ? 'text-white font-medium' : 'text-textMuted'
+                        isSelected ? 'text-white font-medium' : 'text-textMuted',
                       )}
                     >
                       {t(`dashboard.summary.mealType.${mealType.id}`)}
                     </Text>
                   </Pressable>
-                )
+                );
               })}
             </View>
           )}
@@ -355,5 +355,5 @@ export default function NutritionScreen() {
         )}
       </View>
     </ScreenHeader>
-  )
+  );
 }

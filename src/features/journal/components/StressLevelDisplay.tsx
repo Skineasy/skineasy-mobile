@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import type { StressLevel } from '@shared/types/journal.types'
+import type { StressLevel } from '@shared/types/journal.types';
 
-const STRESS_COLORS = ['#7D604E', '#D2C5BD', '#FFCEC2', '#FF977E', '#E84C3F'] as const
-const BAR_HEIGHTS = [40, 70, 100, 130, 160] as const
+const STRESS_COLORS = ['#7D604E', '#D2C5BD', '#FFCEC2', '#FF977E', '#E84C3F'] as const;
+const BAR_HEIGHTS = [40, 70, 100, 130, 160] as const;
 
 const LEVEL_KEYS: Record<StressLevel, string> = {
   1: 'minimal',
@@ -12,18 +12,18 @@ const LEVEL_KEYS: Record<StressLevel, string> = {
   3: 'moderate',
   4: 'high',
   5: 'intense',
-}
+};
 
 interface StressLevelDisplayProps {
-  level: StressLevel
+  level: StressLevel;
 }
 
 export function StressLevelDisplay({ level }: StressLevelDisplayProps): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const levelKey = LEVEL_KEYS[level]
-  const label = t(`journal.stress.level.${levelKey}`)
-  const description = t(`journal.stress.description.${levelKey}`)
+  const levelKey = LEVEL_KEYS[level];
+  const label = t(`journal.stress.level.${levelKey}`);
+  const description = t(`journal.stress.description.${levelKey}`);
 
   return (
     <View className="items-center">
@@ -36,9 +36,9 @@ export function StressLevelDisplay({ level }: StressLevelDisplayProps): React.Re
       {/* Bars visualization */}
       <View className="flex-row items-end justify-center gap-3 h-44">
         {STRESS_COLORS.map((color, index) => {
-          const barLevel = (index + 1) as StressLevel
-          const isActive = barLevel <= level
-          const height = BAR_HEIGHTS[index]
+          const barLevel = (index + 1) as StressLevel;
+          const isActive = barLevel <= level;
+          const height = BAR_HEIGHTS[index];
 
           return (
             <View
@@ -50,9 +50,9 @@ export function StressLevelDisplay({ level }: StressLevelDisplayProps): React.Re
                 backgroundColor: isActive ? color : `${color}40`,
               }}
             />
-          )
+          );
         })}
       </View>
     </View>
-  )
+  );
 }

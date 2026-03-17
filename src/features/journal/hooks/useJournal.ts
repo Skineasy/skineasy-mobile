@@ -5,7 +5,7 @@
  * Prefer importing from the specific hook files directly.
  */
 
-export { useSleepEntries, useUpsertSleep, useDeleteSleep } from '@features/journal/hooks/useSleep'
+export { useSleepEntries, useUpsertSleep, useDeleteSleep } from '@features/journal/hooks/useSleep';
 
 export {
   useSportTypes,
@@ -13,7 +13,7 @@ export {
   useCreateSport,
   useUpdateSport,
   useDeleteSport,
-} from '@features/journal/hooks/useSport'
+} from '@features/journal/hooks/useSport';
 
 export {
   useMealEntries,
@@ -21,10 +21,10 @@ export {
   useCreateMeal,
   useUpdateMeal,
   useDeleteMeal,
-} from '@features/journal/hooks/useMeal'
+} from '@features/journal/hooks/useMeal';
 
 export {
   useStressEntries,
   useUpsertStress,
   useDeleteStress,
-} from '@features/journal/hooks/useStress'
+} from '@features/journal/hooks/useStress';

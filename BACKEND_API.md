@@ -74,7 +74,7 @@ All successful responses follow this structure:
 
 ```typescript
 {
-  data: T // The actual response data
+  data: T; // The actual response data
 }
 ```
 
@@ -1313,87 +1313,87 @@ This ensures all dates are normalized to UTC, avoiding timezone ambiguity issues
 ```typescript
 // Authentication
 interface LoginRequest {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 interface RegisterRequest {
-  firstname: string
-  lastname: string
-  email: string
-  password: string
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
 }
 
 interface AuthResponse {
-  access_token: string
-  refresh_token: string
-  user: User
+  access_token: string;
+  refresh_token: string;
+  user: User;
 }
 
 interface RefreshTokenRequest {
-  refresh_token: string
+  refresh_token: string;
 }
 
 interface RefreshTokenResponse {
-  access_token: string
+  access_token: string;
 }
 
 // User
 interface User {
-  id: number
-  email: string
-  firstname: string
-  lastname: string
-  skinType: string | null
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+  skinType: string | null;
 }
 
 // Diagnosis
 interface Diagnosis {
-  id: number
-  skinType: string
-  concerns: string[]
-  createdAt: string // ISO 8601
-  routine: Routine
+  id: number;
+  skinType: string;
+  concerns: string[];
+  createdAt: string; // ISO 8601
+  routine: Routine;
 }
 
 interface Routine {
-  morning: RoutineStep[]
-  evening: RoutineStep[]
+  morning: RoutineStep[];
+  evening: RoutineStep[];
 }
 
 interface RoutineStep {
-  id: number
-  order: number
-  productName: string
-  productUrl: string
-  description: string
+  id: number;
+  order: number;
+  productName: string;
+  productUrl: string;
+  description: string;
 }
 
 // Sleep Entry
 interface SleepEntry {
-  id: number
-  customer_id: number
-  date: string // ISO 8601 UTC
-  hours: number // 0-24
-  quality: number // 1-5
-  created_at: string // ISO 8601
+  id: number;
+  customer_id: number;
+  date: string; // ISO 8601 UTC
+  hours: number; // 0-24
+  quality: number; // 1-5
+  created_at: string; // ISO 8601
 }
 
 interface CreateSleepEntryDto {
-  date: string // ISO 8601 UTC
-  hours: number // 0-24
-  quality: number // 1-5
+  date: string; // ISO 8601 UTC
+  hours: number; // 0-24
+  quality: number; // 1-5
 }
 
 interface UpdateSleepEntryDto {
-  date?: string
-  hours?: number
-  quality?: number
+  date?: string;
+  hours?: number;
+  quality?: number;
 }
 
 interface SleepUpsertResponse {
-  data: SleepEntry
-  created: boolean // true if new, false if updated
+  data: SleepEntry;
+  created: boolean; // true if new, false if updated
 }
 
 // Sport Entry
@@ -1407,69 +1407,69 @@ type SportType =
   | 'pilates'
   | 'hiking'
   | 'dancing'
-  | 'other'
+  | 'other';
 
 interface SportEntry {
-  id: number
-  customer_id: number
-  date: string // ISO 8601 UTC
-  type: SportType
-  duration: number // minutes
-  intensity: number // 1-5
-  created_at: string // ISO 8601
+  id: number;
+  customer_id: number;
+  date: string; // ISO 8601 UTC
+  type: SportType;
+  duration: number; // minutes
+  intensity: number; // 1-5
+  created_at: string; // ISO 8601
 }
 
 interface CreateSportEntryDto {
-  date: string // ISO 8601 UTC
-  type: SportType
-  duration: number // min: 1
-  intensity: number // 1-5
+  date: string; // ISO 8601 UTC
+  type: SportType;
+  duration: number; // min: 1
+  intensity: number; // 1-5
 }
 
 interface UpdateSportEntryDto {
-  date?: string
-  type?: SportType
-  duration?: number
-  intensity?: number
+  date?: string;
+  type?: SportType;
+  duration?: number;
+  intensity?: number;
 }
 
 // Meal Entry
-type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 interface MealEntry {
-  id: number
-  customer_id: number
-  date: string // ISO 8601 UTC
-  photo_url: string | null
-  food_name: string | null // max 200 chars
-  note: string | null
-  meal_type: MealType | null
-  created_at: string // ISO 8601
+  id: number;
+  customer_id: number;
+  date: string; // ISO 8601 UTC
+  photo_url: string | null;
+  food_name: string | null; // max 200 chars
+  note: string | null;
+  meal_type: MealType | null;
+  created_at: string; // ISO 8601
 }
 
 interface CreateMealEntryDto {
-  date: string // ISO 8601 UTC
-  photo_url?: string
-  food_name?: string // max 200 chars
-  note?: string
-  meal_type?: MealType
+  date: string; // ISO 8601 UTC
+  photo_url?: string;
+  food_name?: string; // max 200 chars
+  note?: string;
+  meal_type?: MealType;
 }
 
 interface UpdateMealEntryDto {
-  date?: string
-  photo_url?: string
-  food_name?: string
-  note?: string
-  meal_type?: MealType
+  date?: string;
+  photo_url?: string;
+  food_name?: string;
+  note?: string;
+  meal_type?: MealType;
 }
 
 interface UploadPhotoResponse {
-  url: string
+  url: string;
 }
 
 // API Response wrapper
 interface ApiResponse<T> {
-  data: T
+  data: T;
 }
 ```
 

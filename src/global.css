@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 125 96 78;
+    --color-primary-dark: 46 35 25;
+    --color-secondary: 232 76 63;
+    --color-background: 244 233 224;
+    --color-surface: 255 249 245;
+    --color-text: 107 85 68;
+    --color-text-muted: 154 138 122;
+    --color-text-light: 196 181 168;
+    --color-error: 232 76 63;
+    --color-success: 23 178 106;
+    --color-warning: 255 151 126;
+    --color-border: 224 201 184;
+    --color-border-focus: 23 178 106;
+    --color-cream: 244 233 224;
+    --color-cream-muted: 224 201 184;
+    --color-brown-dark: 46 35 25;
+    --color-brown-light: 125 96 78;
+  }
+}

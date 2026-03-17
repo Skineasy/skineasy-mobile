@@ -1,19 +1,19 @@
-import { useRef } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { Linking, Text, TextInput, View } from 'react-native'
+import { useRef } from 'react';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Linking, Text, TextInput, View } from 'react-native';
 
-import { RegisterInput } from '@features/auth/schemas/auth.schema'
-import { Button } from '@shared/components/Button'
-import { Input } from '@shared/components/Input'
-import { KeyboardScrollView } from '@shared/components/KeyboardScrollView'
+import { RegisterInput } from '@features/auth/schemas/auth.schema';
+import { Button } from '@shared/components/button';
+import { Input } from '@shared/components/input';
+import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
 
 interface Step4CredentialsProps {
-  onNext: () => void
-  control: Control<RegisterInput>
-  errors: FieldErrors<RegisterInput>
-  isValid: boolean
-  isLoading: boolean
+  onNext: () => void;
+  control: Control<RegisterInput>;
+  errors: FieldErrors<RegisterInput>;
+  isValid: boolean;
+  isLoading: boolean;
 }
 
 export function Step4Credentials({
@@ -23,9 +23,9 @@ export function Step4Credentials({
   isValid,
   isLoading,
 }: Step4CredentialsProps) {
-  const { t } = useTranslation()
-  const passwordRef = useRef<TextInput>(null)
-  const confirmPasswordRef = useRef<TextInput>(null)
+  const { t } = useTranslation();
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
 
   return (
     <KeyboardScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={100}>
@@ -136,5 +136,5 @@ export function Step4Credentials({
         </View>
       </View>
     </KeyboardScrollView>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-import { ConfigContext, ExpoConfig } from 'expo/config'
+import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'Skin Easy',
+  name: process.env.APP_NAME ?? 'Skin Easy',
   slug: 'skineasy',
   version: '1.0.0',
   orientation: 'portrait',
@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   ios: {
     supportsTablet: false,
-    bundleIdentifier: 'com.skineasy.app',
+    bundleIdentifier: process.env.BUNDLE_ID ?? 'com.skineasy.app',
     config: {
       usesNonExemptEncryption: false,
     },
@@ -30,7 +30,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#F4E9E0',
     },
-    package: 'com.skineasy.app',
+    package: process.env.BUNDLE_ID ?? 'com.skineasy.app',
     edgeToEdgeEnabled: true,
     softwareKeyboardLayoutMode: 'pan',
   },
@@ -70,4 +70,4 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     'react-native-health',
   ],
-})
+});

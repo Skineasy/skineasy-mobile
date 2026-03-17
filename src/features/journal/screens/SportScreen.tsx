@@ -9,57 +9,57 @@
  * Connected to real backend API with validation
  */
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Dumbbell, Flame, MessageSquare, PersonStanding, Timer } from 'lucide-react-native'
-import { useEffect, useMemo } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert, Text, View } from 'react-native'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Dumbbell, Flame, MessageSquare, PersonStanding, Timer } from 'lucide-react-native';
+import { useEffect, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
 
-import { SportTypeSelector } from '@features/journal/components/SportTypeSelector'
+import { SportTypeSelector } from '@features/journal/components/SportTypeSelector';
 import {
   useCreateSport,
   useDeleteSport,
   useSportEntries,
   useSportTypes,
   useUpdateSport,
-} from '@features/journal/hooks/useJournal'
-import { sportFormSchema, type SportFormInput } from '@features/journal/schemas/journal.schema'
-import { enrichSportTypes } from '@features/journal/utils/sportMapping'
-import { Button } from '@shared/components/Button'
-import { Card } from '@shared/components/Card'
-import { Input } from '@shared/components/Input'
-import { Pressable } from '@shared/components/Pressable'
-import { ScreenHeader } from '@shared/components/ScreenHeader'
-import { SectionHeader } from '@shared/components/SectionHeader'
-import type { SportIntensity } from '@shared/types/journal.types'
-import { cn } from '@shared/utils/cn'
-import { getTodayUTC, toISODateString } from '@shared/utils/date'
+} from '@features/journal/hooks/useJournal';
+import { sportFormSchema, type SportFormInput } from '@features/journal/schemas/journal.schema';
+import { enrichSportTypes } from '@features/journal/utils/sportMapping';
+import { Button } from '@shared/components/button';
+import { Card } from '@shared/components/card';
+import { Input } from '@shared/components/input';
+import { Pressable } from '@shared/components/pressable';
+import { ScreenHeader } from '@shared/components/screen-header';
+import { SectionHeader } from '@shared/components/section-header';
+import type { SportIntensity } from '@shared/types/journal.types';
+import { cn } from '@shared/utils/cn';
+import { getTodayUTC, toISODateString } from '@shared/utils/date';
 
-const INTENSITY_LEVELS = [1, 2, 3, 4, 5] as const
+const INTENSITY_LEVELS = [1, 2, 3, 4, 5] as const;
 
 export default function SportScreen() {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const params = useLocalSearchParams<{ id?: string; date?: string }>()
-  const createSport = useCreateSport()
-  const updateSport = useUpdateSport()
-  const deleteSport = useDeleteSport()
-  const { data: sportTypes } = useSportTypes()
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string; date?: string }>();
+  const createSport = useCreateSport();
+  const updateSport = useUpdateSport();
+  const deleteSport = useDeleteSport();
+  const { data: sportTypes } = useSportTypes();
 
   // If editing, fetch existing entry
-  const dateToUse = params.date || getTodayUTC()
-  const { data: sportEntries, isLoading, isError, refetch } = useSportEntries(dateToUse)
-  const existingEntry = sportEntries?.find((e) => e.id === Number(params.id))
-  const isEditMode = !!params.id
+  const dateToUse = params.date || getTodayUTC();
+  const { data: sportEntries, isLoading, isError, refetch } = useSportEntries(dateToUse);
+  const existingEntry = sportEntries?.find((e) => e.id === Number(params.id));
+  const isEditMode = !!params.id;
 
   // Create a map of sport type names to backend IDs
   const sportTypeIdMap = useMemo(() => {
-    if (!sportTypes) return new Map<string, number>()
-    const enriched = enrichSportTypes(sportTypes, t)
-    return new Map(enriched.map((st) => [st.id, st.backendId]))
-  }, [sportTypes, t])
+    if (!sportTypes) return new Map<string, number>();
+    const enriched = enrichSportTypes(sportTypes, t);
+    return new Map(enriched.map((st) => [st.id, st.backendId]));
+  }, [sportTypes, t]);
 
   const {
     control,
@@ -74,7 +74,7 @@ export default function SportScreen() {
     defaultValues: {
       intensity: 3, // Default intensity to 3 (moderate)
     },
-  })
+  });
 
   // Populate form when editing
   useEffect(() => {
@@ -84,20 +84,20 @@ export default function SportScreen() {
         duration: String(existingEntry.duration),
         intensity: existingEntry.intensity as SportIntensity,
         note: existingEntry.note || '',
-      })
+      });
     }
-  }, [existingEntry, reset])
+  }, [existingEntry, reset]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const selectedIntensity = watch('intensity') ?? 3
+  const selectedIntensity = watch('intensity') ?? 3;
 
   const onSubmit = (data: SportFormInput) => {
     // Get backend ID from sport type name
-    const sportTypeId = sportTypeIdMap.get(data.type)
+    const sportTypeId = sportTypeIdMap.get(data.type);
 
     if (!sportTypeId) {
       // This shouldn't happen if validation is correct
-      return
+      return;
     }
 
     const dto = {
@@ -106,7 +106,7 @@ export default function SportScreen() {
       duration: Number(data.duration),
       intensity: data.intensity as SportIntensity,
       note: data.note || null,
-    }
+    };
 
     if (isEditMode && existingEntry) {
       // Update existing entry
@@ -114,19 +114,19 @@ export default function SportScreen() {
         { id: existingEntry.id, dto, date: dateToUse },
         {
           onSuccess: () => {
-            router.back()
+            router.back();
           },
-        }
-      )
+        },
+      );
     } else {
       // Create new entry
       createSport.mutate(dto, {
         onSuccess: () => {
-          router.back()
+          router.back();
         },
-      })
+      });
     }
-  }
+  };
 
   const getIntensityLabel = (level: number): string => {
     const labels = [
@@ -135,12 +135,12 @@ export default function SportScreen() {
       t('journal.sport.intensity.moderate'),
       t('journal.sport.intensity.hard'),
       t('journal.sport.intensity.veryHard'),
-    ]
-    return labels[level - 1] || ''
-  }
+    ];
+    return labels[level - 1] || '';
+  };
 
   const handleDelete = (): void => {
-    if (!existingEntry) return
+    if (!existingEntry) return;
 
     Alert.alert(t('common.deleteConfirmTitle'), t('common.deleteConfirmMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
@@ -150,12 +150,12 @@ export default function SportScreen() {
         onPress: () => {
           deleteSport.mutate(
             { id: existingEntry.id, date: dateToUse },
-            { onSuccess: () => router.back() }
-          )
+            { onSuccess: () => router.back() },
+          );
         },
       },
-    ])
-  }
+    ]);
+  };
 
   if (isLoading) {
     return (
@@ -164,7 +164,7 @@ export default function SportScreen() {
           <ActivityIndicator size="large" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   if (isError) {
@@ -175,7 +175,7 @@ export default function SportScreen() {
           <Button title={t('common.retry')} onPress={() => refetch()} haptic="medium" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   return (
@@ -243,7 +243,7 @@ export default function SportScreen() {
                 <Text
                   className={cn(
                     'text-2xl font-bold',
-                    selectedIntensity === level ? 'text-white' : 'text-text'
+                    selectedIntensity === level ? 'text-white' : 'text-text',
                   )}
                 >
                   {level}
@@ -300,5 +300,5 @@ export default function SportScreen() {
         )}
       </View>
     </ScreenHeader>
-  )
+  );
 }

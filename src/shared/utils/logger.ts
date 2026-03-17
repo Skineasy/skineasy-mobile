@@ -1,110 +1,49 @@
-/**
- * Centralized Logger Utility
- *
- * Provides consistent logging across the app with environment-based control.
- * All logs are automatically disabled in production builds.
- * Each log includes a timestamp for debugging.
- *
- * Usage:
- * - logger.debug('Debug info', { data })
- * - logger.info('Info message')
- * - logger.warn('Warning message')
- * - logger.error('Error message', error)
- */
+const enabled = __DEV__;
 
-class Logger {
-  private enabled: boolean
+const timestamp = (): string => {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2, '0');
+  const m = now.getMinutes().toString().padStart(2, '0');
+  const s = now.getSeconds().toString().padStart(2, '0');
+  const ms = now.getMilliseconds().toString().padStart(3, '0');
+  return `${h}:${m}:${s}.${ms}`;
+};
 
-  constructor() {
-    // Only enable logging in development mode
-    this.enabled = __DEV__
-  }
+const debug = (message: string, ...args: unknown[]): void => {
+  if (!enabled) return;
+  console.log(`[${timestamp()}] [DEBUG] ${message}`, ...args);
+};
 
-  /**
-   * Format timestamp for logs (HH:MM:SS.mmm)
-   */
-  private getTimestamp(): string {
-    const now = new Date()
-    const hours = now.getHours().toString().padStart(2, '0')
-    const minutes = now.getMinutes().toString().padStart(2, '0')
-    const seconds = now.getSeconds().toString().padStart(2, '0')
-    const milliseconds = now.getMilliseconds().toString().padStart(3, '0')
-    return `${hours}:${minutes}:${seconds}.${milliseconds}`
-  }
+const info = (message: string, ...args: unknown[]): void => {
+  if (!enabled) return;
+  console.log(`[${timestamp()}] [INFO] ${message}`, ...args);
+};
 
-  /**
-   * Debug logs - For detailed debugging information
-   * Use for: Developer-only information, verbose data dumps
-   */
-  debug(message: string, ...args: unknown[]): void {
-    if (!this.enabled) return
-    console.log(`[${this.getTimestamp()}] [DEBUG] ${message}`, ...args)
-  }
+const warn = (message: string, ...args: unknown[]): void => {
+  if (!enabled) return;
+  console.warn(`[${timestamp()}] [WARN] ${message}`, ...args);
+};
 
-  /**
-   * Info logs - For general information
-   * Use for: App flow tracking, user actions, state changes
-   */
-  info(message: string, ...args: unknown[]): void {
-    if (!this.enabled) return
-    console.log(`[${this.getTimestamp()}] [INFO] ${message}`, ...args)
-  }
+const error = (message: string, ...args: unknown[]): void => {
+  if (!enabled) return;
+  console.error(`[${timestamp()}] [ERROR] ${message}`, ...args);
+};
 
-  /**
-   * Warning logs - For non-critical issues
-   * Use for: Deprecated API usage, fallback behaviors, potential issues
-   */
-  warn(message: string, ...args: unknown[]): void {
-    if (!this.enabled) return
-    console.warn(`[${this.getTimestamp()}] [WARN] ${message}`, ...args)
-  }
+const group = (label: string): void => {
+  if (!enabled) return;
+  console.group(label);
+};
 
-  /**
-   * Error logs - For errors and exceptions
-   * Use for: Caught errors, API failures, validation errors
-   */
-  error(message: string, ...args: unknown[]): void {
-    if (!this.enabled) return
-    console.error(`[${this.getTimestamp()}] [ERROR] ${message}`, ...args)
-  }
+const groupEnd = (): void => {
+  if (!enabled) return;
+  console.groupEnd();
+};
 
-  /**
-   * Group logs together (collapsible in browser/console)
-   */
-  group(label: string): void {
-    if (!this.enabled) return
-    console.group(label)
-  }
-
-  /**
-   * End a log group
-   */
-  groupEnd(): void {
-    if (!this.enabled) return
-    console.groupEnd()
-  }
-
-  /**
-   * Log a table (useful for arrays/objects)
-   */
-  table(data: unknown): void {
-    if (!this.enabled) return
-    console.table(data)
-  }
-
-  /**
-   * Manually enable/disable logging (useful for testing)
-   */
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled
-  }
-
-  /**
-   * Check if logging is enabled
-   */
-  isEnabled(): boolean {
-    return this.enabled
-  }
-}
-
-export const logger = new Logger()
+export const logger = {
+  debug,
+  info,
+  warn,
+  error,
+  group,
+  groupEnd,
+};

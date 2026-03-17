@@ -34,6 +34,6 @@ export const typography = {
     fontSize: 16,
     lineHeight: 24,
   },
-} as const
+} as const;
 
-export type TypographyKey = keyof typeof typography
+export type TypographyKey = keyof typeof typography;

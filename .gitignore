@@ -46,3 +46,6 @@ yarn-error.*
 old_files
 SkinEasy.app
 build*
+
+.ralph*
+*.app

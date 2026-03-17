@@ -10,6 +10,6 @@ const assets = {
   logo: require('./logo.png'),
   appleHealth: require('./onboarding/appleHealth.png'),
   skineasyLogo: require('./onboarding/skineasyLogo.png'),
-}
+};
 
-export default assets
+export default assets;

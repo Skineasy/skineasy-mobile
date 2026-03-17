@@ -1,45 +1,45 @@
-import { ExternalLink } from 'lucide-react-native'
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Image, Linking, ScrollView, Text, useWindowDimensions, View } from 'react-native'
-import RenderHtml, { type MixedStyleDeclaration } from 'react-native-render-html'
+import { ExternalLink } from 'lucide-react-native';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Linking, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import RenderHtml, { type MixedStyleDeclaration } from 'react-native-render-html';
 
-import type { ProductDto } from '@features/routine/types/routine.types'
-import { BottomSheet } from '@shared/components/BottomSheet'
-import { Card } from '@shared/components/Card'
-import { Pressable } from '@shared/components/Pressable'
-import { haptic } from '@shared/utils/haptic'
-import { colors } from '@theme/colors'
+import type { ProductDto } from '@features/routine/types/routine.types';
+import { BottomSheet } from '@shared/components/bottom-sheet';
+import { Card } from '@shared/components/card';
+import { Pressable } from '@shared/components/pressable';
+import { haptic } from '@shared/utils/haptic';
+import { colors } from '@theme/colors';
 
 const HTML_BASE_STYLE: MixedStyleDeclaration = {
   color: colors.text,
   fontSize: 14,
   lineHeight: 20,
-}
+};
 
 interface ProductDetailSheetProps {
-  product: ProductDto | null
-  visible: boolean
-  onClose: () => void
+  product: ProductDto | null;
+  visible: boolean;
+  onClose: () => void;
 }
 
 export function ProductDetailSheet({ product, visible, onClose }: ProductDetailSheetProps) {
-  const { t } = useTranslation()
-  const { width } = useWindowDimensions()
+  const { t } = useTranslation();
+  const { width } = useWindowDimensions();
 
   const handleBuyPress = useCallback(async () => {
-    if (!product?.url) return
-    haptic.heavy()
-    await Linking.openURL(product.url)
-  }, [product])
+    if (!product?.url) return;
+    haptic.heavy();
+    await Linking.openURL(product.url);
+  }, [product]);
 
-  if (!product) return null
+  if (!product) return null;
 
-  const { typeContent } = product
-  const hasHowToUse = typeContent?.howToUse && typeContent.howToUse.length > 0
-  const hasKeyIngredient = typeContent?.keyIngredient && typeContent.keyIngredient.length > 0
+  const { typeContent } = product;
+  const hasHowToUse = typeContent?.howToUse && typeContent.howToUse.length > 0;
+  const hasKeyIngredient = typeContent?.keyIngredient && typeContent.keyIngredient.length > 0;
   const hasIrritation =
-    typeContent?.irritationPotential && typeContent.irritationPotential.length > 0
+    typeContent?.irritationPotential && typeContent.irritationPotential.length > 0;
 
   return (
     <BottomSheet visible={visible} onClose={onClose} scrollable backgroundColor={colors.surface}>
@@ -140,5 +140,5 @@ export function ProductDetailSheet({ product, visible, onClose }: ProductDetailS
         )}
       </ScrollView>
     </BottomSheet>
-  )
+  );
 }

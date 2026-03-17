@@ -5,9 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@lib/*": ["src/lib/*"],
       "@features/*": ["src/features/*"],
       "@shared/*": ["src/shared/*"],
-      "@navigation/*": ["src/navigation/*"],
       "@theme/*": ["src/theme/*"],
       "@i18n/*": ["src/i18n/*"],
       "@assets/*": ["assets/*"],

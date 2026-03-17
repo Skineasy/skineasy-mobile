@@ -1,24 +1,24 @@
-import { Check, ChevronRight } from 'lucide-react-native'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Image, Text, View } from 'react-native'
-import Animated, { FadeInDown } from 'react-native-reanimated'
+import { Check, ChevronRight } from 'lucide-react-native';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { ProductDetailSheet } from '@features/routine/components/ProductDetailSheet'
-import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore'
-import type { ProductDto, RoutineStepWithProducts } from '@features/routine/types/routine.types'
-import { CATEGORY_LABELS } from '@features/routine/types/routine.types'
-import { Card } from '@shared/components/Card'
-import { Pressable } from '@shared/components/Pressable'
-import { cn } from '@shared/utils/cn'
-import { getTodayUTC } from '@shared/utils/date'
-import { haptic } from '@shared/utils/haptic'
-import { colors } from '@theme/colors'
+import { ProductDetailSheet } from '@features/routine/components/ProductDetailSheet';
+import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore';
+import type { ProductDto, RoutineStepWithProducts } from '@features/routine/types/routine.types';
+import { CATEGORY_LABELS } from '@features/routine/types/routine.types';
+import { Card } from '@shared/components/card';
+import { Pressable } from '@shared/components/pressable';
+import { cn } from '@shared/utils/cn';
+import { getTodayUTC } from '@shared/utils/date';
+import { haptic } from '@shared/utils/haptic';
+import { colors } from '@theme/colors';
 
 interface ProductItemProps {
-  product: ProductDto
-  isLast: boolean
-  onPress: () => void
+  product: ProductDto;
+  isLast: boolean;
+  onPress: () => void;
 }
 
 function ProductItem({ product, isLast, onPress }: ProductItemProps) {
@@ -44,15 +44,15 @@ function ProductItem({ product, isLast, onPress }: ProductItemProps) {
 
       <ChevronRight size={18} color={colors.textLight} />
     </Pressable>
-  )
+  );
 }
 
 interface RoutineStepCardProps {
-  stepWithProducts: RoutineStepWithProducts
-  index: number
-  categoryOccurrence: number
-  totalCategoryCount: number
-  timeOfDay: 'morning' | 'evening'
+  stepWithProducts: RoutineStepWithProducts;
+  index: number;
+  categoryOccurrence: number;
+  totalCategoryCount: number;
+  timeOfDay: 'morning' | 'evening';
 }
 
 export function RoutineStepCard({
@@ -62,34 +62,34 @@ export function RoutineStepCard({
   totalCategoryCount,
   timeOfDay,
 }: RoutineStepCardProps) {
-  const { t } = useTranslation()
-  const { step, products } = stepWithProducts
-  const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(null)
+  const { t } = useTranslation();
+  const { step, products } = stepWithProducts;
+  const [selectedProduct, setSelectedProduct] = useState<ProductDto | null>(null);
 
-  const { isCompleted, toggleCompletion } = useRoutineCompletionStore()
-  const today = getTodayUTC()
-  const completed = isCompleted(today, timeOfDay, step.order)
+  const { isCompleted, toggleCompletion } = useRoutineCompletionStore();
+  const today = getTodayUTC();
+  const completed = isCompleted(today, timeOfDay, step.order);
 
-  const baseLabel = CATEGORY_LABELS[step.category] || step.category
+  const baseLabel = CATEGORY_LABELS[step.category] || step.category;
   const categoryLabel =
     totalCategoryCount > 1
       ? `${t(categoryOccurrence === 1 ? 'routine.ordinal.first' : 'routine.ordinal.second')} ${baseLabel.toLowerCase()}`
-      : baseLabel
-  const hasProducts = products.length > 0
+      : baseLabel;
+  const hasProducts = products.length > 0;
 
   const handleProductPress = (product: ProductDto) => {
-    haptic.light()
-    setSelectedProduct(product)
-  }
+    haptic.light();
+    setSelectedProduct(product);
+  };
 
   const handleCloseSheet = () => {
-    setSelectedProduct(null)
-  }
+    setSelectedProduct(null);
+  };
 
   const handleToggleCompletion = () => {
-    haptic.light()
-    toggleCompletion(today, timeOfDay, step.order)
-  }
+    haptic.light();
+    toggleCompletion(today, timeOfDay, step.order);
+  };
 
   return (
     <>
@@ -158,5 +158,5 @@ export function RoutineStepCard({
         onClose={handleCloseSheet}
       />
     </>
-  )
+  );
 }

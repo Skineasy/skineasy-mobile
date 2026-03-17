@@ -1,47 +1,47 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Smile } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert, Text, View } from 'react-native'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Smile } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
 
-import { DateNavigation } from '@features/dashboard/components/DateNavigation'
-import { StressLevelDisplay } from '@features/journal/components/StressLevelDisplay'
+import { DateNavigation } from '@features/dashboard/components/DateNavigation';
+import { StressLevelDisplay } from '@features/journal/components/StressLevelDisplay';
 import {
   useDeleteStress,
   useStressEntries,
   useUpsertStress,
-} from '@features/journal/hooks/useStress'
-import { stressFormSchema, type StressFormInput } from '@features/journal/schemas/journal.schema'
-import { Button } from '@shared/components/Button'
-import { ScreenHeader } from '@shared/components/ScreenHeader'
-import { Slider } from '@shared/components/Slider'
-import type { StressLevel } from '@shared/types/journal.types'
-import { toISODateString, toUTCDateString } from '@shared/utils/date'
+} from '@features/journal/hooks/useStress';
+import { stressFormSchema, type StressFormInput } from '@features/journal/schemas/journal.schema';
+import { Button } from '@shared/components/button';
+import { ScreenHeader } from '@shared/components/screen-header';
+import { Slider } from '@shared/components/slider';
+import type { StressLevel } from '@shared/types/journal.types';
+import { toISODateString, toUTCDateString } from '@shared/utils/date';
 
-const DEFAULT_STRESS_LEVEL = 3 as StressLevel
+const DEFAULT_STRESS_LEVEL = 3 as StressLevel;
 
 // Slider width to match stress bars: 5 bars × 44px + 4 gaps × 12px = 268px
-const SLIDER_WIDTH = 268
+const SLIDER_WIDTH = 268;
 
 export default function StressScreen(): React.ReactElement {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const params = useLocalSearchParams<{ id?: string; date?: string }>()
-  const upsertStress = useUpsertStress()
-  const deleteStress = useDeleteStress()
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string; date?: string }>();
+  const upsertStress = useUpsertStress();
+  const deleteStress = useDeleteStress();
 
   const [selectedDate, setSelectedDate] = useState(() =>
-    params.date ? new Date(params.date) : new Date()
-  )
+    params.date ? new Date(params.date) : new Date(),
+  );
 
-  const dateString = toUTCDateString(selectedDate)
-  const { data: stressEntries, isLoading, isError, refetch } = useStressEntries(dateString)
+  const dateString = toUTCDateString(selectedDate);
+  const { data: stressEntries, isLoading, isError, refetch } = useStressEntries(dateString);
 
   const existingEntry = params.id
     ? stressEntries?.find((e) => e.id === Number(params.id))
-    : stressEntries?.[0]
+    : stressEntries?.[0];
 
   const {
     handleSubmit,
@@ -56,40 +56,40 @@ export default function StressScreen(): React.ReactElement {
     defaultValues: {
       level: DEFAULT_STRESS_LEVEL,
     },
-  })
+  });
 
   useEffect(() => {
-    if (isLoading) return
+    if (isLoading) return;
 
     const syncForm = async (): Promise<void> => {
       if (existingEntry) {
-        reset({ level: existingEntry.level as StressLevel })
+        reset({ level: existingEntry.level as StressLevel });
       } else {
-        reset({ level: DEFAULT_STRESS_LEVEL })
+        reset({ level: DEFAULT_STRESS_LEVEL });
       }
-      await trigger()
-    }
-    void syncForm()
-  }, [existingEntry, isLoading, reset, trigger])
+      await trigger();
+    };
+    void syncForm();
+  }, [existingEntry, isLoading, reset, trigger]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const selectedLevel = watch('level') as StressLevel
+  const selectedLevel = watch('level') as StressLevel;
 
   const onSubmit = (data: StressFormInput): void => {
     const dto = {
       date: toISODateString(dateString),
       level: data.level as StressLevel,
-    }
+    };
 
     upsertStress.mutate(dto, {
       onSuccess: () => {
-        router.back()
+        router.back();
       },
-    })
-  }
+    });
+  };
 
   const handleDelete = (): void => {
-    if (!existingEntry) return
+    if (!existingEntry) return;
 
     Alert.alert(t('common.deleteConfirmTitle'), t('common.deleteConfirmMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
@@ -99,12 +99,12 @@ export default function StressScreen(): React.ReactElement {
         onPress: () => {
           deleteStress.mutate(
             { id: existingEntry.id, date: dateString },
-            { onSuccess: () => router.back() }
-          )
+            { onSuccess: () => router.back() },
+          );
         },
       },
-    ])
-  }
+    ]);
+  };
 
   if (isLoading) {
     return (
@@ -113,7 +113,7 @@ export default function StressScreen(): React.ReactElement {
           <ActivityIndicator size="large" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   if (isError) {
@@ -124,7 +124,7 @@ export default function StressScreen(): React.ReactElement {
           <Button title={t('common.retry')} onPress={() => refetch()} haptic="medium" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   return (
@@ -141,8 +141,8 @@ export default function StressScreen(): React.ReactElement {
         <Slider
           value={selectedLevel}
           onChange={(val) => {
-            setValue('level', val as StressLevel, { shouldValidate: true })
-            void trigger()
+            setValue('level', val as StressLevel, { shouldValidate: true });
+            void trigger();
           }}
           min={1}
           max={5}
@@ -173,5 +173,5 @@ export default function StressScreen(): React.ReactElement {
         )}
       </View>
     </ScreenHeader>
-  )
+  );
 }

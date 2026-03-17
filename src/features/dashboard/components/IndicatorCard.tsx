@@ -1,63 +1,63 @@
-import { ChevronRight, type LucideIcon } from 'lucide-react-native'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Image, Text, View } from 'react-native'
+import { ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
-} from 'react-native-reanimated'
+} from 'react-native-reanimated';
 
-import { Card } from '@shared/components/Card'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+import { Card } from '@shared/components/card';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
-type IndicatorStatus = 'empty' | 'partial' | 'complete'
-type IndicatorLayout = 'grid' | 'list'
+type IndicatorStatus = 'empty' | 'partial' | 'complete';
+type IndicatorLayout = 'grid' | 'list';
 
 interface IndicatorCardProps {
-  icon: LucideIcon
-  label: string
-  value: string
+  icon: LucideIcon;
+  label: string;
+  value: string;
   /** Visual indicator (stars, dots, emoji) displayed on the right */
-  visualIndicator?: string
+  visualIndicator?: string;
   /** Secondary text info (meal types, activity name, note) */
-  secondaryText?: string
+  secondaryText?: string;
   /** Thumbnail URL for nutrition card */
-  thumbnailUrl?: string
+  thumbnailUrl?: string;
   /** Custom content replacing the default value/visual row in list layout */
-  customContent?: React.ReactNode
-  onPress?: () => void
-  disabled?: boolean
-  status: IndicatorStatus
-  layout?: IndicatorLayout
+  customContent?: React.ReactNode;
+  onPress?: () => void;
+  disabled?: boolean;
+  status: IndicatorStatus;
+  layout?: IndicatorLayout;
 }
 
 const STATUS_COLORS: Record<IndicatorStatus, string> = {
   empty: colors.textMuted,
   partial: colors.warning,
   complete: colors.success,
-}
+};
 
 function StatusDot({ status }: { status: IndicatorStatus }): React.ReactElement {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   useEffect(() => {
     if (status === 'empty' || status === 'partial') {
       scale.value = withRepeat(
         withSequence(withTiming(1.3, { duration: 800 }), withTiming(1, { duration: 800 })),
-        -1
-      )
+        -1,
+      );
     } else {
-      scale.value = 1
+      scale.value = 1;
     }
-  }, [status, scale])
+  }, [status, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-  }))
+  }));
 
   return (
     <Animated.View
@@ -66,7 +66,7 @@ function StatusDot({ status }: { status: IndicatorStatus }): React.ReactElement 
         animatedStyle,
       ]}
     />
-  )
+  );
 }
 
 export function IndicatorCard({
@@ -82,8 +82,8 @@ export function IndicatorCard({
   status,
   layout = 'list',
 }: IndicatorCardProps): React.ReactElement {
-  const { t } = useTranslation()
-  const isEmpty = status === 'empty'
+  const { t } = useTranslation();
+  const isEmpty = status === 'empty';
 
   const gridContent = (
     <Card padding="sm" className="gap-5">
@@ -111,7 +111,7 @@ export function IndicatorCard({
         )}
       </View>
     </Card>
-  )
+  );
 
   const listContent = (
     <Card padding="md" className="gap-3">
@@ -152,17 +152,17 @@ export function IndicatorCard({
         </View>
       )}
     </Card>
-  )
+  );
 
-  const content = layout === 'grid' ? gridContent : listContent
+  const content = layout === 'grid' ? gridContent : listContent;
 
   if (onPress && !disabled) {
     return (
       <Pressable onPress={onPress} haptic="light">
         {content}
       </Pressable>
-    )
+    );
   }
 
-  return content
+  return content;
 }

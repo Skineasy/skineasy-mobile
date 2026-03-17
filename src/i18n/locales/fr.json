@@ -28,7 +28,11 @@
     "sessionExpiredMessage": "Veuillez vous reconnecter",
     "deleteConfirmTitle": "Supprimer l'entrée",
     "deleteConfirmMessage": "Es-tu sûr(e) de vouloir supprimer cette entrée ?",
-    "ok": "OK"
+    "ok": "OK",
+    "networkError": "Vérifie ta connexion internet",
+    "notFound": "La ressource demandée est introuvable",
+    "validationError": "Vérifie tes informations et réessaie",
+    "serverError": "Un problème est survenu de notre côté. Réessaie plus tard"
   },
   "auth": {
     "login": "Connexion",
@@ -47,6 +51,7 @@
     "noAccount": "Pas encore de compte ?",
     "hasAccount": "Déjà un compte ?",
     "invalidCredentials": "Identifiants invalides",
+    "emailAlreadyExists": "Un compte avec cet email existe déjà",
     "registerError": "Impossible de créer le compte. Veuillez réessayer.",
     "registerSuccess": "Compte créé avec succès",
     "welcomeBack": "Bon retour",

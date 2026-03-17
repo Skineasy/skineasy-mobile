@@ -24,4 +24,4 @@ export const queryKeys = {
   routine: ['routine'] as const,
   routineLast: () => [...queryKeys.routine, 'last'] as const,
   routineByRspid: (rspid: string) => [...queryKeys.routine, 'rspid', rspid] as const,
-} as const
+} as const;

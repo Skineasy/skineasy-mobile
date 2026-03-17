@@ -5,6 +5,10 @@
   },
   "build": {
     "development": {
+      "env": {
+        "APP_NAME": "Skin Easy (Dev)",
+        "BUNDLE_ID": "com.skineasy.app.dev"
+      },
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -13,6 +17,10 @@
       "channel": "development"
     },
     "development-simulator": {
+      "env": {
+        "APP_NAME": "Skin Easy (Dev)",
+        "BUNDLE_ID": "com.skineasy.app.dev"
+      },
       "developmentClient": true,
       "distribution": "internal",
       "ios": {

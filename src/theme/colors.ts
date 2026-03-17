@@ -31,6 +31,6 @@ export const colors = {
   brownLight: '#7D604E',
 
   white: '#FFFFFF',
-} as const
+} as const;
 
-export type ColorKey = keyof typeof colors
+export type ColorKey = keyof typeof colors;

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -8,18 +8,18 @@ import {
   interpolate,
   Easing,
   AnimatedStyle,
-} from 'react-native-reanimated'
-import { ViewStyle } from 'react-native'
+} from 'react-native-reanimated';
+import { ViewStyle } from 'react-native';
 
-import { appConfig } from '@shared/config/appConfig'
+import { appConfig } from '@shared/config/appConfig';
 
 const ANIMATION_CONFIG = {
   duration: 400,
   easing: Easing.out(Easing.ease),
-}
+};
 
-const DELAY_INCREMENT = 80
-const TRANSLATE_Y = 10
+const DELAY_INCREMENT = 80;
+const TRANSLATE_Y = 10;
 
 /**
  * Hook that provides staggered entrance animations for screen elements.
@@ -38,26 +38,26 @@ const TRANSLATE_Y = 10
  */
 export function useEntranceAnimation(
   count: number,
-  baseDelay: number = 0
+  baseDelay: number = 0,
 ): AnimatedStyle<ViewStyle>[] {
-  const animationsEnabled = appConfig.features.animations
-  const progress = Array.from({ length: count }, () => useSharedValue(animationsEnabled ? 0 : 1))
+  const animationsEnabled = appConfig.features.animations;
+  const progress = Array.from({ length: count }, () => useSharedValue(animationsEnabled ? 0 : 1));
 
   useEffect(() => {
-    if (!animationsEnabled) return
+    if (!animationsEnabled) return;
 
     progress.forEach((p, index) => {
-      p.value = withDelay(baseDelay + index * DELAY_INCREMENT, withTiming(1, ANIMATION_CONFIG))
-    })
+      p.value = withDelay(baseDelay + index * DELAY_INCREMENT, withTiming(1, ANIMATION_CONFIG));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const styles = progress.map((p) =>
     useAnimatedStyle(() => ({
       opacity: p.value,
       transform: [{ translateY: interpolate(p.value, [0, 1], [TRANSLATE_Y, 0]) }],
-    }))
-  )
+    })),
+  );
 
-  return styles
+  return styles;
 }

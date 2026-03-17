@@ -1,13 +1,13 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Minus, Plus, Search } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Minus, Plus, Search } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 
-import { DateNavigation } from '@features/dashboard/components/DateNavigation'
-import { ObservationChip } from '@features/journal/components/ObservationChip'
+import { DateNavigation } from '@features/dashboard/components/DateNavigation';
+import { ObservationChip } from '@features/journal/components/ObservationChip';
 import {
   NEGATIVE_OBSERVATION_ICONS,
   NEGATIVE_OBSERVATIONS,
@@ -15,35 +15,35 @@ import {
   POSITIVE_OBSERVATIONS,
   type NegativeObservation,
   type PositiveObservation,
-} from '@features/journal/constants/observations'
+} from '@features/journal/constants/observations';
 import {
   useDeleteObservations,
   useObservationsEntry,
   useUpsertObservations,
-} from '@features/journal/hooks/useObservations'
+} from '@features/journal/hooks/useObservations';
 import {
   observationFormSchema,
   type ObservationFormInput,
-} from '@features/journal/schemas/journal.schema'
-import { Button } from '@shared/components/Button'
-import { ScreenHeader } from '@shared/components/ScreenHeader'
-import { SectionHeader } from '@shared/components/SectionHeader'
-import { toISODateString, toUTCDateString } from '@shared/utils/date'
+} from '@features/journal/schemas/journal.schema';
+import { Button } from '@shared/components/button';
+import { ScreenHeader } from '@shared/components/screen-header';
+import { SectionHeader } from '@shared/components/section-header';
+import { toISODateString, toUTCDateString } from '@shared/utils/date';
 
 export default function ObservationsScreen(): React.ReactElement {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const params = useLocalSearchParams<{ date?: string }>()
-  const upsertObservation = useUpsertObservations()
-  const deleteObservation = useDeleteObservations()
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ date?: string }>();
+  const upsertObservation = useUpsertObservations();
+  const deleteObservation = useDeleteObservations();
 
   const [selectedDate, setSelectedDate] = useState(() =>
-    params.date ? new Date(params.date) : new Date()
-  )
+    params.date ? new Date(params.date) : new Date(),
+  );
 
-  const dateString = toUTCDateString(selectedDate)
-  const { data: entries = [], isLoading, isError, refetch } = useObservationsEntry(dateString)
-  const existingEntry = entries[0]
+  const dateString = toUTCDateString(selectedDate);
+  const { data: entries = [], isLoading, isError, refetch } = useObservationsEntry(dateString);
+  const existingEntry = entries[0];
 
   const {
     handleSubmit,
@@ -59,59 +59,59 @@ export default function ObservationsScreen(): React.ReactElement {
       positives: [],
       negatives: [],
     },
-  })
+  });
 
   useEffect(() => {
-    if (isLoading) return
+    if (isLoading) return;
 
     const syncForm = async (): Promise<void> => {
       if (existingEntry) {
         reset({
           positives: existingEntry.positives,
           negatives: existingEntry.negatives,
-        })
+        });
       } else {
-        reset({ positives: [], negatives: [] })
+        reset({ positives: [], negatives: [] });
       }
-      await trigger()
-    }
-    void syncForm()
-  }, [existingEntry, isLoading, reset, trigger])
+      await trigger();
+    };
+    void syncForm();
+  }, [existingEntry, isLoading, reset, trigger]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const selectedPositives = watch('positives')
-  const selectedNegatives = watch('negatives')
+  const selectedPositives = watch('positives');
+  const selectedNegatives = watch('negatives');
 
   const togglePositive = (key: PositiveObservation): void => {
-    const current = selectedPositives
-    const updated = current.includes(key) ? current.filter((k) => k !== key) : [...current, key]
-    setValue('positives', updated, { shouldValidate: true })
-    void trigger()
-  }
+    const current = selectedPositives;
+    const updated = current.includes(key) ? current.filter((k) => k !== key) : [...current, key];
+    setValue('positives', updated, { shouldValidate: true });
+    void trigger();
+  };
 
   const toggleNegative = (key: NegativeObservation): void => {
-    const current = selectedNegatives
-    const updated = current.includes(key) ? current.filter((k) => k !== key) : [...current, key]
-    setValue('negatives', updated, { shouldValidate: true })
-    void trigger()
-  }
+    const current = selectedNegatives;
+    const updated = current.includes(key) ? current.filter((k) => k !== key) : [...current, key];
+    setValue('negatives', updated, { shouldValidate: true });
+    void trigger();
+  };
 
   const onSubmit = (data: ObservationFormInput): void => {
     const dto = {
       date: toISODateString(dateString),
       positives: data.positives,
       negatives: data.negatives,
-    }
+    };
 
     upsertObservation.mutate(dto, {
       onSuccess: () => {
-        router.back()
+        router.back();
       },
-    })
-  }
+    });
+  };
 
   const handleDelete = (): void => {
-    if (!existingEntry) return
+    if (!existingEntry) return;
 
     Alert.alert(t('common.deleteConfirmTitle'), t('common.deleteConfirmMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
@@ -121,12 +121,12 @@ export default function ObservationsScreen(): React.ReactElement {
         onPress: () => {
           deleteObservation.mutate(
             { id: existingEntry.id, date: dateString },
-            { onSuccess: () => router.back() }
-          )
+            { onSuccess: () => router.back() },
+          );
         },
       },
-    ])
-  }
+    ]);
+  };
 
   if (isLoading) {
     return (
@@ -135,7 +135,7 @@ export default function ObservationsScreen(): React.ReactElement {
           <ActivityIndicator size="large" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   if (isError) {
@@ -146,7 +146,7 @@ export default function ObservationsScreen(): React.ReactElement {
           <Button title={t('common.retry')} onPress={() => refetch()} haptic="medium" />
         </View>
       </ScreenHeader>
-    )
+    );
   }
 
   return (
@@ -221,5 +221,5 @@ export default function ObservationsScreen(): React.ReactElement {
         )}
       </View>
     </ScreenHeader>
-  )
+  );
 }

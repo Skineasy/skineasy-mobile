@@ -449,7 +449,7 @@ type SkinType =
   | 'mixte_seche_grasse' // Mixte Sèche-Grasse
   | 'grasse' // Grasse
   | 'tres_grasse' // Très Grasse
-  | 'generique' // Générique
+  | 'generique'; // Générique
 
 // Skin States (7 states from PHP)
 type SkinStateType =
@@ -459,7 +459,7 @@ type SkinStateType =
   | 'atopique' // Atopic/Eczema
   | 'deshydratee' // Dehydrated
   | 'acneique' // Acne-prone
-  | 'acne_hormonale' // Hormonal Acne
+  | 'acne_hormonale'; // Hormonal Acne
 
 // Product Categories (15 categories)
 type ProductCategory =
@@ -477,7 +477,7 @@ type ProductCategory =
   | 'brume' // Mist
   | 'baume' // Balm
   | 'gadgets' // Beauty Tech
-  | 'complements' // Supplements
+  | 'complements'; // Supplements
 ```
 
 ### 5.2 Routine Response Structure

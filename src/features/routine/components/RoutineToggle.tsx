@@ -1,21 +1,21 @@
-import type { LucideIcon } from 'lucide-react-native'
-import { Moon, Sun } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import type { LucideIcon } from 'lucide-react-native';
+import { Moon, Sun } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import type { TimeOfDay } from '@features/routine/types/routine.types'
-import { Card } from '@shared/components/Card'
-import { Pressable } from '@shared/components/Pressable'
-import { cn } from '@shared/utils/cn'
-import { colors } from '@theme/colors'
+import type { TimeOfDay } from '@features/routine/types/routine.types';
+import { Card } from '@shared/components/card';
+import { Pressable } from '@shared/components/pressable';
+import { cn } from '@shared/utils/cn';
+import { colors } from '@theme/colors';
 
 interface ToggleButtonProps {
-  time: TimeOfDay
-  isSelected: boolean
-  onSelect: (time: TimeOfDay) => void
-  icon: LucideIcon
-  label: string
-  stepCount: number
+  time: TimeOfDay;
+  isSelected: boolean;
+  onSelect: (time: TimeOfDay) => void;
+  icon: LucideIcon;
+  label: string;
+  stepCount: number;
 }
 
 function ToggleButton({
@@ -42,7 +42,7 @@ function ToggleButton({
         <View
           className={cn(
             'ml-2 px-2 py-0.5 rounded-full',
-            isSelected ? 'bg-white/20' : 'bg-gray-100'
+            isSelected ? 'bg-white/20' : 'bg-gray-100',
           )}
         >
           <Text
@@ -53,14 +53,14 @@ function ToggleButton({
         </View>
       </Card>
     </Pressable>
-  )
+  );
 }
 
 interface RoutineToggleProps {
-  selected: TimeOfDay
-  onSelect: (time: TimeOfDay) => void
-  morningStepCount: number
-  eveningStepCount: number
+  selected: TimeOfDay;
+  onSelect: (time: TimeOfDay) => void;
+  morningStepCount: number;
+  eveningStepCount: number;
 }
 
 export function RoutineToggle({
@@ -69,7 +69,7 @@ export function RoutineToggle({
   morningStepCount,
   eveningStepCount,
 }: RoutineToggleProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="flex-row gap-3 py-3">
@@ -90,5 +90,5 @@ export function RoutineToggle({
         stepCount={eveningStepCount}
       />
     </View>
-  )
+  );
 }

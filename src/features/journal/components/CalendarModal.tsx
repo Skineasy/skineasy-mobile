@@ -1,16 +1,16 @@
-import { format } from 'date-fns'
-import { useMemo, useState } from 'react'
-import { Calendar, type DateData } from 'react-native-calendars'
+import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
+import { Calendar, type DateData } from 'react-native-calendars';
 
-import { useMonthScores } from '@features/calendar/hooks/useMonthScores'
-import { BottomSheet } from '@shared/components/BottomSheet'
-import { colors } from '@theme/colors'
+import { useMonthScores } from '@features/calendar/hooks/useMonthScores';
+import { BottomSheet } from '@shared/components/bottom-sheet';
+import { colors } from '@theme/colors';
 
 interface CalendarModalProps {
-  visible: boolean
-  onClose: () => void
-  selectedDate: string
-  onDateSelect: (date: string) => void
+  visible: boolean;
+  onClose: () => void;
+  selectedDate: string;
+  onDateSelect: (date: string) => void;
 }
 
 export function CalendarModal({
@@ -19,27 +19,27 @@ export function CalendarModal({
   selectedDate,
   onDateSelect,
 }: CalendarModalProps): React.ReactElement {
-  const todayDate = new Date()
-  const today = format(todayDate, 'yyyy-MM-dd')
+  const todayDate = new Date();
+  const today = format(todayDate, 'yyyy-MM-dd');
   const [visibleMonth, setVisibleMonth] = useState({
     year: todayDate.getFullYear(),
     month: todayDate.getMonth(),
-  })
+  });
 
-  const { markedDates } = useMonthScores(visibleMonth.year, visibleMonth.month)
+  const { markedDates } = useMonthScores(visibleMonth.year, visibleMonth.month);
 
   const finalMarkedDates = useMemo(() => {
-    const result: Record<string, object> = {}
+    const result: Record<string, object> = {};
 
     // Convert multi-dot format to simple dot format and filter score=0
     for (const [date, value] of Object.entries(markedDates)) {
-      const dots = (value as { dots: { color: string }[] }).dots
-      const dotColor = dots?.[0]?.color
+      const dots = (value as { dots: { color: string }[] }).dots;
+      const dotColor = dots?.[0]?.color;
       if (dotColor && dotColor !== colors.textMuted) {
         result[date] = {
           marked: true,
           dotColor,
-        }
+        };
       }
     }
 
@@ -48,19 +48,19 @@ export function CalendarModal({
       ...result[selectedDate],
       selected: true,
       selectedColor: colors.primary,
-    }
+    };
 
-    return result
-  }, [markedDates, selectedDate])
+    return result;
+  }, [markedDates, selectedDate]);
 
   const handleDayPress = (day: DateData): void => {
-    onDateSelect(day.dateString)
-    onClose()
-  }
+    onDateSelect(day.dateString);
+    onClose();
+  };
 
   const handleMonthChange = (month: DateData): void => {
-    setVisibleMonth({ year: month.year, month: month.month - 1 })
-  }
+    setVisibleMonth({ year: month.year, month: month.month - 1 });
+  };
 
   return (
     <BottomSheet visible={visible} onClose={onClose} backgroundColor={colors.background}>
@@ -89,5 +89,5 @@ export function CalendarModal({
         }}
       />
     </BottomSheet>
-  )
+  );
 }

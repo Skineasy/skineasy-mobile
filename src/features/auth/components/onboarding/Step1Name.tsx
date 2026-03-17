@@ -1,23 +1,23 @@
-import { useRef } from 'react'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { Text, TextInput, View } from 'react-native'
+import { useRef } from 'react';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Text, TextInput, View } from 'react-native';
 
-import { RegisterInput } from '@features/auth/schemas/auth.schema'
-import { Button } from '@shared/components/Button'
-import { Input } from '@shared/components/Input'
-import { KeyboardScrollView } from '@shared/components/KeyboardScrollView'
+import { RegisterInput } from '@features/auth/schemas/auth.schema';
+import { Button } from '@shared/components/button';
+import { Input } from '@shared/components/input';
+import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
 
 interface Step1NameProps {
-  onNext: () => void
-  control: Control<RegisterInput>
-  errors: FieldErrors<RegisterInput>
-  isValid: boolean
+  onNext: () => void;
+  control: Control<RegisterInput>;
+  errors: FieldErrors<RegisterInput>;
+  isValid: boolean;
 }
 
 export function Step1Name({ onNext, control, errors, isValid }: Step1NameProps) {
-  const { t } = useTranslation()
-  const lastnameRef = useRef<TextInput>(null)
+  const { t } = useTranslation();
+  const lastnameRef = useRef<TextInput>(null);
 
   return (
     <KeyboardScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={100}>
@@ -85,5 +85,5 @@ export function Step1Name({ onNext, control, errors, isValid }: Step1NameProps) 
         </View>
       </View>
     </KeyboardScrollView>
-  )
+  );
 }

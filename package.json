@@ -11,45 +11,43 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint src/ app/",
-    "lint:fix": "eslint src/ app/ --fix",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\" \"!node_modules/**\" \"!.expo/**\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\" \"!node_modules/**\" \"!.expo/**\"",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run format:check && npm run typecheck",
-    "prepare": "husky"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
+    "prepare": "husky",
+    "update:prod": "eas update --branch main --message \"$(git log -1 --pretty=%s)\" --non-interactive"
   },
   "dependencies": {
     "@dev-plugins/react-query": "^0.4.0",
     "@expo-google-fonts/roboto": "^0.4.2",
-    "@gorhom/bottom-sheet": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@lodev09/react-native-true-sheet": "^3.6.9",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "^8.4.4",
     "@react-native-community/netinfo": "11.4.1",
-    "@react-navigation/bottom-tabs": "^7.4.0",
-    "@react-navigation/native": "^7.1.8",
-    "@react-navigation/native-stack": "^7.3.16",
     "@sentry/react-native": "~7.2.0",
     "@tanstack/react-query": "^5.90.12",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "expo": "~54.0.31",
+    "expo": "~54.0.33",
     "expo-constants": "^18.0.12",
     "expo-dev-client": "~6.0.20",
     "expo-device": "~8.0.10",
-    "expo-font": "~14.0.10",
-    "expo-glass-effect": "~0.1.8",
+    "expo-font": "~14.0.11",
+    "expo-glass-effect": "~0.1.9",
     "expo-haptics": "~15.0.8",
     "expo-image-manipulator": "^14.0.8",
     "expo-image-picker": "^17.0.10",
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.11",
     "expo-localization": "^17.0.8",
-    "expo-router": "~6.0.21",
+    "expo-router": "~6.0.23",
     "expo-secure-store": "^15.0.8",
     "expo-splash-screen": "^31.0.13",
     "expo-status-bar": "~3.0.9",
@@ -71,19 +69,21 @@
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "~4.16.0",
     "react-native-svg": "^15.12.1",
-    "react-native-toast-message": "^2.3.3",
     "react-native-web": "^0.21.2",
     "react-native-webview": "^13.15.0",
-    "tailwind-merge": "^3.4.0",
+    "react-native-worklets": "0.5.1",
+    "sonner-native": "^0.23.1",
     "zod": "^4.2.1",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^9.39.2",
+    "@testing-library/react-native": "^13.3.3",
     "@types/node": "^25.0.3",
     "@types/react": "~19.1.0",
-    "babel-plugin-module-resolver": "^5.0.2",
-    "babel-preset-expo": "^54.0.9",
+    "babel-preset-expo": "^54.0.10",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -93,10 +93,25 @@
     "jsdom": "^27.3.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
+    "react-test-renderer": "^19.1.0",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.50.0",
     "vitest": "^4.0.16"
+  },
+  "overrides": {
+    "react-native-health": {
+      "@expo/fingerprint": "0.15.4"
+    }
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-native-health"
+        ]
+      }
+    }
   },
   "private": true
 }

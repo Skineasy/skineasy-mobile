@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import { colors } from '@theme/colors'
+import { describe, it, expect } from 'vitest';
+import { colors } from '@theme/colors';
 
 describe('colors', () => {
   it('should have primary color defined', () => {
-    expect(colors.primary).toBe('#7D604E')
-  })
+    expect(colors.primary).toBe('#7D604E');
+  });
 
   it('should have background color defined', () => {
-    expect(colors.background).toBe('#F4E9E0')
-  })
+    expect(colors.background).toBe('#F4E9E0');
+  });
 
   it('should have all required color keys', () => {
     const requiredKeys = [
@@ -27,10 +27,10 @@ describe('colors', () => {
       'creamMuted',
       'brownDark',
       'brownLight',
-    ]
+    ];
 
     requiredKeys.forEach((key) => {
-      expect(colors).toHaveProperty(key)
-    })
-  })
-})
+      expect(colors).toHaveProperty(key);
+    });
+  });
+});

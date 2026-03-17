@@ -1,47 +1,37 @@
-import { useMutation } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
-import Toast from 'react-native-toast-message'
+import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
-import { authService } from '@features/auth/services/auth.service'
-import type { RegisterInput } from '@features/auth/schemas/auth.schema'
-import { useAuthStore } from '@shared/stores/auth.store'
-import { useUserStore } from '@shared/stores/user.store'
-import { haptic } from '@shared/utils/haptic'
+import { authService } from '@features/auth/services/auth.service';
+import type { RegisterInput } from '@features/auth/schemas/auth.schema';
+import { toast } from '@lib/toast';
+import { useAuthStore } from '@shared/stores/auth.store';
+import { useUserStore } from '@shared/stores/user.store';
 
 export function useRegister() {
-  const { t } = useTranslation()
-  const setTokens = useAuthStore((state) => state.setTokens)
-  const setUser = useUserStore((state) => state.setUser)
+  const { t } = useTranslation();
+  const setTokens = useAuthStore((state) => state.setTokens);
+  const setUser = useUserStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: async (data: RegisterInput) => {
       // Strip confirmPassword - it's only for client-side validation
       // Also remove empty birthday
-      const { confirmPassword: _, birthday, ...rest } = data
+      const { confirmPassword: _, birthday, ...rest } = data;
       const registerData = {
         ...rest,
         ...(birthday ? { birthday } : {}),
-      }
-      const registerResponse = await authService.register(registerData)
-      const { accessToken, refreshToken, user } = registerResponse.data
-      await setTokens(accessToken, refreshToken)
-      return user
+      };
+      const registerResponse = await authService.register(registerData);
+      const { accessToken, refreshToken, user } = registerResponse.data;
+      await setTokens(accessToken, refreshToken);
+      return user;
     },
     onSuccess: (user) => {
-      haptic.success()
-      setUser(user)
-      Toast.show({
-        type: 'success',
-        text1: t('auth.registerSuccess'),
-      })
+      setUser(user);
+      toast.success(t('auth.registerSuccess'));
     },
     onError: () => {
-      haptic.error()
-      Toast.show({
-        type: 'error',
-        text1: t('common.error'),
-        text2: t('auth.registerError'),
-      })
+      toast.error(t('common.error'), t('auth.registerError'));
     },
-  })
+  });
 }

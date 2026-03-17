@@ -7,72 +7,72 @@
  * - All sport types are validated for translations and icons
  */
 
-import { Search, X } from 'lucide-react-native'
-import React, { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native'
+import { Search, X } from 'lucide-react-native';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { useSportTypes } from '@features/journal/hooks/useJournal'
-import { enrichSportTypes } from '@features/journal/utils/sportMapping'
-import { BottomSheet } from '@shared/components/BottomSheet'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+import { useSportTypes } from '@features/journal/hooks/useJournal';
+import { enrichSportTypes } from '@features/journal/utils/sportMapping';
+import { BottomSheet } from '@shared/components/bottom-sheet';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
 interface SportTypeSelectorProps {
-  value: string | null
-  onChange: (sportType: string) => void
+  value: string | null;
+  onChange: (sportType: string) => void;
 }
 
 export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
-  const { t } = useTranslation()
-  const { data: sportTypes, isLoading } = useSportTypes()
+  const { t } = useTranslation();
+  const { data: sportTypes, isLoading } = useSportTypes();
 
-  const [bottomSheetVisible, setBottomSheetVisible] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Enrich sport types with labels and icons
   const enrichedSportTypes = useMemo(() => {
-    if (!sportTypes) return []
-    return enrichSportTypes(sportTypes, t)
-  }, [sportTypes, t])
+    if (!sportTypes) return [];
+    return enrichSportTypes(sportTypes, t);
+  }, [sportTypes, t]);
 
   // Get popular sport types for quick select
   const popularSportTypes = useMemo(() => {
-    return enrichedSportTypes.filter((s) => s.popular)
-  }, [enrichedSportTypes])
+    return enrichedSportTypes.filter((s) => s.popular);
+  }, [enrichedSportTypes]);
 
   // Filter sport types based on search
   const filteredSportTypes = useMemo(() => {
-    if (!searchQuery.trim()) return enrichedSportTypes
+    if (!searchQuery.trim()) return enrichedSportTypes;
 
-    const query = searchQuery.toLowerCase()
-    return enrichedSportTypes.filter((sport) => sport.label.toLowerCase().includes(query))
-  }, [enrichedSportTypes, searchQuery])
+    const query = searchQuery.toLowerCase();
+    return enrichedSportTypes.filter((sport) => sport.label.toLowerCase().includes(query));
+  }, [enrichedSportTypes, searchQuery]);
 
   // Get label for selected value
   const selectedLabel = useMemo(() => {
-    if (!value) return null
-    const selected = enrichedSportTypes.find((s) => s.id === value)
-    return selected?.label || value
-  }, [value, enrichedSportTypes])
+    if (!value) return null;
+    const selected = enrichedSportTypes.find((s) => s.id === value);
+    return selected?.label || value;
+  }, [value, enrichedSportTypes]);
 
   const handleSelect = (sportType: string) => {
-    onChange(sportType)
-    setBottomSheetVisible(false)
-    setSearchQuery('')
-  }
+    onChange(sportType);
+    setBottomSheetVisible(false);
+    setSearchQuery('');
+  };
 
   const handleClear = () => {
-    onChange('')
-    setSearchQuery('')
-  }
+    onChange('');
+    setSearchQuery('');
+  };
 
   if (isLoading) {
     return (
       <View className="py-4">
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
-    )
+    );
   }
 
   return (
@@ -125,8 +125,8 @@ export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
       <BottomSheet
         visible={bottomSheetVisible}
         onClose={() => {
-          setBottomSheetVisible(false)
-          setSearchQuery('')
+          setBottomSheetVisible(false);
+          setSearchQuery('');
         }}
         scrollable
       >
@@ -179,5 +179,5 @@ export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
         </View>
       </BottomSheet>
     </View>
-  )
+  );
 }

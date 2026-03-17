@@ -1,11 +1,11 @@
-import { defineConfig } from 'vitest/config'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'json', 'html'],
@@ -15,11 +15,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@lib': path.resolve(__dirname, './src/lib'),
       '@features': path.resolve(__dirname, './src/features'),
       '@shared': path.resolve(__dirname, './src/shared'),
-      '@navigation': path.resolve(__dirname, './src/navigation'),
       '@theme': path.resolve(__dirname, './src/theme'),
       '@i18n': path.resolve(__dirname, './src/i18n'),
     },
   },
-})
+});

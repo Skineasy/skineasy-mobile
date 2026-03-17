@@ -1,24 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
-import { Droplets, Dumbbell, Moon, Plus, Search, Smile, Utensils } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Image, ScrollView, Text, View } from 'react-native'
+import { useQuery } from '@tanstack/react-query';
+import { Droplets, Dumbbell, Moon, Plus, Search, Smile, Utensils } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Image, ScrollView, Text, View } from 'react-native';
 
-import { journalService } from '@features/journal/services/journal.service'
-import { Button } from '@shared/components/Button'
-import { Card } from '@shared/components/Card'
-import { queryKeys } from '@shared/config/queryKeys'
+import { journalService } from '@features/journal/services/journal.service';
+import { Button } from '@shared/components/button';
+import { Card } from '@shared/components/card';
+import { queryKeys } from '@shared/config/queryKeys';
 import type {
   MealEntry,
   ObservationEntry,
   SleepEntry,
   SportEntry,
   StressEntry,
-} from '@shared/types/journal.types'
-import { colors } from '@theme/colors'
+} from '@shared/types/journal.types';
+import { colors } from '@theme/colors';
 
 interface CalendarDayDetailProps {
-  date: string
-  onAddEntry?: () => void
+  date: string;
+  onAddEntry?: () => void;
 }
 
 const STRESS_LEVEL_KEYS: Record<number, string> = {
@@ -27,16 +27,16 @@ const STRESS_LEVEL_KEYS: Record<number, string> = {
   3: 'moderate',
   4: 'high',
   5: 'intense',
-}
+};
 
 function SleepDetail({ entry }: { entry?: SleepEntry }): React.ReactElement | null {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (!entry) return null
+  if (!entry) return null;
 
-  const hours = Math.floor(entry.hours)
-  const minutes = Math.round((entry.hours % 1) * 60)
-  const timeStr = `${hours}h${minutes.toString().padStart(2, '0')}`
+  const hours = Math.floor(entry.hours);
+  const minutes = Math.round((entry.hours % 1) * 60);
+  const timeStr = `${hours}h${minutes.toString().padStart(2, '0')}`;
 
   return (
     <Card padding="md" className="gap-2">
@@ -53,13 +53,13 @@ function SleepDetail({ entry }: { entry?: SleepEntry }): React.ReactElement | nu
         <Text className="text-lg font-bold text-text">{entry.quality}/5</Text>
       </View>
     </Card>
-  )
+  );
 }
 
 function MealsDetail({ entries }: { entries: MealEntry[] }): React.ReactElement | null {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (entries.length === 0) return null
+  if (entries.length === 0) return null;
 
   return (
     <Card padding="md" className="gap-3">
@@ -91,13 +91,13 @@ function MealsDetail({ entries }: { entries: MealEntry[] }): React.ReactElement 
         </View>
       ))}
     </Card>
-  )
+  );
 }
 
 function SportsDetail({ entries }: { entries: SportEntry[] }): React.ReactElement | null {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (entries.length === 0) return null
+  if (entries.length === 0) return null;
 
   return (
     <Card padding="md" className="gap-3">
@@ -123,15 +123,15 @@ function SportsDetail({ entries }: { entries: SportEntry[] }): React.ReactElemen
         </View>
       ))}
     </Card>
-  )
+  );
 }
 
 function StressDetail({ entry }: { entry?: StressEntry }): React.ReactElement | null {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (!entry) return null
+  if (!entry) return null;
 
-  const levelKey = STRESS_LEVEL_KEYS[entry.level]
+  const levelKey = STRESS_LEVEL_KEYS[entry.level];
 
   return (
     <Card padding="md" className="gap-2">
@@ -145,16 +145,16 @@ function StressDetail({ entry }: { entry?: StressEntry }): React.ReactElement | 
       </View>
       {entry.note && <Text className="text-sm text-text-muted">{entry.note}</Text>}
     </Card>
-  )
+  );
 }
 
 function ObservationsDetail({ entry }: { entry?: ObservationEntry }): React.ReactElement | null {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  if (!entry) return null
+  if (!entry) return null;
 
-  const total = entry.positives.length + entry.negatives.length
-  if (total === 0) return null
+  const total = entry.positives.length + entry.negatives.length;
+  if (total === 0) return null;
 
   return (
     <Card padding="md" className="gap-2">
@@ -185,11 +185,11 @@ function ObservationsDetail({ entry }: { entry?: ObservationEntry }): React.Reac
         </View>
       )}
     </Card>
-  )
+  );
 }
 
 function EmptyState({ onAddEntry }: { onAddEntry?: () => void }): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="flex-1 items-center justify-center px-8">
@@ -206,7 +206,7 @@ function EmptyState({ onAddEntry }: { onAddEntry?: () => void }): React.ReactEle
         <Button title={t('journal.addEntry')} onPress={onAddEntry} iconLeft={Plus} fitContent />
       )}
     </View>
-  )
+  );
 }
 
 export function CalendarDayDetail({
@@ -217,31 +217,31 @@ export function CalendarDayDetail({
     queryKey: queryKeys.journalEntriesRange(date, date),
     queryFn: () => journalService.entries.getByDateRange(date, date),
     staleTime: 5 * 60 * 1000,
-  })
+  });
 
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
         <Text className="text-text-muted">...</Text>
       </View>
-    )
+    );
   }
 
-  const sleeps = data?.sleeps ?? []
-  const meals = data?.meals ?? []
-  const sports = data?.sports ?? []
-  const stresses = data?.stresses ?? []
-  const observations = data?.observations ?? []
+  const sleeps = data?.sleeps ?? [];
+  const meals = data?.meals ?? [];
+  const sports = data?.sports ?? [];
+  const stresses = data?.stresses ?? [];
+  const observations = data?.observations ?? [];
 
   const hasData =
     sleeps.length > 0 ||
     meals.length > 0 ||
     sports.length > 0 ||
     stresses.length > 0 ||
-    observations.length > 0
+    observations.length > 0;
 
   if (!hasData) {
-    return <EmptyState onAddEntry={onAddEntry} />
+    return <EmptyState onAddEntry={onAddEntry} />;
   }
 
   return (
@@ -254,5 +254,5 @@ export function CalendarDayDetail({
         <ObservationsDetail entry={observations[0]} />
       </View>
     </ScrollView>
-  )
+  );
 }

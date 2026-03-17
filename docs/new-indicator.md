@@ -49,7 +49,7 @@ export const POSITIVE_OBSERVATIONS = [
   'fewerPimples',
   'glowingSkin',
   'smootherSkin',
-] as const
+] as const;
 
 export const NEGATIVE_OBSERVATIONS = [
   'acne',
@@ -63,10 +63,10 @@ export const NEGATIVE_OBSERVATIONS = [
   'sensitiveSkin',
   'wrinkles',
   'dullComplexion',
-] as const
+] as const;
 
-export type PositiveObservation = (typeof POSITIVE_OBSERVATIONS)[number]
-export type NegativeObservation = (typeof NEGATIVE_OBSERVATIONS)[number]
+export type PositiveObservation = (typeof POSITIVE_OBSERVATIONS)[number];
+export type NegativeObservation = (typeof NEGATIVE_OBSERVATIONS)[number];
 ```
 
 ---
@@ -89,23 +89,23 @@ DELETE /api/v1/journal/observation/:id             -> void
 // src/shared/types/journal.types.ts
 
 export interface ObservationEntry {
-  id: number
-  customer_id: number
-  date: string // ISO 8601 UTC: "2025-01-15T00:00:00.000Z"
-  positives: PositiveObservation[] // e.g. ["skinHydrated", "fewerPimples"]
-  negatives: NegativeObservation[] // e.g. ["acne", "excessSebum"]
-  created_at: string
+  id: number;
+  customer_id: number;
+  date: string; // ISO 8601 UTC: "2025-01-15T00:00:00.000Z"
+  positives: PositiveObservation[]; // e.g. ["skinHydrated", "fewerPimples"]
+  negatives: NegativeObservation[]; // e.g. ["acne", "excessSebum"]
+  created_at: string;
 }
 
 export interface CreateObservationEntryDto {
-  date: string // ISO 8601 UTC
-  positives: PositiveObservation[]
-  negatives: NegativeObservation[]
+  date: string; // ISO 8601 UTC
+  positives: PositiveObservation[];
+  negatives: NegativeObservation[];
 }
 
 export interface ObservationUpsertResponse {
-  data: ObservationEntry
-  created: boolean
+  data: ObservationEntry;
+  created: boolean;
 }
 ```
 

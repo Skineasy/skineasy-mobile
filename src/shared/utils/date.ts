@@ -15,7 +15,7 @@ import {
   isYesterday as isYesterdayFns,
   isTomorrow as isTomorrowFns,
   startOfDay,
-} from 'date-fns'
+} from 'date-fns';
 
 /**
  * Convert a local Date object to YYYY-MM-DD format
@@ -29,7 +29,7 @@ import {
  * toUTCDateString(localDate) // "2025-01-15"
  */
 export function toUTCDateString(date: Date): string {
-  return format(date, 'yyyy-MM-dd')
+  return format(date, 'yyyy-MM-dd');
 }
 
 /**
@@ -42,7 +42,7 @@ export function toUTCDateString(date: Date): string {
  * getTodayUTC() // "2025-01-15"
  */
 export function getTodayUTC(): string {
-  return toUTCDateString(new Date())
+  return toUTCDateString(new Date());
 }
 
 /**
@@ -57,8 +57,8 @@ export function getTodayUTC(): string {
  * formatDate("2025-01-15T00:00:00.000Z", 'PP') // "Jan 15, 2025"
  */
 export function formatDate(date: Date | string, formatPattern: string = 'PPPP'): string {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return format(dateObj, formatPattern)
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return format(dateObj, formatPattern);
 }
 
 /**
@@ -68,8 +68,8 @@ export function formatDate(date: Date | string, formatPattern: string = 'PPPP'):
  * @returns True if the date is today
  */
 export function isToday(date: Date | string): boolean {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return isTodayFns(dateObj)
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return isTodayFns(dateObj);
 }
 
 /**
@@ -79,8 +79,8 @@ export function isToday(date: Date | string): boolean {
  * @returns True if the date is yesterday
  */
 export function isYesterday(date: Date | string): boolean {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return isYesterdayFns(dateObj)
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return isYesterdayFns(dateObj);
 }
 
 /**
@@ -90,8 +90,8 @@ export function isYesterday(date: Date | string): boolean {
  * @returns True if the date is tomorrow
  */
 export function isTomorrow(date: Date | string): boolean {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  return isTomorrowFns(dateObj)
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return isTomorrowFns(dateObj);
 }
 
 /**
@@ -101,11 +101,11 @@ export function isTomorrow(date: Date | string): boolean {
  * @returns True if the date is before today
  */
 export function isPast(date: Date | string): boolean {
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  const today = startOfDay(new Date())
-  const compareDate = startOfDay(dateObj)
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  const today = startOfDay(new Date());
+  const compareDate = startOfDay(dateObj);
   // Compare start of day for both dates to ignore time component
-  return compareDate < today
+  return compareDate < today;
 }
 
 /**
@@ -119,7 +119,7 @@ export function isPast(date: Date | string): boolean {
  * toISODateString("2025-01-15") // "2025-01-15T00:00:00.000Z"
  */
 export function toISODateString(dateString: string): string {
-  return `${dateString}T00:00:00.000Z`
+  return `${dateString}T00:00:00.000Z`;
 }
 
 /**
@@ -134,5 +134,5 @@ export function toISODateString(dateString: string): string {
  * fromISOToDateString("2025-01-15") // "2025-01-15"
  */
 export function fromISOToDateString(isoDateString: string): string {
-  return isoDateString.split('T')[0]
+  return isoDateString.split('T')[0];
 }

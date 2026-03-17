@@ -1,27 +1,27 @@
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
-import Animated, { FadeInDown } from 'react-native-reanimated'
-import { AlertCircle, Clock, ExternalLink, ShoppingCart } from 'lucide-react-native'
-import { Image, Linking } from 'react-native'
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { AlertCircle, Clock, ExternalLink, ShoppingCart } from 'lucide-react-native';
+import { Image, Linking } from 'react-native';
 
-import { useRoutineByRspid } from '@features/routine/hooks/useRoutineByRspid'
-import { Pressable } from '@shared/components/Pressable'
-import type { RoutineProduct } from '@shared/types/routine.types'
-import { haptic } from '@shared/utils/haptic'
-import { colors } from '@theme/colors'
+import { useRoutineByRspid } from '@features/routine/hooks/useRoutineByRspid';
+import { Pressable } from '@shared/components/pressable';
+import type { RoutineProduct } from '@shared/types/routine.types';
+import { haptic } from '@shared/utils/haptic';
+import { colors } from '@theme/colors';
 
 /**
  * Product card for web embed (simplified version)
  */
 function ProductCard({ product, index }: { product: RoutineProduct; index: number }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const handleShopPress = () => {
     if (product.purchaseUrl) {
-      haptic.medium()
-      Linking.openURL(product.purchaseUrl)
+      haptic.medium();
+      Linking.openURL(product.purchaseUrl);
     }
-  }
+  };
 
   return (
     <Animated.View
@@ -58,11 +58,11 @@ function ProductCard({ product, index }: { product: RoutineProduct; index: numbe
         </Pressable>
       )}
     </Animated.View>
-  )
+  );
 }
 
 function NoRspidState() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="flex-1 items-center justify-center px-4 py-20">
@@ -74,11 +74,11 @@ function NoRspidState() {
       </Text>
       <Text className="text-base text-textMuted text-center">{t('routine.noRspidMessage')}</Text>
     </View>
-  )
+  );
 }
 
 function ProcessingState() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="flex-1 items-center justify-center px-4 py-20">
@@ -91,11 +91,11 @@ function ProcessingState() {
       <Text className="text-base text-textMuted text-center">{t('routine.processingMessage')}</Text>
       <ActivityIndicator size="large" color={colors.primary} className="mt-8" />
     </View>
-  )
+  );
 }
 
 interface RoutineWebContentProps {
-  rspid: string | null
+  rspid: string | null;
 }
 
 /**
@@ -103,14 +103,14 @@ interface RoutineWebContentProps {
  * Uses /routine/{rspid} endpoint (no auth required)
  */
 export function RoutineWebContent({ rspid }: RoutineWebContentProps) {
-  const { t } = useTranslation()
-  const { data, isLoading, isError } = useRoutineByRspid(rspid)
+  const { t } = useTranslation();
+  const { data, isLoading, isError } = useRoutineByRspid(rspid);
 
-  const isProcessing = data?.status === 'processing'
-  const products = data?.products || []
+  const isProcessing = data?.status === 'processing';
+  const products = data?.products || [];
 
   if (!rspid) {
-    return <NoRspidState />
+    return <NoRspidState />;
   }
 
   if (isLoading) {
@@ -118,7 +118,7 @@ export function RoutineWebContent({ rspid }: RoutineWebContentProps) {
       <View className="flex-1 items-center justify-center py-20">
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
-    )
+    );
   }
 
   if (isError) {
@@ -129,11 +129,11 @@ export function RoutineWebContent({ rspid }: RoutineWebContentProps) {
         </Text>
         <Text className="text-base text-textMuted text-center">{t('routine.loadError')}</Text>
       </View>
-    )
+    );
   }
 
   if (isProcessing) {
-    return <ProcessingState />
+    return <ProcessingState />;
   }
 
   return (
@@ -157,5 +157,5 @@ export function RoutineWebContent({ rspid }: RoutineWebContentProps) {
         </View>
       )}
     </ScrollView>
-  )
+  );
 }

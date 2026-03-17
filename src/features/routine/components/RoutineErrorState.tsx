@@ -1,11 +1,11 @@
-import { AlertCircle } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { AlertCircle } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import { colors } from '@theme/colors'
+import { colors } from '@theme/colors';
 
 export function RoutineErrorState() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="flex-1 items-center justify-center px-4 py-20">
@@ -15,5 +15,5 @@ export function RoutineErrorState() {
       <Text className="text-xl font-bold text-text text-center mb-2">{t('common.error')}</Text>
       <Text className="text-base text-textMuted text-center">{t('routine.loadError')}</Text>
     </View>
-  )
+  );
 }

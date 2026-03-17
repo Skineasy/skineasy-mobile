@@ -435,7 +435,7 @@ No routine found for this user.
 
 ```typescript
 interface RoutineResponse {
-  data: RoutineResponseDto
+  data: RoutineResponseDto;
 }
 
 async function fetchLastRoutine(accessToken: string): Promise<RoutineResponseDto | null> {
@@ -444,21 +444,21 @@ async function fetchLastRoutine(accessToken: string): Promise<RoutineResponseDto
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    })
+    });
 
     if (response.status === 404) {
-      return null // No routine exists
+      return null; // No routine exists
     }
 
     if (!response.ok) {
-      throw new Error('Failed to fetch routine')
+      throw new Error('Failed to fetch routine');
     }
 
-    const { data } = (await response.json()) as RoutineResponse
-    return data
+    const { data } = (await response.json()) as RoutineResponse;
+    return data;
   } catch (error) {
-    console.error('Error fetching routine:', error)
-    throw error
+    console.error('Error fetching routine:', error);
+    throw error;
   }
 }
 ```
@@ -467,11 +467,11 @@ async function fetchLastRoutine(accessToken: string): Promise<RoutineResponseDto
 
 ```typescript
 function getTodayRoutine(routine: RoutineResponseDto) {
-  const today = new Date().getDay()
+  const today = new Date().getDay();
   // Convert JS day (0=Sunday) to our format (0=Monday)
-  const dayOfWeek = today === 0 ? 6 : today - 1
+  const dayOfWeek = today === 0 ? 6 : today - 1;
 
-  return routine.routinePlan.weeklySchedule.find((day) => day.dayOfWeek === dayOfWeek)
+  return routine.routinePlan.weeklySchedule.find((day) => day.dayOfWeek === dayOfWeek);
 }
 ```
 
@@ -480,9 +480,9 @@ function getTodayRoutine(routine: RoutineResponseDto) {
 ```typescript
 function getProductForStep(
   routine: RoutineResponseDto,
-  step: RoutineStepResponseDto
+  step: RoutineStepResponseDto,
 ): ProductResponseDto | null {
-  return routine.productSelection.products[step.category] ?? null
+  return routine.productSelection.products[step.category] ?? null;
 }
 ```
 
@@ -491,7 +491,7 @@ function getProductForStep(
 ```typescript
 function renderRoutineSteps(routine: RoutineResponseDto, timeRoutine: TimeRoutineResponseDto) {
   return timeRoutine.steps.map((step) => {
-    const product = getProductForStep(routine, step)
+    const product = getProductForStep(routine, step);
 
     return {
       order: step.order,
@@ -500,8 +500,8 @@ function renderRoutineSteps(routine: RoutineResponseDto, timeRoutine: TimeRoutin
       productBrand: product?.brand ?? '',
       productPrice: product?.price ?? 0,
       estimatedMinutes: step.estimatedMinutes,
-    }
-  })
+    };
+  });
 }
 ```
 
@@ -518,7 +518,7 @@ type SkinType =
   | 'mixte_seche_grasse'
   | 'grasse'
   | 'tres_grasse'
-  | 'generique'
+  | 'generique';
 
 type SkinStateType =
   | 'sensible'
@@ -527,7 +527,7 @@ type SkinStateType =
   | 'atopique'
   | 'deshydratee'
   | 'acneique'
-  | 'acne_hormonale'
+  | 'acne_hormonale';
 
 type ProductCategory =
   | 'demaquillant'
@@ -544,97 +544,97 @@ type ProductCategory =
   | 'brume'
   | 'baume'
   | 'gadgets'
-  | 'complements'
+  | 'complements';
 
 interface ProductResponseDto {
-  id: number
-  name: string
-  price: number
-  brand: string | null
-  type: string | null
-  illustration: string | null
-  illustrationUrl: string
+  id: number;
+  name: string;
+  price: number;
+  brand: string | null;
+  type: string | null;
+  illustration: string | null;
+  illustrationUrl: string;
 }
 
 interface SkinTypeResponseDto {
-  primaryType: SkinType
-  label: string
-  confidence: number
+  primaryType: SkinType;
+  label: string;
+  confidence: number;
 }
 
 interface SkinStateResponseDto {
-  states: SkinStateType[]
-  labels: string[]
+  states: SkinStateType[];
+  labels: string[];
 }
 
 interface HealthConditionsResponseDto {
-  conditions: string[]
-  hasRestrictions: boolean
-  isPregnancySafe: boolean
+  conditions: string[];
+  hasRestrictions: boolean;
+  isPregnancySafe: boolean;
 }
 
 interface SkinAnalysisResponseDto {
-  skinType: SkinTypeResponseDto
-  skinStates: SkinStateResponseDto
-  healthConditions: HealthConditionsResponseDto
+  skinType: SkinTypeResponseDto;
+  skinStates: SkinStateResponseDto;
+  healthConditions: HealthConditionsResponseDto;
 }
 
 interface ProductSelectionResponseDto {
-  products: Record<ProductCategory, ProductResponseDto | null>
-  totalPrice: number
-  productCount: number
-  brandCohesionApplied: boolean
+  products: Record<ProductCategory, ProductResponseDto | null>;
+  totalPrice: number;
+  productCount: number;
+  brandCohesionApplied: boolean;
 }
 
 interface RoutineStepResponseDto {
-  order: number
-  category: ProductCategory
-  estimatedMinutes: number
+  order: number;
+  category: ProductCategory;
+  estimatedMinutes: number;
 }
 
 interface TimeRoutineResponseDto {
-  steps: RoutineStepResponseDto[]
-  estimatedMinutes: number
+  steps: RoutineStepResponseDto[];
+  estimatedMinutes: number;
 }
 
 interface DailyRoutineResponseDto {
-  dayOfWeek: number
-  dayName: string
-  morning: TimeRoutineResponseDto
-  evening: TimeRoutineResponseDto
+  dayOfWeek: number;
+  dayName: string;
+  morning: TimeRoutineResponseDto;
+  evening: TimeRoutineResponseDto;
 }
 
 interface ProductUsageResponseDto {
-  category: ProductCategory
-  timesPerWeek: number
-  usedInMorning: boolean
-  usedInEvening: boolean
+  category: ProductCategory;
+  timesPerWeek: number;
+  usedInMorning: boolean;
+  usedInEvening: boolean;
 }
 
 interface RoutinePlanResponseDto {
-  weeklySchedule: DailyRoutineResponseDto[]
-  productUsage: ProductUsageResponseDto[]
+  weeklySchedule: DailyRoutineResponseDto[];
+  productUsage: ProductUsageResponseDto[];
 }
 
 interface RoutineSummaryResponseDto {
-  skinTypeLabel: string
-  primaryConcerns: string[]
-  hasRestrictions: boolean
-  totalProducts: number
-  totalPrice: number
-  averageDailyMinutes: number
-  brandCohesionApplied: boolean
+  skinTypeLabel: string;
+  primaryConcerns: string[];
+  hasRestrictions: boolean;
+  totalProducts: number;
+  totalPrice: number;
+  averageDailyMinutes: number;
+  brandCohesionApplied: boolean;
 }
 
 interface RoutineResponseDto {
-  id: string
-  email: string
-  customerId?: number
-  createdAt: string
-  analysis: SkinAnalysisResponseDto
-  productSelection: ProductSelectionResponseDto
-  routinePlan: RoutinePlanResponseDto
-  summary: RoutineSummaryResponseDto
+  id: string;
+  email: string;
+  customerId?: number;
+  createdAt: string;
+  analysis: SkinAnalysisResponseDto;
+  productSelection: ProductSelectionResponseDto;
+  routinePlan: RoutinePlanResponseDto;
+  summary: RoutineSummaryResponseDto;
 }
 ```
 
@@ -662,37 +662,37 @@ See full response structure above.
 
 ```javascript
 pm.test('Status code is 200', function () {
-  pm.response.to.have.status(200)
-})
+  pm.response.to.have.status(200);
+});
 
 pm.test('Response has data object', function () {
-  const jsonData = pm.response.json()
-  pm.expect(jsonData).to.have.property('data')
-})
+  const jsonData = pm.response.json();
+  pm.expect(jsonData).to.have.property('data');
+});
 
 pm.test('Routine has required fields', function () {
-  const routine = pm.response.json().data
-  pm.expect(routine).to.have.property('id')
-  pm.expect(routine).to.have.property('email')
-  pm.expect(routine).to.have.property('createdAt')
-  pm.expect(routine).to.have.property('analysis')
-  pm.expect(routine).to.have.property('productSelection')
-  pm.expect(routine).to.have.property('routinePlan')
-  pm.expect(routine).to.have.property('summary')
-})
+  const routine = pm.response.json().data;
+  pm.expect(routine).to.have.property('id');
+  pm.expect(routine).to.have.property('email');
+  pm.expect(routine).to.have.property('createdAt');
+  pm.expect(routine).to.have.property('analysis');
+  pm.expect(routine).to.have.property('productSelection');
+  pm.expect(routine).to.have.property('routinePlan');
+  pm.expect(routine).to.have.property('summary');
+});
 
 pm.test('createdAt is valid ISO date', function () {
-  const routine = pm.response.json().data
-  const date = new Date(routine.createdAt)
-  pm.expect(date.toISOString()).to.equal(routine.createdAt)
-})
+  const routine = pm.response.json().data;
+  const date = new Date(routine.createdAt);
+  pm.expect(date.toISOString()).to.equal(routine.createdAt);
+});
 
 pm.test('Products structure is correct', function () {
-  const products = pm.response.json().data.productSelection.products
-  pm.expect(products).to.have.property('nettoyant')
-  pm.expect(products).to.have.property('serum')
-  pm.expect(products).to.have.property('creme_jour')
-})
+  const products = pm.response.json().data.productSelection.products;
+  pm.expect(products).to.have.property('nettoyant');
+  pm.expect(products).to.have.property('serum');
+  pm.expect(products).to.have.property('creme_jour');
+});
 ```
 
 ---

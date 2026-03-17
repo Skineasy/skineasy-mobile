@@ -6,4 +6,4 @@ export const appConfig = {
   ui: {
     indicatorLayout: 'list' as 'grid' | 'list',
   },
-}
+};

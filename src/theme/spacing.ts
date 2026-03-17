@@ -6,14 +6,14 @@ export const spacing = {
   xl: 24,
   '2xl': 32,
   '3xl': 48,
-} as const
+} as const;
 
 export const radius = {
   sm: 4,
   md: 8,
   lg: 16,
   full: 9999,
-} as const
+} as const;
 
-export type SpacingKey = keyof typeof spacing
-export type RadiusKey = keyof typeof radius
+export type SpacingKey = keyof typeof spacing;
+export type RadiusKey = keyof typeof radius;

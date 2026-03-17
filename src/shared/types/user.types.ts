@@ -1,20 +1,20 @@
 export interface UserProfile {
-  id: number
-  email: string
-  firstname: string
-  lastname: string
-  skinType?: string
-  birthday?: string // YYYY-MM-DD format
-  avatar?: string | null
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+  skinType?: string;
+  birthday?: string; // YYYY-MM-DD format
+  avatar?: string | null;
 }
 
 export interface AuthState {
-  token: string | null
-  isAuthenticated: boolean
-  isLoading: boolean
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 export interface UserState {
-  user: UserProfile | null
-  hasDiagnosis: boolean
+  user: UserProfile | null;
+  hasDiagnosis: boolean;
 }

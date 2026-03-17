@@ -1,28 +1,28 @@
-import { Plus } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { ImageBackground, Text, View } from 'react-native'
+import { Plus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { ImageBackground, Text, View } from 'react-native';
 
-import assets from 'assets'
+import assets from 'assets';
 
-import { CircleProgress } from '@shared/components/CircleProgress'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+import { CircleProgress } from '@shared/components/circle-progress';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
 interface ScoreContainerProps {
-  score: number // 0-100
-  missingCount?: number
-  onPlusPress?: () => void
+  score: number; // 0-100
+  missingCount?: number;
+  onPlusPress?: () => void;
 }
 
-const SIZE = 200
-const STROKE_WIDTH = 20
+const SIZE = 200;
+const STROKE_WIDTH = 20;
 
 export function ScoreContainer({
   score,
   missingCount,
   onPlusPress,
 }: ScoreContainerProps): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <View className="px-4">
@@ -69,5 +69,5 @@ export function ScoreContainer({
         </View>
       </ImageBackground>
     </View>
-  )
+  );
 }

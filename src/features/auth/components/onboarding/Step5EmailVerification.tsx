@@ -1,40 +1,40 @@
-import { useRouter } from 'expo-router'
-import { MailWarning } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { AppState, Linking, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router';
+import { MailWarning } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AppState, Linking, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Background } from '@shared/components/Background'
-import { Button } from '@shared/components/Button'
-import { GlassContainer } from '@shared/components/GlassContainer'
-import { colors } from '@theme/colors'
+import { Background } from '@shared/components/background';
+import { Button } from '@shared/components/button';
+import { GlassContainer } from '@shared/components/glass-container';
+import { colors } from '@theme/colors';
 
 interface Step5EmailVerificationProps {
-  email: string
+  email: string;
 }
 
 export function Step5EmailVerification({ email }: Step5EmailVerificationProps): React.ReactElement {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const [hasLeftApp, setHasLeftApp] = useState(false)
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [hasLeftApp, setHasLeftApp] = useState(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'background') {
-        setHasLeftApp(true)
+        setHasLeftApp(true);
       }
-    })
-    return () => subscription.remove()
-  }, [])
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleOpenEmail = (): void => {
-    Linking.openURL('mailto:')
-  }
+    Linking.openURL('mailto:');
+  };
 
   const handleValidated = (): void => {
-    router.replace('/(auth)/login')
-  }
+    router.replace('/(auth)/login');
+  };
 
   return (
     <Background variant="brownGradient">
@@ -73,5 +73,5 @@ export function Step5EmailVerification({ email }: Step5EmailVerificationProps): 
         </View>
       </SafeAreaView>
     </Background>
-  )
+  );
 }

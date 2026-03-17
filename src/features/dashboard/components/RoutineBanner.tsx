@@ -1,16 +1,16 @@
-import { useRouter } from 'expo-router'
-import { ListChecks, Sparkles, Sun } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { ImageBackground, Text, View } from 'react-native'
+import { useRouter } from 'expo-router';
+import { ListChecks, Sparkles, Sun } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { ImageBackground, Text, View } from 'react-native';
 
-import assets from 'assets'
+import assets from 'assets';
 
-import { Button } from '@shared/components/Button'
-import { SectionHeader } from '@shared/components/SectionHeader'
-import { useUserStore } from '@shared/stores/user.store'
+import { Button } from '@shared/components/button';
+import { SectionHeader } from '@shared/components/section-header';
+import { useUserStore } from '@shared/stores/user.store';
 
 function RoutineReadyBanner({ onPress }: { onPress?: () => void }): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <ImageBackground
@@ -31,11 +31,11 @@ function RoutineReadyBanner({ onPress }: { onPress?: () => void }): React.ReactE
         />
       </View>
     </ImageBackground>
-  )
+  );
 }
 
 function QuizBanner({ onPress }: { onPress?: () => void }): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <ImageBackground
@@ -54,25 +54,25 @@ function QuizBanner({ onPress }: { onPress?: () => void }): React.ReactElement {
         />
       </View>
     </ImageBackground>
-  )
+  );
 }
 
 export function RoutineBannerContainer(): React.ReactElement | null {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const routineStatus = useUserStore((state) => state.routineStatus)
+  const { t } = useTranslation();
+  const router = useRouter();
+  const routineStatus = useUserStore((state) => state.routineStatus);
 
   if (routineStatus === 'processing') {
-    return null
+    return null;
   }
 
   const handlePress = (): void => {
     if (routineStatus === 'none') {
-      router.push('/diagnosis/quiz')
+      router.push('/diagnosis/quiz');
     } else {
-      router.push('/routine')
+      router.push('/routine');
     }
-  }
+  };
 
   return (
     <View>
@@ -85,5 +85,5 @@ export function RoutineBannerContainer(): React.ReactElement | null {
         )}
       </View>
     </View>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import { Check } from 'lucide-react-native'
-import { View } from 'react-native'
+import { Check } from 'lucide-react-native';
+import { View } from 'react-native';
 
-import { CircleProgress } from '@shared/components/CircleProgress'
-import { colors } from '@theme/colors'
+import { CircleProgress } from '@shared/components/circle-progress';
+import { colors } from '@theme/colors';
 
-const SIZE = 32
-const STROKE_WIDTH = 6
-const ICON_SIZE = 14
-const DOT_SIZE = 6
+const SIZE = 32;
+const STROKE_WIDTH = 6;
+const ICON_SIZE = 14;
+const DOT_SIZE = 6;
 
 type DayProgressCircleProps = {
-  score: number // 0-100
-  isToday: boolean
-}
+  score: number; // 0-100
+  isToday: boolean;
+};
 
 export function DayProgressCircle({ score, isToday }: DayProgressCircleProps): React.ReactElement {
-  const isFullScore = score === 100
+  const isFullScore = score === 100;
 
   return (
     <View className="items-center justify-center">
@@ -37,5 +37,5 @@ export function DayProgressCircle({ score, isToday }: DayProgressCircleProps): R
         ) : null}
       </View>
     </View>
-  )
+  );
 }

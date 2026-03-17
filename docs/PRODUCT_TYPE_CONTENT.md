@@ -35,15 +35,15 @@ Products in routine responses now include a `typeContent` field with rich inform
 
 ```typescript
 interface TypeContentDto {
-  title: string
-  subtitle: string
-  description: string // HTML content
-  howToUse: string // HTML content
-  application: string
-  frequency: string
-  badge: string
-  keyIngredient: string
-  irritationPotential: string
+  title: string;
+  subtitle: string;
+  description: string; // HTML content
+  howToUse: string; // HTML content
+  application: string;
+  frequency: string;
+  badge: string;
+  keyIngredient: string;
+  irritationPotential: string;
 }
 ```
 

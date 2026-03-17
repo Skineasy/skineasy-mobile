@@ -1,20 +1,20 @@
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { ScrollView, Text, View } from 'react-native'
-import Animated, { FadeInDown } from 'react-native-reanimated'
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { RoutineEmptyState } from '@features/routine/components/RoutineEmptyState'
-import { RoutineErrorState } from '@features/routine/components/RoutineErrorState'
-import { RoutineLoadingState } from '@features/routine/components/RoutineLoadingState'
-import { RoutineStepCard } from '@features/routine/components/RoutineStepCard'
-import { RoutineSummaryCard } from '@features/routine/components/RoutineSummaryCard'
-import { RoutineToggle } from '@features/routine/components/RoutineToggle'
-import { useRoutine } from '@features/routine/hooks/useRoutine'
-import { useTodayRoutine } from '@features/routine/hooks/useTodayRoutine'
-import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore'
-import type { TimeOfDay } from '@features/routine/types/routine.types'
-import { ScreenHeader } from '@shared/components/ScreenHeader'
-import { getTodayUTC } from '@shared/utils/date'
+import { RoutineEmptyState } from '@features/routine/components/RoutineEmptyState';
+import { RoutineErrorState } from '@features/routine/components/RoutineErrorState';
+import { RoutineLoadingState } from '@features/routine/components/RoutineLoadingState';
+import { RoutineStepCard } from '@features/routine/components/RoutineStepCard';
+import { RoutineSummaryCard } from '@features/routine/components/RoutineSummaryCard';
+import { RoutineToggle } from '@features/routine/components/RoutineToggle';
+import { useRoutine } from '@features/routine/hooks/useRoutine';
+import { useTodayRoutine } from '@features/routine/hooks/useTodayRoutine';
+import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore';
+import type { TimeOfDay } from '@features/routine/types/routine.types';
+import { ScreenHeader } from '@shared/components/screen-header';
+import { getTodayUTC } from '@shared/utils/date';
 
 /**
  * Main Routine Results Screen
@@ -25,43 +25,43 @@ import { getTodayUTC } from '@shared/utils/date'
  * - Shop buttons for each product
  */
 export default function RoutineResultsScreen() {
-  const { t } = useTranslation()
-  const [selectedTime, setSelectedTime] = useState<TimeOfDay>('morning')
+  const { t } = useTranslation();
+  const [selectedTime, setSelectedTime] = useState<TimeOfDay>('morning');
 
-  const { data: routine, isLoading, isError } = useRoutine()
-  const todayRoutine = useTodayRoutine(routine)
+  const { data: routine, isLoading, isError } = useRoutine();
+  const todayRoutine = useTodayRoutine(routine);
 
-  const { isCompleted } = useRoutineCompletionStore()
-  const today = getTodayUTC()
+  const { isCompleted } = useRoutineCompletionStore();
+  const today = getTodayUTC();
 
   // Compute category counts and occurrences for ordinal labels
   // Sort completed items to the end
   const stepsWithOrdinal = useMemo(() => {
-    if (!todayRoutine) return []
+    if (!todayRoutine) return [];
 
     const currentSteps =
-      selectedTime === 'morning' ? todayRoutine.morning.steps : todayRoutine.evening.steps
+      selectedTime === 'morning' ? todayRoutine.morning.steps : todayRoutine.evening.steps;
 
-    const categoryCount = new Map<string, number>()
+    const categoryCount = new Map<string, number>();
     currentSteps.forEach((s) => {
-      categoryCount.set(s.step.category, (categoryCount.get(s.step.category) || 0) + 1)
-    })
+      categoryCount.set(s.step.category, (categoryCount.get(s.step.category) || 0) + 1);
+    });
 
-    const occurrenceTracker = new Map<string, number>()
+    const occurrenceTracker = new Map<string, number>();
     const stepsWithMeta = currentSteps.map((stepWithProducts) => {
-      const cat = stepWithProducts.step.category
-      const occurrence = (occurrenceTracker.get(cat) || 0) + 1
-      occurrenceTracker.set(cat, occurrence)
+      const cat = stepWithProducts.step.category;
+      const occurrence = (occurrenceTracker.get(cat) || 0) + 1;
+      occurrenceTracker.set(cat, occurrence);
       return {
         stepWithProducts,
         categoryOccurrence: occurrence,
         totalCategoryCount: categoryCount.get(cat) || 1,
         completed: isCompleted(today, selectedTime, stepWithProducts.step.order),
-      }
-    })
+      };
+    });
 
-    return stepsWithMeta
-  }, [todayRoutine, selectedTime, isCompleted, today])
+    return stepsWithMeta;
+  }, [todayRoutine, selectedTime, isCompleted, today]);
 
   // Loading state
   if (isLoading) {
@@ -69,7 +69,7 @@ export default function RoutineResultsScreen() {
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
         <RoutineLoadingState />
       </ScreenHeader>
-    )
+    );
   }
 
   // Error state
@@ -78,7 +78,7 @@ export default function RoutineResultsScreen() {
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
         <RoutineErrorState />
       </ScreenHeader>
-    )
+    );
   }
 
   // No routine found
@@ -87,11 +87,11 @@ export default function RoutineResultsScreen() {
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
         <RoutineEmptyState />
       </ScreenHeader>
-    )
+    );
   }
 
   const currentSteps =
-    selectedTime === 'morning' ? todayRoutine.morning.steps : todayRoutine.evening.steps
+    selectedTime === 'morning' ? todayRoutine.morning.steps : todayRoutine.evening.steps;
 
   return (
     <ScreenHeader
@@ -143,7 +143,7 @@ export default function RoutineResultsScreen() {
               totalCategoryCount={totalCategoryCount}
               timeOfDay={selectedTime}
             />
-          )
+          ),
         )}
 
         {/* Empty state for current time */}
@@ -154,5 +154,5 @@ export default function RoutineResultsScreen() {
         )}
       </ScrollView>
     </ScreenHeader>
-  )
+  );
 }

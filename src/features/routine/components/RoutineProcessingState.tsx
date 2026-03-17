@@ -1,27 +1,27 @@
-import { Clock } from 'lucide-react-native'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { Clock } from 'lucide-react-native';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated'
+} from 'react-native-reanimated';
 
-import { colors } from '@theme/colors'
+import { colors } from '@theme/colors';
 
 export function RoutineProcessingState(): React.ReactElement {
-  const { t } = useTranslation()
-  const rotation = useSharedValue(0)
+  const { t } = useTranslation();
+  const rotation = useSharedValue(0);
 
   useEffect(() => {
-    rotation.value = withRepeat(withTiming(360, { duration: 3000 }), -1, false)
-  }, [rotation])
+    rotation.value = withRepeat(withTiming(360, { duration: 3000 }), -1, false);
+  }, [rotation]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
-  }))
+  }));
 
   return (
     <View className="flex-1 items-center justify-center px-8">
@@ -35,5 +35,5 @@ export function RoutineProcessingState(): React.ReactElement {
         {t('routine.processingSubtitle')}
       </Text>
     </View>
-  )
+  );
 }

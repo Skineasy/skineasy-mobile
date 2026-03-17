@@ -1,37 +1,37 @@
-import type { LucideIcon } from 'lucide-react-native'
-import { StyleSheet, Text, View, type ViewStyle } from 'react-native'
+import type { LucideIcon } from 'lucide-react-native';
+import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
-import { GlassContainer } from '@shared/components/GlassContainer'
-import { Pressable } from '@shared/components/Pressable'
-import { cn } from '@shared/utils/cn'
-import { colors } from '@theme/colors'
+import { GlassContainer } from '@shared/components/glass-container';
+import { Pressable } from '@shared/components/pressable';
+import { cn } from '@shared/utils/cn';
+import { colors } from '@theme/colors';
 
-type ChipVariant = 'positive' | 'negative'
+type ChipVariant = 'positive' | 'negative';
 
 type ObservationChipProps = {
-  selected: boolean
-  onPress: () => void
-  label: string
-  icon: LucideIcon
-  variant: ChipVariant
-}
+  selected: boolean;
+  onPress: () => void;
+  label: string;
+  icon: LucideIcon;
+  variant: ChipVariant;
+};
 
 function getContainerStyle(variant: ChipVariant, selected: boolean): ViewStyle {
-  if (!selected) return styles.container
+  if (!selected) return styles.container;
   return {
     ...styles.container,
     backgroundColor: variant === 'positive' ? colors.background : 'rgba(232, 76, 63, 0.15)',
-  }
+  };
 }
 
 function getTintColor(variant: ChipVariant, selected: boolean): string {
-  if (!selected) return 'transparent'
-  return variant === 'positive' ? colors.background : 'rgba(232, 76, 63, 0.15)'
+  if (!selected) return 'transparent';
+  return variant === 'positive' ? colors.background : 'rgba(232, 76, 63, 0.15)';
 }
 
 function getTextColor(variant: ChipVariant, selected: boolean): string {
-  if (!selected) return colors.textMuted
-  return variant === 'positive' ? colors.primary : colors.secondary
+  if (!selected) return colors.textMuted;
+  return variant === 'positive' ? colors.primary : colors.secondary;
 }
 
 export function ObservationChip({
@@ -41,7 +41,7 @@ export function ObservationChip({
   icon: Icon,
   variant,
 }: ObservationChipProps): React.ReactElement {
-  const textColor = getTextColor(variant, selected)
+  const textColor = getTextColor(variant, selected);
 
   return (
     <Pressable onPress={onPress} haptic="light">
@@ -56,7 +56,7 @@ export function ObservationChip({
               'text-sm font-medium',
               selected && variant === 'positive' && 'text-primary',
               selected && variant === 'negative' && 'text-secondary',
-              !selected && 'text-textMuted'
+              !selected && 'text-textMuted',
             )}
           >
             {label}
@@ -64,7 +64,7 @@ export function ObservationChip({
         </View>
       </GlassContainer>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 16,
   },
-})
+});

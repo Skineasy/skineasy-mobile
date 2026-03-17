@@ -1,17 +1,17 @@
-import { useRouter } from 'expo-router'
-import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { useRouter } from 'expo-router';
+import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import { BottomSheet } from '@shared/components/BottomSheet'
-import { Button } from '@shared/components/Button'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+import { BottomSheet } from '@shared/components/bottom-sheet';
+import { Button } from '@shared/components/button';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
 interface AddIndicatorSheetProps {
-  visible: boolean
-  onClose: () => void
-  date: string
+  visible: boolean;
+  onClose: () => void;
+  date: string;
 }
 
 const INDICATORS = [
@@ -20,20 +20,20 @@ const INDICATORS = [
   { key: 'nutrition', icon: Utensils, path: '/journal/nutrition' },
   { key: 'sport', icon: Dumbbell, path: '/journal/sport' },
   { key: 'stress', icon: Smile, path: '/journal/stress' },
-] as const
+] as const;
 
 export function AddIndicatorSheet({
   visible,
   onClose,
   date,
 }: AddIndicatorSheetProps): React.ReactElement {
-  const { t } = useTranslation()
-  const router = useRouter()
+  const { t } = useTranslation();
+  const router = useRouter();
 
   const handlePress = (path: string): void => {
-    onClose()
-    router.push({ pathname: path, params: { date } })
-  }
+    onClose();
+    router.push({ pathname: path, params: { date } });
+  };
 
   return (
     <BottomSheet visible={visible} onClose={onClose}>
@@ -66,5 +66,5 @@ export function AddIndicatorSheet({
         />
       </View>
     </BottomSheet>
-  )
+  );
 }

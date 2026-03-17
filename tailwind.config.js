@@ -1,5 +1,3 @@
-const { colors } = require('./src/theme/colors')
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./App.{js,jsx,ts,tsx}', './app/**/*.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
@@ -8,31 +6,31 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: colors.primary,
-          dark: colors.primaryDark,
+          DEFAULT: 'rgb(var(--color-primary) / <alpha-value>)',
+          dark: 'rgb(var(--color-primary-dark) / <alpha-value>)',
         },
-        secondary: colors.secondary,
-        background: colors.background,
-        surface: colors.surface,
+        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
+        background: 'rgb(var(--color-background) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
         text: {
-          DEFAULT: colors.text,
-          muted: colors.textMuted,
-          light: colors.textLight,
+          DEFAULT: 'rgb(var(--color-text) / <alpha-value>)',
+          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+          light: 'rgb(var(--color-text-light) / <alpha-value>)',
         },
-        error: colors.error,
-        success: colors.success,
-        warning: colors.warning,
+        error: 'rgb(var(--color-error) / <alpha-value>)',
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
         border: {
-          DEFAULT: colors.border,
-          focus: colors.borderFocus,
+          DEFAULT: 'rgb(var(--color-border) / <alpha-value>)',
+          focus: 'rgb(var(--color-border-focus) / <alpha-value>)',
         },
         cream: {
-          DEFAULT: colors.cream,
-          muted: colors.creamMuted,
+          DEFAULT: 'rgb(var(--color-cream) / <alpha-value>)',
+          muted: 'rgb(var(--color-cream-muted) / <alpha-value>)',
         },
         brown: {
-          dark: colors.brownDark,
-          light: colors.brownLight,
+          dark: 'rgb(var(--color-brown-dark) / <alpha-value>)',
+          light: 'rgb(var(--color-brown-light) / <alpha-value>)',
         },
       },
       fontFamily: {
@@ -73,4 +71,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

@@ -28,7 +28,11 @@
     "sessionExpiredMessage": "Please log in again",
     "deleteConfirmTitle": "Delete Entry",
     "deleteConfirmMessage": "Are you sure you want to delete this entry?",
-    "ok": "OK"
+    "ok": "OK",
+    "networkError": "Please check your internet connection",
+    "notFound": "The requested resource was not found",
+    "validationError": "Please check your input and try again",
+    "serverError": "Something went wrong on our end. Please try again later"
   },
   "auth": {
     "login": "Login",
@@ -47,6 +51,7 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "invalidCredentials": "Invalid credentials",
+    "emailAlreadyExists": "An account with this email already exists",
     "registerError": "Unable to create account. Please try again.",
     "registerSuccess": "Account created successfully",
     "welcomeBack": "Welcome back",

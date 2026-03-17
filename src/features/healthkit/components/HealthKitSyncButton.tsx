@@ -1,47 +1,48 @@
-import * as Device from 'expo-device'
-import { formatDistanceToNow } from 'date-fns'
-import { enUS, fr } from 'date-fns/locale'
-import { Activity } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Platform, Text, View } from 'react-native'
-import Toast from 'react-native-toast-message'
+import * as Device from 'expo-device';
+import { formatDistanceToNow } from 'date-fns';
+import { enUS, fr } from 'date-fns/locale';
+import { Activity } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Platform, Text, View } from 'react-native';
 
-import { useHealthKitSync } from '@features/healthkit/hooks/useHealthKitSync'
-import { Pressable } from '@shared/components/Pressable'
-import { colors } from '@theme/colors'
+import { toast } from '@lib/toast';
+
+import { useHealthKitSync } from '@features/healthkit/hooks/useHealthKitSync';
+import { Pressable } from '@shared/components/pressable';
+import { colors } from '@theme/colors';
 
 export function HealthKitSyncButton(): React.ReactElement | null {
-  const { t, i18n } = useTranslation()
-  const { sync, isSyncing, lastSyncDate, isAuthorized, requestAuthorization } = useHealthKitSync()
+  const { t, i18n } = useTranslation();
+  const { sync, isSyncing, lastSyncDate, isAuthorized, requestAuthorization } = useHealthKitSync();
 
   // Only show on iOS
   if (Platform.OS !== 'ios') {
-    return null
+    return null;
   }
 
   const handlePress = async (): Promise<void> => {
     // Check if running in simulator
     if (!Device.isDevice) {
-      Toast.show({ type: 'error', text1: t('healthkit.simulatorError') })
-      return
+      toast.error(t('healthkit.simulatorError'));
+      return;
     }
 
     if (!isAuthorized) {
-      const authorized = await requestAuthorization()
+      const authorized = await requestAuthorization();
       if (authorized) {
-        await sync()
+        await sync();
       }
     } else {
-      await sync()
+      await sync();
     }
-  }
+  };
 
   const formatLastSync = (): string => {
-    if (!lastSyncDate) return t('healthkit.neverSynced')
-    const date = new Date(lastSyncDate)
-    const locale = i18n.language === 'fr' ? fr : enUS
-    return formatDistanceToNow(date, { addSuffix: true, locale })
-  }
+    if (!lastSyncDate) return t('healthkit.neverSynced');
+    const date = new Date(lastSyncDate);
+    const locale = i18n.language === 'fr' ? fr : enUS;
+    return formatDistanceToNow(date, { addSuffix: true, locale });
+  };
 
   return (
     <Pressable
@@ -61,5 +62,5 @@ export function HealthKitSyncButton(): React.ReactElement | null {
       </View>
       {isSyncing && <ActivityIndicator size="small" color={colors.primary} />}
     </Pressable>
-  )
+  );
 }

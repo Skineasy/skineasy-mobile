@@ -9,11 +9,11 @@
  * - No server-side compression
  */
 
-import { logger } from '@shared/utils/logger'
-import * as ImageManipulator from 'expo-image-manipulator'
-import * as ImagePicker from 'expo-image-picker'
+import { logger } from '@shared/utils/logger';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 
-type PermissionDeniedHandler = () => void
+type PermissionDeniedHandler = () => void;
 
 /**
  * Image compression settings
@@ -23,7 +23,7 @@ const IMAGE_COMPRESSION = {
   MAX_HEIGHT: 1200, // Resize to max height of 1200px
   QUALITY: 0.8, // 80% quality
   FORMAT: ImageManipulator.SaveFormat.JPEG, // Always convert to JPEG for consistency
-}
+};
 
 /**
  * Pick an image from the device's gallery
@@ -32,40 +32,40 @@ const IMAGE_COMPRESSION = {
  * @returns Promise<string | null> - URI of the selected image, or null if canceled
  */
 export async function pickImageFromGallery(
-  onPermissionDenied?: PermissionDeniedHandler
+  onPermissionDenied?: PermissionDeniedHandler,
 ): Promise<string | null> {
   try {
-    logger.info('[Image] Requesting gallery permissions')
+    logger.info('[Image] Requesting gallery permissions');
 
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
-      logger.warn('[Image] Gallery permission denied')
-      onPermissionDenied?.()
-      return null
+      logger.warn('[Image] Gallery permission denied');
+      onPermissionDenied?.();
+      return null;
     }
 
-    logger.info('[Image] Launching image picker')
+    logger.info('[Image] Launching image picker');
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    })
+    });
 
     if (result.canceled) {
-      logger.info('[Image] Image picker canceled')
-      return null
+      logger.info('[Image] Image picker canceled');
+      return null;
     }
 
-    const imageUri = result.assets[0].uri
-    logger.info('[Image] Image selected:', imageUri)
+    const imageUri = result.assets[0].uri;
+    logger.info('[Image] Image selected:', imageUri);
 
-    return imageUri
+    return imageUri;
   } catch (error) {
-    logger.error('[Image] Error picking image from gallery:', error)
-    return null
+    logger.error('[Image] Error picking image from gallery:', error);
+    return null;
   }
 }
 
@@ -76,40 +76,40 @@ export async function pickImageFromGallery(
  * @returns Promise<string | null> - URI of the captured photo, or null if canceled
  */
 export async function takePhoto(
-  onPermissionDenied?: PermissionDeniedHandler
+  onPermissionDenied?: PermissionDeniedHandler,
 ): Promise<string | null> {
   try {
-    logger.info('[Image] Requesting camera permissions')
+    logger.info('[Image] Requesting camera permissions');
 
-    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
     if (status !== 'granted') {
-      logger.warn('[Image] Camera permission denied')
-      onPermissionDenied?.()
-      return null
+      logger.warn('[Image] Camera permission denied');
+      onPermissionDenied?.();
+      return null;
     }
 
-    logger.info('[Image] Launching camera')
+    logger.info('[Image] Launching camera');
 
     // Launch camera
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1, // Get full quality, we'll compress manually
-    })
+    });
 
     if (result.canceled) {
-      logger.info('[Image] Camera canceled')
-      return null
+      logger.info('[Image] Camera canceled');
+      return null;
     }
 
-    const imageUri = result.assets[0].uri
-    logger.info('[Image] Photo captured:', imageUri)
+    const imageUri = result.assets[0].uri;
+    logger.info('[Image] Photo captured:', imageUri);
 
-    return imageUri
+    return imageUri;
   } catch (error) {
-    logger.error('[Image] Error taking photo:', error)
-    return null
+    logger.error('[Image] Error taking photo:', error);
+    return null;
   }
 }
 
@@ -123,7 +123,7 @@ export async function takePhoto(
  */
 export async function compressImage(uri: string): Promise<string> {
   try {
-    logger.info('[Image] Compressing image:', uri)
+    logger.info('[Image] Compressing image:', uri);
 
     const manipulatedImage = await ImageManipulator.manipulateAsync(
       uri,
@@ -138,15 +138,15 @@ export async function compressImage(uri: string): Promise<string> {
       {
         compress: IMAGE_COMPRESSION.QUALITY,
         format: IMAGE_COMPRESSION.FORMAT,
-      }
-    )
+      },
+    );
 
-    logger.info('[Image] Image compressed successfully:', manipulatedImage.uri)
+    logger.info('[Image] Image compressed successfully:', manipulatedImage.uri);
 
-    return manipulatedImage.uri
+    return manipulatedImage.uri;
   } catch (error) {
-    logger.error('[Image] Error compressing image:', error)
-    throw new Error('Failed to compress image')
+    logger.error('[Image] Error compressing image:', error);
+    throw new Error('Failed to compress image');
   }
 }
 
@@ -158,17 +158,17 @@ export async function compressImage(uri: string): Promise<string> {
  * @returns FormData object ready for upload
  */
 export function imageUriToFormData(uri: string, fieldName: string = 'image'): FormData {
-  const filename = uri.split('/').pop() || 'photo.jpg'
-  const match = /\.(\w+)$/.exec(filename)
-  const type = match ? `image/${match[1]}` : 'image/jpeg'
+  const filename = uri.split('/').pop() || 'photo.jpg';
+  const match = /\.(\w+)$/.exec(filename);
+  const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-  const formData = new FormData()
+  const formData = new FormData();
   // React Native FormData accepts blob-like objects
   formData.append(fieldName, {
     uri,
     name: filename,
     type,
-  } as unknown as Blob)
+  } as unknown as Blob);
 
-  return formData
+  return formData;
 }

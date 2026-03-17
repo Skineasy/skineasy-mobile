@@ -62,14 +62,14 @@ ui: {
 
 ```typescript
 interface IndicatorCardProps {
-  icon: LucideIcon
-  label: string
-  value: string
-  subtitle?: string // NEW: e.g. "Breakfast, Lunch" or "Running, Yoga"
-  onPress?: () => void
-  disabled?: boolean
-  status: IndicatorStatus
-  layout?: IndicatorLayout
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  subtitle?: string; // NEW: e.g. "Breakfast, Lunch" or "Running, Yoga"
+  onPress?: () => void;
+  disabled?: boolean;
+  status: IndicatorStatus;
+  layout?: IndicatorLayout;
 }
 ```
 
@@ -107,20 +107,20 @@ const listContent = (
 
 ```typescript
 // Nutrition: show meal types
-const mealTypes = [...new Set(mealEntries.map((m) => m.meal_type).filter(Boolean))]
-const nutritionSubtitle = mealTypes.map((t) => t(`journal.nutrition.mealType.${t}`)).join(', ')
+const mealTypes = [...new Set(mealEntries.map((m) => m.meal_type).filter(Boolean))];
+const nutritionSubtitle = mealTypes.map((t) => t(`journal.nutrition.mealType.${t}`)).join(', ');
 
 // Sport: show activity names
-const sportNames = [...new Set(sportEntries.map((s) => s.sportType?.name).filter(Boolean))]
-const sportSubtitle = sportNames.map((n) => t(`journal.sport.types.${n}`)).join(', ')
+const sportNames = [...new Set(sportEntries.map((s) => s.sportType?.name).filter(Boolean))];
+const sportSubtitle = sportNames.map((n) => t(`journal.sport.types.${n}`)).join(', ');
 
 // Sleep: show quality
 const sleepSubtitle = sleepEntries[0]
   ? t('journal.sleep.qualityLabel', { quality: sleepEntries[0].quality })
-  : undefined
+  : undefined;
 
 // Stress: show note preview
-const stressSubtitle = stressEntries[0]?.note?.substring(0, 50) || undefined
+const stressSubtitle = stressEntries[0]?.note?.substring(0, 50) || undefined;
 ```
 
 **Example display:**
@@ -149,74 +149,74 @@ const stressSubtitle = stressEntries[0]?.note?.substring(0, 50) || undefined
 **Implementation:**
 
 ```typescript
-import { useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, parseISO } from 'date-fns'
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, parseISO } from 'date-fns';
 
-import { journalService } from '@features/journal/services/journal.service'
-import { calculateDayScore } from '@features/dashboard/utils/score'
-import { queryKeys } from '@shared/config/queryKeys'
-import { toUTCDateString } from '@shared/utils/date'
-import type { MealEntry, SleepEntry, SportEntry, StressEntry } from '@shared/types/journal.types'
-import { colors } from '@theme/colors'
+import { journalService } from '@features/journal/services/journal.service';
+import { calculateDayScore } from '@features/dashboard/utils/score';
+import { queryKeys } from '@shared/config/queryKeys';
+import { toUTCDateString } from '@shared/utils/date';
+import type { MealEntry, SleepEntry, SportEntry, StressEntry } from '@shared/types/journal.types';
+import { colors } from '@theme/colors';
 
-type MarkedDates = Record<string, { dots: Array<{ key: string; color: string }> }>
+type MarkedDates = Record<string, { dots: Array<{ key: string; color: string }> }>;
 
 function getScoreColor(score: number): string {
-  if (score > 70) return colors.success
-  if (score > 30) return colors.warning
-  if (score > 0) return colors.error
-  return colors.textMuted
+  if (score > 70) return colors.success;
+  if (score > 30) return colors.warning;
+  if (score > 0) return colors.error;
+  return colors.textMuted;
 }
 
 function filterByDate<T extends { date: string }>(entries: T[], targetDate: Date): T[] {
-  return entries.filter((e) => isSameDay(parseISO(e.date), targetDate))
+  return entries.filter((e) => isSameDay(parseISO(e.date), targetDate));
 }
 
 export function useMonthScores(
   year: number,
-  month: number
+  month: number,
 ): { markedDates: MarkedDates; isLoading: boolean } {
-  const monthStart = startOfMonth(new Date(year, month))
-  const monthEnd = endOfMonth(monthStart)
-  const startDate = toUTCDateString(monthStart)
-  const endDate = toUTCDateString(monthEnd)
+  const monthStart = startOfMonth(new Date(year, month));
+  const monthEnd = endOfMonth(monthStart);
+  const startDate = toUTCDateString(monthStart);
+  const endDate = toUTCDateString(monthEnd);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.journalEntriesRange(startDate, endDate),
     queryFn: () => journalService.entries.getByDateRange(startDate, endDate),
     staleTime: 5 * 60 * 1000,
-  })
+  });
 
   const markedDates = useMemo(() => {
-    const result: MarkedDates = {}
+    const result: MarkedDates = {};
 
-    if (!data) return result
+    if (!data) return result;
 
-    const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
-    const sleeps: SleepEntry[] = data.sleeps ?? []
-    const meals: MealEntry[] = data.meals ?? []
-    const sports: SportEntry[] = data.sports ?? []
-    const stresses: StressEntry[] = data.stresses ?? []
+    const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    const sleeps: SleepEntry[] = data.sleeps ?? [];
+    const meals: MealEntry[] = data.meals ?? [];
+    const sports: SportEntry[] = data.sports ?? [];
+    const stresses: StressEntry[] = data.stresses ?? [];
 
     for (const day of days) {
-      const dateStr = format(day, 'yyyy-MM-dd')
-      const daySleeps = filterByDate(sleeps, day)
-      const dayMeals = filterByDate(meals, day)
-      const daySports = filterByDate(sports, day)
-      const dayStresses = filterByDate(stresses, day)
+      const dateStr = format(day, 'yyyy-MM-dd');
+      const daySleeps = filterByDate(sleeps, day);
+      const dayMeals = filterByDate(meals, day);
+      const daySports = filterByDate(sports, day);
+      const dayStresses = filterByDate(stresses, day);
 
-      const score = calculateDayScore(daySleeps[0], dayMeals, daySports, dayStresses[0])
+      const score = calculateDayScore(daySleeps[0], dayMeals, daySports, dayStresses[0]);
 
       result[dateStr] = {
         dots: [{ key: 'score', color: getScoreColor(score) }],
-      }
+      };
     }
 
-    return result
-  }, [data, monthStart, monthEnd])
+    return result;
+  }, [data, monthStart, monthEnd]);
 
-  return { markedDates, isLoading }
+  return { markedDates, isLoading };
 }
 ```
 
@@ -487,19 +487,19 @@ export default function CalendarScreen(): React.ReactElement {
 const TABS = [
   { name: 'index', icon: Home },
   { name: 'routine', icon: BookOpen },
-]
+];
 ```
 
 **After:**
 
 ```typescript
-import { CalendarDays, Home, Sparkles } from 'lucide-react-native'
+import { CalendarDays, Home, Sparkles } from 'lucide-react-native';
 
 const TABS = [
   { name: 'index', icon: Home },
   { name: 'calendar', icon: CalendarDays },
   { name: 'routine', icon: Sparkles },
-]
+];
 ```
 
 **Verification:** Tab bar shows 3 icons

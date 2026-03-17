@@ -1,29 +1,29 @@
-import { User, UserRound, Users } from 'lucide-react-native'
-import { Control, Controller, FieldErrors } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { User, UserRound, Users } from 'lucide-react-native';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import { RegisterInput } from '@features/auth/schemas/auth.schema'
-import { Button } from '@shared/components/Button'
-import { DateInput } from '@shared/components/DateInput'
-import { KeyboardScrollView } from '@shared/components/KeyboardScrollView'
-import { SelectableCard } from '@shared/components/SelectableCard'
+import { RegisterInput } from '@features/auth/schemas/auth.schema';
+import { Button } from '@shared/components/button';
+import { DateInput } from '@shared/components/date-input';
+import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
+import { SelectableCard } from '@shared/components/selectable-card';
 
 const GENDER_OPTIONS = [
   { value: 1, labelKey: 'auth.genderMr', icon: User },
   { value: 2, labelKey: 'auth.genderMrs', icon: UserRound },
   { value: 3, labelKey: 'auth.genderOther', icon: Users },
-] as const
+] as const;
 
 interface Step2AboutYouProps {
-  onNext: () => void
-  control: Control<RegisterInput>
-  errors: FieldErrors<RegisterInput>
-  isValid: boolean
+  onNext: () => void;
+  control: Control<RegisterInput>;
+  errors: FieldErrors<RegisterInput>;
+  isValid: boolean;
 }
 
 export function Step2AboutYou({ onNext, control, errors, isValid }: Step2AboutYouProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <KeyboardScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={100}>
@@ -83,5 +83,5 @@ export function Step2AboutYou({ onNext, control, errors, isValid }: Step2AboutYo
         </View>
       </View>
     </KeyboardScrollView>
-  )
+  );
 }

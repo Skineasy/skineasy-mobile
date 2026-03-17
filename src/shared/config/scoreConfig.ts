@@ -33,4 +33,4 @@ export const scoreConfig = {
     pointsPerNegative: 8,
     trackingBonus: 10,
   },
-}
+};

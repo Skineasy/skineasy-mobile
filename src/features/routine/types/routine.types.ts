@@ -16,7 +16,7 @@ export type SkinType =
   | 'mixte_seche_grasse'
   | 'grasse'
   | 'tres_grasse'
-  | 'generique'
+  | 'generique';
 
 export type SkinStateType =
   | 'sensible'
@@ -25,7 +25,7 @@ export type SkinStateType =
   | 'atopique'
   | 'deshydratee'
   | 'acneique'
-  | 'acne_hormonale'
+  | 'acne_hormonale';
 
 export type ProductCategory =
   | 'demaquillant'
@@ -42,38 +42,38 @@ export type ProductCategory =
   | 'brume'
   | 'baume'
   | 'gadgets'
-  | 'complements'
+  | 'complements';
 
-export type TimeOfDay = 'morning' | 'evening'
+export type TimeOfDay = 'morning' | 'evening';
 
 // ============================================================================
 // Product Types
 // ============================================================================
 
 export interface TypeContentDto {
-  title: string
-  subtitle: string
-  description: string
-  howToUse: string
-  application: string
-  frequency: string
-  badge: string
-  keyIngredient: string
-  irritationPotential: string
+  title: string;
+  subtitle: string;
+  description: string;
+  howToUse: string;
+  application: string;
+  frequency: string;
+  badge: string;
+  keyIngredient: string;
+  irritationPotential: string;
 }
 
 export interface ProductDto {
-  id: number
-  name: string
-  price: number
-  brand: string | null
-  type: string | null
-  illustration: string | null
-  illustrationUrl: string
-  feature: string | null
-  url: string | null
-  contenance: string | null
-  typeContent: TypeContentDto | null
+  id: number;
+  name: string;
+  price: number;
+  brand: string | null;
+  type: string | null;
+  illustration: string | null;
+  illustrationUrl: string;
+  feature: string | null;
+  url: string | null;
+  contenance: string | null;
+  typeContent: TypeContentDto | null;
 }
 
 // ============================================================================
@@ -81,26 +81,26 @@ export interface ProductDto {
 // ============================================================================
 
 export interface SkinTypeDto {
-  primaryType: SkinType
-  label: string
-  confidence: number
+  primaryType: SkinType;
+  label: string;
+  confidence: number;
 }
 
 export interface SkinStateDto {
-  states: SkinStateType[]
-  labels: string[]
+  states: SkinStateType[];
+  labels: string[];
 }
 
 export interface HealthConditionsDto {
-  conditions: string[]
-  hasRestrictions: boolean
-  isPregnancySafe: boolean
+  conditions: string[];
+  hasRestrictions: boolean;
+  isPregnancySafe: boolean;
 }
 
 export interface SkinAnalysisDto {
-  skinType: SkinTypeDto
-  skinStates: SkinStateDto
-  healthConditions: HealthConditionsDto
+  skinType: SkinTypeDto;
+  skinStates: SkinStateDto;
+  healthConditions: HealthConditionsDto;
 }
 
 // ============================================================================
@@ -111,13 +111,13 @@ export interface SkinAnalysisDto {
  * Products are now arrays per category (0 to 3 products each)
  * Empty categories will be empty arrays [], not null
  */
-export type ProductSelectionProducts = Record<ProductCategory, ProductDto[]>
+export type ProductSelectionProducts = Record<ProductCategory, ProductDto[]>;
 
 export interface ProductSelectionDto {
-  products: ProductSelectionProducts
-  totalPrice: number
-  productCount: number
-  brandCohesionApplied: boolean
+  products: ProductSelectionProducts;
+  totalPrice: number;
+  productCount: number;
+  brandCohesionApplied: boolean;
 }
 
 // ============================================================================
@@ -125,33 +125,33 @@ export interface ProductSelectionDto {
 // ============================================================================
 
 export interface RoutineStepDto {
-  order: number
-  category: ProductCategory
-  estimatedMinutes: number
+  order: number;
+  category: ProductCategory;
+  estimatedMinutes: number;
 }
 
 export interface TimeRoutineDto {
-  steps: RoutineStepDto[]
-  estimatedMinutes: number
+  steps: RoutineStepDto[];
+  estimatedMinutes: number;
 }
 
 export interface DailyRoutineDto {
-  dayOfWeek: number // 0 = Monday, 6 = Sunday
-  dayName: string // "Lundi", "Mardi", etc.
-  morning: TimeRoutineDto
-  evening: TimeRoutineDto
+  dayOfWeek: number; // 0 = Monday, 6 = Sunday
+  dayName: string; // "Lundi", "Mardi", etc.
+  morning: TimeRoutineDto;
+  evening: TimeRoutineDto;
 }
 
 export interface ProductUsageDto {
-  category: ProductCategory
-  timesPerWeek: number
-  usedInMorning: boolean
-  usedInEvening: boolean
+  category: ProductCategory;
+  timesPerWeek: number;
+  usedInMorning: boolean;
+  usedInEvening: boolean;
 }
 
 export interface RoutinePlanDto {
-  weeklySchedule: DailyRoutineDto[]
-  productUsage: ProductUsageDto[]
+  weeklySchedule: DailyRoutineDto[];
+  productUsage: ProductUsageDto[];
 }
 
 // ============================================================================
@@ -159,13 +159,13 @@ export interface RoutinePlanDto {
 // ============================================================================
 
 export interface RoutineSummaryDto {
-  skinTypeLabel: string
-  primaryConcerns: string[]
-  hasRestrictions: boolean
-  totalProducts: number
-  totalPrice: number
-  averageDailyMinutes: number
-  brandCohesionApplied: boolean
+  skinTypeLabel: string;
+  primaryConcerns: string[];
+  hasRestrictions: boolean;
+  totalProducts: number;
+  totalPrice: number;
+  averageDailyMinutes: number;
+  brandCohesionApplied: boolean;
 }
 
 // ============================================================================
@@ -173,18 +173,18 @@ export interface RoutineSummaryDto {
 // ============================================================================
 
 export interface RoutineDto {
-  id: string
-  email: string
-  customerId?: number
-  createdAt: string
-  analysis: SkinAnalysisDto
-  productSelection: ProductSelectionDto
-  routinePlan: RoutinePlanDto
-  summary: RoutineSummaryDto
+  id: string;
+  email: string;
+  customerId?: number;
+  createdAt: string;
+  analysis: SkinAnalysisDto;
+  productSelection: ProductSelectionDto;
+  routinePlan: RoutinePlanDto;
+  summary: RoutineSummaryDto;
 }
 
 export interface RoutineApiResponse {
-  data: RoutineDto
+  data: RoutineDto;
 }
 
 // ============================================================================
@@ -196,23 +196,23 @@ export interface RoutineApiResponse {
  * A step can have 0-3 products (e.g., multiple serums)
  */
 export interface RoutineStepWithProducts {
-  step: RoutineStepDto
-  products: ProductDto[]
+  step: RoutineStepDto;
+  products: ProductDto[];
 }
 
 /**
  * Today's routine for morning or evening
  */
 export interface TodayRoutine {
-  dayName: string
+  dayName: string;
   morning: {
-    steps: RoutineStepWithProducts[]
-    estimatedMinutes: number
-  }
+    steps: RoutineStepWithProducts[];
+    estimatedMinutes: number;
+  };
   evening: {
-    steps: RoutineStepWithProducts[]
-    estimatedMinutes: number
-  }
+    steps: RoutineStepWithProducts[];
+    estimatedMinutes: number;
+  };
 }
 
 // ============================================================================
@@ -235,4 +235,4 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   baume: 'Baume',
   gadgets: 'Accessoires',
   complements: 'Compléments',
-}
+};

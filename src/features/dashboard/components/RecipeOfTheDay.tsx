@@ -1,9 +1,9 @@
-import { ChevronRight, UtensilsCrossed } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { ImageBackground, Text, View } from 'react-native'
+import { ChevronRight, UtensilsCrossed } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { ImageBackground, Text, View } from 'react-native';
 
-import { SectionHeader } from '@shared/components/SectionHeader'
-import { Button } from '@shared/components/Button'
+import { SectionHeader } from '@shared/components/section-header';
+import { Button } from '@shared/components/button';
 
 // Placeholder recipe data
 const PLACEHOLDER_RECIPE = {
@@ -12,12 +12,12 @@ const PLACEHOLDER_RECIPE = {
     "Potter ipsum wand elf parchment wingardium. Umbridge mischief hoops sorcerer's winky. Peruvian-night-powder...",
   // Placeholder image URL - will be replaced with real recipe images from API
   imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
-}
+};
 
 export function RecipeOfTheDay(): React.ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const handlePress = (): void => {}
+  const handlePress = (): void => {};
 
   return (
     <View className="py-2">
@@ -57,5 +57,5 @@ export function RecipeOfTheDay(): React.ReactElement {
         </ImageBackground>
       </View>
     </View>
-  )
+  );
 }

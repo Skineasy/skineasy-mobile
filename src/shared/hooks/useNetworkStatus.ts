@@ -1,9 +1,9 @@
-import NetInfo from '@react-native-community/netinfo'
-import { useEffect, useRef } from 'react'
+import NetInfo from '@react-native-community/netinfo';
+import { useEffect, useRef } from 'react';
 
-import { useNetworkStore } from '@shared/stores/network.store'
-import { haptic } from '@shared/utils/haptic'
-import { logger } from '@shared/utils/logger'
+import { useNetworkStore } from '@shared/stores/network.store';
+import { haptic } from '@shared/utils/haptic';
+import { logger } from '@shared/utils/logger';
 
 /**
  * Hook that subscribes to network state changes and updates the network store.
@@ -15,36 +15,36 @@ import { logger } from '@shared/utils/logger'
  * - Triggers haptic feedback on connectivity transitions
  */
 export function useNetworkStatus() {
-  const setNetworkState = useNetworkStore((state) => state.setNetworkState)
-  const previousConnected = useRef<boolean | null>(null)
+  const setNetworkState = useNetworkStore((state) => state.setNetworkState);
+  const previousConnected = useRef<boolean | null>(null);
 
   useEffect(() => {
-    logger.info('[Network] Subscribing to network state changes...')
+    logger.info('[Network] Subscribing to network state changes...');
     const unsubscribe = NetInfo.addEventListener((state) => {
-      const isConnected = state.isConnected ?? false
-      const isInternetReachable = state.isInternetReachable
+      const isConnected = state.isConnected ?? false;
+      const isInternetReachable = state.isInternetReachable;
 
       logger.info('[Network] State changed:', {
         isConnected,
         isInternetReachable,
         type: state.type,
-      })
+      });
 
       // Trigger haptic feedback on connectivity change (after initial load)
       if (previousConnected.current !== null && previousConnected.current !== isConnected) {
         if (isConnected) {
-          haptic.success()
+          haptic.success();
         } else {
-          haptic.error()
+          haptic.error();
         }
       }
 
-      previousConnected.current = isConnected
-      setNetworkState(isConnected, isInternetReachable)
-    })
+      previousConnected.current = isConnected;
+      setNetworkState(isConnected, isInternetReachable);
+    });
 
     return () => {
-      unsubscribe()
-    }
-  }, [setNetworkState])
+      unsubscribe();
+    };
+  }, [setNetworkState]);
 }

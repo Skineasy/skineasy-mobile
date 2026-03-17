@@ -1,0 +1,43 @@
+# Docs
+docs/**
+CLAUDE.md
+BACKEND_API.md
+*.md
+
+# Config (non-native)
+.prettierrc
+eslint.config.mjs
+commitlint.config.js
+vitest.config.ts
+vitest.setup.ts
+.husky/**
+.ralphrc
+.ralph/**
+
+# Scripts
+scripts/**
+
+# Tests
+src/**/__tests__/**
+src/test/**
+
+# i18n (OTA-updatable)
+src/i18n/**
+
+# Assets (OTA-updatable)
+assets/**
+
+# JS/TS source (OTA-updatable)
+src/**/*.ts
+src/**/*.tsx
+
+# Styling (OTA-updatable)
+src/global.css
+tailwind.config.js
+
+# EAS workflows
+.eas/**
+
+# Dev/build artifacts
+dist/**
+old_files/**

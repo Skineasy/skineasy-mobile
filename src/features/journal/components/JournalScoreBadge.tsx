@@ -1,20 +1,20 @@
-import { Check } from 'lucide-react-native'
-import { useTranslation } from 'react-i18next'
-import { Text, View } from 'react-native'
+import { Check } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
-import { CircleProgress } from '@shared/components/CircleProgress'
-import { colors } from '@theme/colors'
+import { CircleProgress } from '@shared/components/circle-progress';
+import { colors } from '@theme/colors';
 
-const SIZE = 48
-const STROKE_WIDTH = 6
+const SIZE = 48;
+const STROKE_WIDTH = 6;
 
 interface JournalScoreBadgeProps {
-  score: number
+  score: number;
 }
 
 export function JournalScoreBadge({ score }: JournalScoreBadgeProps): React.ReactElement {
-  const { t } = useTranslation()
-  const isFullScore = score === 100
+  const { t } = useTranslation();
+  const isFullScore = score === 100;
 
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
@@ -36,5 +36,5 @@ export function JournalScoreBadge({ score }: JournalScoreBadgeProps): React.Reac
       </View>
       <Text className="text-sm text-text-muted">{t('journal.skinScore')}</Text>
     </View>
-  )
+  );
 }
