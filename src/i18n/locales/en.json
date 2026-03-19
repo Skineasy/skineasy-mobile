@@ -108,7 +108,11 @@
     "routine": {
       "title": "Your routine is ready!",
       "description": "We've put together a personalized routine based on all the answers you gave us.",
-      "discover": "Discover my routine"
+      "discover": "Discover my routine",
+      "teaser": {
+        "title": "Your personalized routine",
+        "description": "Order \"Ma routine skincare\" on our website to get your custom routine tailored to your skin!"
+      }
     },
     "summary": {
       "title": "Daily Summary",
@@ -345,6 +349,7 @@
     "noProducts": "No products available",
     "noRspidTitle": "Routine Not Found",
     "noRspidMessage": "No routine ID was provided. Please access this page from your quiz completion link.",
+    "seeOldRoutine": "Old routine",
     "noRoutineTitle": "No Routine Yet",
     "noRoutineMessage": "Complete the skin quiz to get your personalized routine.",
     "noProductForStep": "No product available for this step",

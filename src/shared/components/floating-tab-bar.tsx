@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GlassContainer } from '@shared/components/glass-container';
 import { useTabBarContext } from '@shared/contexts/TabBarContext';
+import { useUserStore } from '@shared/stores/user.store';
 import { colors } from '@theme/colors';
 
 export const SPRING_CONFIG = { damping: 60, stiffness: 300 };
@@ -19,13 +20,18 @@ type TabConfig = {
   icon: typeof Home;
 };
 
-const TABS: TabConfig[] = [
+const BASE_TABS: TabConfig[] = [
   { name: 'index', href: '/', labelKey: 'dashboard.home', icon: Home },
   { name: 'journal', href: '/journal', labelKey: 'journal.title', icon: BookOpen },
-  { name: 'routine', href: '/routine', labelKey: 'routine.title', icon: Sparkles },
 ];
 
-const TAB_COUNT = TABS.length;
+const ROUTINE_TAB: TabConfig = {
+  name: 'routine',
+  href: '/routine',
+  labelKey: 'routine.title',
+  icon: Sparkles,
+};
+
 const BUBBLE_PADDING = 8;
 
 type TabButtonProps = {
@@ -59,7 +65,10 @@ type TabBarContentProps = {
 
 function TabBarContent({ containerWidth }: TabBarContentProps): React.ReactElement {
   const { activeIndex } = useTabBarContext();
-  const tabWidth = containerWidth / TAB_COUNT;
+  const hasRoutineAccess = useUserStore((state) => state.hasRoutineAccess);
+  const tabs = hasRoutineAccess ? [...BASE_TABS, ROUTINE_TAB] : BASE_TABS;
+  const tabCount = tabs.length;
+  const tabWidth = containerWidth / tabCount;
   const bubbleWidth = tabWidth - BUBBLE_PADDING * 2;
 
   const bubbleStyle = useAnimatedStyle(() => ({
@@ -70,7 +79,7 @@ function TabBarContent({ containerWidth }: TabBarContentProps): React.ReactEleme
   return (
     <>
       <Animated.View style={[styles.bubble, bubbleStyle]} />
-      {TABS.map((tab) => (
+      {tabs.map((tab) => (
         <TabButton key={tab.name} tab={tab} />
       ))}
     </>

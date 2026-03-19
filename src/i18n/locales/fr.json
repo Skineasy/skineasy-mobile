@@ -109,7 +109,11 @@
     "routine": {
       "title": "Ta routine est prête !",
       "description": "Nous t'avons concocter une routine personnalisée en fonction de toutes les réponses aux questions que tu nous as donné.",
-      "discover": "Découvrir ma routine"
+      "discover": "Découvrir ma routine",
+      "teaser": {
+        "title": "Ta routine personnalisée",
+        "description": "Commande \"Ma routine skincare\" sur notre site pour obtenir ta routine sur-mesure adaptée à ta peau !"
+      }
     },
     "summary": {
       "title": "Récapitulatif quotidien",
@@ -346,6 +350,7 @@
     "noProducts": "Aucun produit disponible",
     "noRspidTitle": "Routine introuvable",
     "noRspidMessage": "Aucun identifiant de routine n'a été fourni. Accède à cette page depuis le lien de fin de quiz.",
+    "seeOldRoutine": "Ancienne routine",
     "noRoutineTitle": "Pas encore de routine",
     "noRoutineMessage": "Complète le quiz peau pour obtenir ta routine personnalisée.",
     "noProductForStep": "Aucun produit disponible pour cette étape",

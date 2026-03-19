@@ -9,10 +9,12 @@ interface UserState {
   hasDiagnosis: boolean;
   rspid: string | null;
   routineStatus: RoutineStatus;
+  hasRoutineAccess: boolean;
   setUser: (user: UserProfile) => void;
   setHasDiagnosis: (value: boolean) => void;
   setRspid: (rspid: string) => void;
   setRoutineStatus: (status: RoutineStatus) => void;
+  setHasRoutineAccess: (value: boolean) => void;
   clearUser: () => void;
 }
 
@@ -21,10 +23,11 @@ export const useUserStore = create<UserState>((set) => ({
   hasDiagnosis: false,
   rspid: null,
   routineStatus: 'none',
+  hasRoutineAccess: false,
 
   setUser: (user) => {
     logger.info('[userStore] setUser called with:', user);
-    set({ user });
+    set({ user, hasRoutineAccess: user.hasRoutineAccess ?? false });
   },
 
   setHasDiagnosis: (value) => {
@@ -42,8 +45,19 @@ export const useUserStore = create<UserState>((set) => ({
     set({ routineStatus });
   },
 
+  setHasRoutineAccess: (hasRoutineAccess) => {
+    logger.info('[userStore] setHasRoutineAccess called with:', hasRoutineAccess);
+    set({ hasRoutineAccess });
+  },
+
   clearUser: () => {
     logger.info('[userStore] clearUser called');
-    set({ user: null, hasDiagnosis: false, rspid: null, routineStatus: 'none' });
+    set({
+      user: null,
+      hasDiagnosis: false,
+      rspid: null,
+      routineStatus: 'none',
+      hasRoutineAccess: false,
+    });
   },
 }));

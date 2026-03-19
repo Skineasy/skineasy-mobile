@@ -14,18 +14,26 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { FloatingTabBar, SPRING_CONFIG } from '@shared/components/floating-tab-bar';
 import { TabBarContext, useTabBarContext } from '@shared/contexts/TabBarContext';
 import { useAuthStore } from '@shared/stores/auth.store';
+import { useUserStore } from '@shared/stores/user.store';
 
-// Map route names to visual tab indices (must match FloatingTabBar TABS order)
-const TAB_INDEX_MAP: Record<string, number> = {
+const TAB_INDEX_MAP_WITH_ROUTINE: Record<string, number> = {
   index: 0,
   journal: 1,
   routine: 2,
 };
 
+const TAB_INDEX_MAP_WITHOUT_ROUTINE: Record<string, number> = {
+  index: 0,
+  journal: 1,
+};
+
 export default function TabsLayout(): React.ReactElement | null {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasRoutineAccess = useUserStore((state) => state.hasRoutineAccess);
   const { width } = useWindowDimensions();
   const activeIndex = useSharedValue(0);
+
+  const tabIndexMap = hasRoutineAccess ? TAB_INDEX_MAP_WITH_ROUTINE : TAB_INDEX_MAP_WITHOUT_ROUTINE;
 
   const setActiveIndex = useCallback(
     (index: number) => {
@@ -52,8 +60,7 @@ export default function TabsLayout(): React.ReactElement | null {
       return null;
     }
 
-    // Use route name to get visual index (expo-router index is alphabetical by filename)
-    const visualIndex = TAB_INDEX_MAP[descriptor.route.name] ?? 0;
+    const visualIndex = tabIndexMap[descriptor.route.name] ?? 0;
 
     return (
       <AnimatedScreen
@@ -75,7 +82,7 @@ export default function TabsLayout(): React.ReactElement | null {
           <TabList style={{ display: 'none' }}>
             <TabTrigger name="index" href="/" />
             <TabTrigger name="journal" href="/journal" />
-            <TabTrigger name="routine" href="/routine" />
+            {hasRoutineAccess && <TabTrigger name="routine" href="/routine" />}
           </TabList>
           <FloatingTabBar />
         </Tabs>

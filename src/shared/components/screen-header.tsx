@@ -21,6 +21,8 @@ interface ScreenHeaderProps {
   canGoBack?: boolean;
   /** Icon to display next to the title */
   icon?: LucideIcon;
+  /** Optional element rendered in the top-right corner */
+  rightAction?: ReactNode;
   className?: string;
   childrenClassName?: string;
 }
@@ -44,6 +46,7 @@ export function ScreenHeader({
   edges = ['top', 'bottom'],
   canGoBack = true,
   icon: Icon,
+  rightAction,
   className = '',
   childrenClassName = '',
 }: ScreenHeaderProps) {
@@ -87,7 +90,7 @@ export function ScreenHeader({
           {Icon && <Icon size={24} color={colors.brownDark} />}
           <Text className="text-xl font-bold text-brown-dark">{title}</Text>
         </View>
-        <View className="w-7" />
+        {rightAction ?? <View className="w-7" />}
       </Animated.View>
 
       <KeyboardAvoidingView

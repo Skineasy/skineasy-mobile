@@ -47,7 +47,9 @@ export function useInitializeUser() {
     staleTime: Infinity, // User data doesn't change often
   });
 
-  // Fetch routine to determine status
+  const hasRoutineAccess = useUserStore((state) => state.hasRoutineAccess);
+
+  // Fetch routine to determine status (skip if no routine access)
   const { data: routineData, isLoading: isRoutineLoading } = useQuery({
     queryKey: queryKeys.routineLast(),
     queryFn: async () => {
@@ -57,12 +59,11 @@ export function useInitializeUser() {
         logger.info('[useInitializeUser] /routine/last response:', result);
         return result;
       } catch (err) {
-        // Any error (404, 400, network) = treat as no routine
         logger.warn('[useInitializeUser] Routine fetch failed:', err);
         return null;
       }
     },
-    enabled: isAuthenticated && !isAuthLoading,
+    enabled: isAuthenticated && !isAuthLoading && hasRoutineAccess,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -92,7 +93,15 @@ export function useInitializeUser() {
   // Sync routine status to store
   useEffect(() => {
     async function syncRoutineStatus(): Promise<void> {
-      if (isRoutineLoading || !isAuthenticated) return;
+      if (!isAuthenticated) return;
+
+      if (!hasRoutineAccess) {
+        logger.info('[useInitializeUser] No routine access, setting status to none');
+        setRoutineStatus('none');
+        return;
+      }
+
+      if (isRoutineLoading) return;
 
       if (!routineData) {
         logger.info('[useInitializeUser] No routine, setting status to none');
@@ -100,7 +109,6 @@ export function useInitializeUser() {
         return;
       }
 
-      // Routine exists - check if ready time has passed
       const readyAt = await routineStorage.getReadyAt();
       if (readyAt && new Date() < readyAt) {
         logger.info('[useInitializeUser] Routine processing until:', readyAt);
@@ -108,14 +116,14 @@ export function useInitializeUser() {
       } else {
         logger.info('[useInitializeUser] Routine ready');
         setRoutineStatus('ready');
-        await routineStorage.clear(); // Clean up
+        await routineStorage.clear();
       }
     }
     syncRoutineStatus();
-  }, [routineData, isRoutineLoading, isAuthenticated, setRoutineStatus]);
+  }, [routineData, isRoutineLoading, isAuthenticated, hasRoutineAccess, setRoutineStatus]);
 
   return {
-    isLoading: isAuthLoading || isLoading || isRoutineLoading,
+    isLoading: isAuthLoading || isLoading || (hasRoutineAccess && isRoutineLoading),
     error,
     refetch: refetchUser,
   };

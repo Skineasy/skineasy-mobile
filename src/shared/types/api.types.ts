@@ -4,6 +4,7 @@ export interface AuthUser {
   email: string;
   firstname: string;
   lastname: string;
+  hasRoutineAccess: boolean;
 }
 
 export interface LoginResponse {
@@ -29,6 +30,7 @@ export interface MeResponse {
     firstname: string;
     lastname: string;
     skinType?: string;
+    hasRoutineAccess: boolean;
   };
 }
 

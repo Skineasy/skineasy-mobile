@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Linking, ScrollView, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { RoutineEmptyState } from '@features/routine/components/RoutineEmptyState';
@@ -13,7 +13,9 @@ import { useRoutine } from '@features/routine/hooks/useRoutine';
 import { useTodayRoutine } from '@features/routine/hooks/useTodayRoutine';
 import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore';
 import type { TimeOfDay } from '@features/routine/types/routine.types';
+import { Pressable } from '@shared/components/pressable';
 import { ScreenHeader } from '@shared/components/screen-header';
+import { ENV } from '@shared/config/env';
 import { getTodayUTC } from '@shared/utils/date';
 
 /**
@@ -93,6 +95,8 @@ export default function RoutineResultsScreen() {
   const currentSteps =
     selectedTime === 'morning' ? todayRoutine.morning.steps : todayRoutine.evening.steps;
 
+  const oldRoutineUrl = `${ENV.PRESTASHOP_URL}/fr/my-custom-page?rspid=${routine.id}`;
+
   return (
     <ScreenHeader
       edges={['top']}
@@ -100,6 +104,11 @@ export default function RoutineResultsScreen() {
       noScroll
       canGoBack={false}
       className="bg-background"
+      rightAction={
+        <Pressable onPress={() => Linking.openURL(oldRoutineUrl)} haptic="light">
+          <Text className="text-sm text-primary font-medium">{t('routine.seeOldRoutine')}</Text>
+        </Pressable>
+      }
     >
       {/* Skin Profile Summary */}
       <RoutineSummaryCard

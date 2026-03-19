@@ -6,6 +6,7 @@ export interface UserProfile {
   skinType?: string;
   birthday?: string; // YYYY-MM-DD format
   avatar?: string | null;
+  hasRoutineAccess?: boolean;
 }
 
 export interface AuthState {
