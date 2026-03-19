@@ -7,6 +7,10 @@ export const authService = {
     return api.post<LoginResponse>('/api/v1/auth/login', data, { skipAuth: true });
   },
 
+  devLogin: (data: { email: string; devSecret: string }): Promise<LoginResponse> => {
+    return api.post<LoginResponse>('/api/v1/auth/dev-login', data, { skipAuth: true });
+  },
+
   register: (data: RegisterApiInput): Promise<RegisterResponse> => {
     return api.post<RegisterResponse>('/api/v1/auth/register', data, { skipAuth: true });
   },

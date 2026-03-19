@@ -7,6 +7,7 @@ import { Text, TextInput, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDevLogin } from '@features/auth/hooks/useDevLogin';
 import { useLogin } from '@features/auth/hooks/useLogin';
 import { LoginInput, loginSchema } from '@features/auth/schemas/auth.schema';
 import { Background } from '@shared/components/background';
@@ -14,11 +15,13 @@ import { Button } from '@shared/components/button';
 import { Input } from '@shared/components/input';
 import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
 import { Pressable } from '@shared/components/pressable';
+import { ENV } from '@shared/config/env';
 import { useEntranceAnimation } from '@shared/hooks/useEntranceAnimation';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
   const { mutate: login, isPending } = useLogin();
+  const { mutate: devLogin, isPending: isDevPending } = useDevLogin();
   const passwordRef = useRef<TextInput>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const animStyles = useEntranceAnimation(4);
@@ -26,6 +29,7 @@ export default function LoginScreen() {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors, isValid, touchedFields },
   } = useForm<LoginInput>({
     mode: 'onChange',
@@ -127,12 +131,13 @@ export default function LoginScreen() {
                   <Button
                     variant="outline"
                     className="mt-4"
-                    title="Login Dev"
+                    title="Connect as"
                     haptic="medium"
+                    loading={isDevPending}
                     onPress={() =>
-                      login({
-                        email: 'aurelien1@gmail.com',
-                        password: '123456',
+                      devLogin({
+                        email: watch('email') || 'aurelien1@gmail.com',
+                        devSecret: ENV.DEV_LOGIN_SECRET,
                       })
                     }
                   />

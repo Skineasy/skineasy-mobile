@@ -5,5 +5,6 @@ export const ENV = {
   TYPEFORM_ID: (Constants.expoConfig?.extra?.typeformId as string) ?? '',
   PRESTASHOP_URL: (Constants.expoConfig?.extra?.prestashopUrl as string) ?? 'https://skineasy.com',
   SENTRY_DSN: (Constants.expoConfig?.extra?.sentryDsn as string) ?? '',
+  DEV_LOGIN_SECRET: (Constants.expoConfig?.extra?.devLoginSecret as string) ?? '',
   IS_DEV: __DEV__,
 };
