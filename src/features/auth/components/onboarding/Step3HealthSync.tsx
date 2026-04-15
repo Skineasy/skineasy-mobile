@@ -119,7 +119,12 @@ export function Step3HealthSync({
           {/* Benefits */}
           <View className="gap-4">
             {BENEFITS.map(({ titleKey, descKey }) => (
-              <GlassContainer key={titleKey} style={{ padding: 16 }}>
+              <GlassContainer
+                key={titleKey}
+                style={{ padding: 16 }}
+                glassStyle="clear"
+                tintColor="transparent"
+              >
                 <Text className="text-base font-semibold text-white mb-1">{t(titleKey)}</Text>
                 <Text className="text-sm text-white">{t(descKey)}</Text>
               </GlassContainer>
