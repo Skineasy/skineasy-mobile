@@ -42,8 +42,24 @@ export const step3Schema = z
     path: ['confirmPassword'],
   });
 
+export const forgotPasswordSchema = z.object({
+  email: z.email({ message: 'validation.invalidEmail' }),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(6, { message: 'validation.passwordMin' }),
+    confirmPassword: z.string().min(6, { message: 'validation.passwordMin' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'validation.passwordsDoNotMatch',
+    path: ['confirmPassword'],
+  });
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
 // API request type - excludes confirmPassword which is only for client validation
 export type RegisterApiInput = Omit<RegisterInput, 'confirmPassword'>;

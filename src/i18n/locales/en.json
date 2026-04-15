@@ -60,7 +60,26 @@
     "termsNoticeStart": "By continuing, you agree to our ",
     "termsOfUse": "Terms of Use",
     "termsNoticeAnd": " and ",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "passwordRecovery": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a link to reset your password.",
+      "submit": "Send reset link",
+      "successTitle": "Check your inbox",
+      "successSubtitle": "If an account exists for this email, you'll receive a reset link shortly.",
+      "backToLogin": "Back to login",
+      "error": "Unable to send reset link. Please try again."
+    },
+    "passwordReset": {
+      "title": "Set a new password",
+      "subtitle": "Choose a new password for your account.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "submit": "Update password",
+      "invalidTokenTitle": "Invalid or expired link",
+      "invalidTokenSubtitle": "This reset link is no longer valid. Please request a new one.",
+      "error": "Unable to update password. Please try again."
+    }
   },
   "onboarding": {
     "step1": {
