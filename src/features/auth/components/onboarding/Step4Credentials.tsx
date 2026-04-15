@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useRef } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import { RegisterInput } from '@features/auth/schemas/auth.schema';
 import { Button } from '@shared/components/button';
 import { Input } from '@shared/components/input';
 import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
+import { Pressable } from '@shared/components/pressable';
 
 interface Step4CredentialsProps {
   onNext: () => void;
@@ -133,6 +135,14 @@ export function Step4Credentials({
             loading={isLoading}
             haptic="heavy"
           />
+          <Link href="/(auth)/login" replace asChild>
+            <Pressable haptic="light" className="items-center py-2">
+              <Text className="text-sm text-primary">
+                {t('auth.hasAccount')}{' '}
+                <Text className="text-primary font-bold text-base">{t('auth.login')}</Text>
+              </Text>
+            </Pressable>
+          </Link>
         </View>
       </View>
     </KeyboardScrollView>
