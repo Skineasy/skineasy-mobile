@@ -14,3 +14,5 @@
 - Added docs/deeplinking.md covering scheme, testing, and Supabase integration plan
 - Changed sport add flow to skip the day list and open the new-activity screen when no sport is logged
 - Fixed sport duration input missing placeholder by allowing placeholder on Input when no floating label
+- Changed dashboard indicators to a horizontal carousel always showing all 5 cards, filled ones first
+- Removed unused appConfig.ui.indicatorLayout option

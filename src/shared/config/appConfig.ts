@@ -3,7 +3,4 @@ export const appConfig = {
     languageSwitcher: true,
     animations: true,
   },
-  ui: {
-    indicatorLayout: 'list' as 'grid' | 'list',
-  },
 };

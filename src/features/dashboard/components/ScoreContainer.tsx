@@ -1,11 +1,9 @@
-import { Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ImageBackground, Text, View } from 'react-native';
 
 import assets from 'assets';
 
 import { CircleProgress } from '@shared/components/circle-progress';
-import { Pressable } from '@shared/components/pressable';
 import { colors } from '@theme/colors';
 
 interface ScoreContainerProps {
@@ -17,11 +15,7 @@ interface ScoreContainerProps {
 const SIZE = 200;
 const STROKE_WIDTH = 20;
 
-export function ScoreContainer({
-  score,
-  missingCount,
-  onPlusPress,
-}: ScoreContainerProps): React.ReactElement {
+export function ScoreContainer({ score, missingCount }: ScoreContainerProps): React.ReactElement {
   const { t } = useTranslation();
 
   return (
@@ -32,17 +26,6 @@ export function ScoreContainer({
         style={{ height: SIZE * 0.85 }}
         imageStyle={{ borderRadius: 16 }}
       >
-        {/* Plus button */}
-        {onPlusPress && (
-          <Pressable
-            onPress={onPlusPress}
-            haptic="light"
-            className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-surface items-center justify-center"
-          >
-            <Plus size={20} color={colors.textMuted} strokeWidth={2} />
-          </Pressable>
-        )}
-
         {/* Score gauge */}
         <View className="items-center justify-center">
           <CircleProgress

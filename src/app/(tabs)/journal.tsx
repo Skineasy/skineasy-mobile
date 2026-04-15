@@ -2,7 +2,6 @@ import { format } from 'date-fns';
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddIndicatorSheet } from '@features/dashboard/components/AddIndicatorSheet';
 import { CalendarDayDetail } from '@features/calendar/components/CalendarDayDetail';
 import { calculateDayScore } from '@features/dashboard/utils/score';
 import { CalendarModal } from '@features/journal/components/CalendarModal';
@@ -46,17 +45,12 @@ export default function JournalScreen(): React.ReactElement {
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <JournalHeader selectedDate={selectedDate} onOpenCalendar={() => setCalendarVisible(true)} />
       {hasData && <JournalScoreBadge score={score} />}
-      <CalendarDayDetail date={selectedDate} onAddEntry={() => setAddEntryVisible(true)} />
+      <CalendarDayDetail date={selectedDate} />
       <CalendarModal
         visible={calendarVisible}
         onClose={() => setCalendarVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
-      />
-      <AddIndicatorSheet
-        visible={addEntryVisible}
-        onClose={() => setAddEntryVisible(false)}
-        date={selectedDate}
       />
     </SafeAreaView>
   );

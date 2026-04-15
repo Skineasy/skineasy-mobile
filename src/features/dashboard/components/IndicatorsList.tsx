@@ -1,10 +1,16 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native';
+import { Dumbbell, Moon, Search, Smile, type LucideIcon, Utensils } from 'lucide-react-native';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Text, View } from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  View,
+} from 'react-native';
 
 import { IndicatorCard } from '@features/dashboard/components/IndicatorCard';
-import { appConfig } from '@shared/config/appConfig';
 import { colors } from '@theme/colors';
 import type {
   MealEntry,
@@ -14,12 +20,11 @@ import type {
   StressEntry,
 } from '@shared/types/journal.types';
 
-type IndicatorStatus = 'empty' | 'partial' | 'complete';
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const HORIZONTAL_PADDING = 16;
 const GAP = 8;
 const CARD_WIDTH = (SCREEN_WIDTH - HORIZONTAL_PADDING * 2 - GAP) / 2;
+const SNAP_INTERVAL = CARD_WIDTH + GAP;
 
 interface IndicatorsListProps {
   sleepEntries: SleepEntry[];
@@ -38,13 +43,32 @@ const STRESS_LEVEL_KEYS: Record<number, string> = {
   5: 'intense',
 };
 
-const STRESS_EMOJIS: Record<number, string> = {
-  1: '😌',
-  2: '🙂',
-  3: '😐',
-  4: '😟',
-  5: '😰',
+type IndicatorType = 'sleep' | 'nutrition' | 'sport' | 'stress' | 'observations';
+
+interface IndicatorItem {
+  key: IndicatorType;
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  level: number;
+  isEmpty: boolean;
+}
+
+const JOURNAL_PATHS: Record<IndicatorType, string> = {
+  sleep: '/journal/sleep',
+  nutrition: '/journal/nutrition',
+  sport: '/journal/sport',
+  stress: '/journal/stress',
+  observations: '/journal/observations',
 };
+
+function formatSleep(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours % 1) * 60)
+    .toString()
+    .padStart(2, '0');
+  return `${h}h${m}`;
+}
 
 export function IndicatorsList({
   sleepEntries,
@@ -54,274 +78,156 @@ export function IndicatorsList({
   observationEntries,
   date,
 }: IndicatorsListProps): React.ReactElement {
-  const layout = appConfig.ui.indicatorLayout;
   const { t } = useTranslation();
   const router = useRouter();
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Calculate values from entries
-  const sleepHours = sleepEntries.length > 0 ? sleepEntries[0].hours : 0;
-  const sleepValue =
-    sleepHours > 0
-      ? `${Math.floor(sleepHours)}h${Math.round((sleepHours % 1) * 60)
-          .toString()
-          .padStart(2, '0')}`
-      : '-';
+  const sleepHours = sleepEntries[0]?.hours ?? 0;
+  const sleepQuality = sleepEntries[0]?.quality ?? 0;
 
   const mealCount = mealEntries.length;
-  const mealValue = mealCount > 0 ? `${mealCount}/4` : '-';
 
-  const totalSportMinutes = sportEntries.reduce((acc, entry) => acc + (entry.duration || 0), 0);
-  const sportValue = totalSportMinutes > 0 ? `${totalSportMinutes} min` : '-';
+  const totalSportMinutes = sportEntries.reduce((acc, e) => acc + (e.duration || 0), 0);
+  const avgSportIntensity =
+    sportEntries.length > 0
+      ? Math.round(sportEntries.reduce((s, e) => s + e.intensity, 0) / sportEntries.length)
+      : 0;
 
-  const stressLevel = stressEntries.length > 0 ? stressEntries[0].level : 0;
-  const stressValue =
-    stressLevel > 0 ? t(`journal.stress.level.${STRESS_LEVEL_KEYS[stressLevel]}`) : '-';
-
-  const navigateToJournal = (
-    type: 'sleep' | 'nutrition' | 'sport' | 'stress' | 'observations',
-  ): void => {
-    const paths = {
-      sleep: '/journal/sleep',
-      nutrition: '/journal/nutrition',
-      sport: '/journal/sport',
-      stress: '/journal/stress',
-      observations: '/journal/observations',
-    };
-    router.push({ pathname: paths[type], params: { date } });
-  };
-
-  // Compute status for each card
-  const sleepStatus: IndicatorStatus = sleepEntries.length > 0 ? 'complete' : 'empty';
-  const nutritionStatus: IndicatorStatus =
-    mealCount >= 3 ? 'complete' : mealCount > 0 ? 'partial' : 'empty';
-  const sportStatus: IndicatorStatus = sportEntries.length > 0 ? 'complete' : 'empty';
-  const stressStatus: IndicatorStatus = stressEntries.length > 0 ? 'complete' : 'empty';
-  const observationStatus: IndicatorStatus = observationEntries.length > 0 ? 'complete' : 'empty';
+  const stressLevel = stressEntries[0]?.level ?? 0;
 
   const observation = observationEntries[0];
-  const observationValue = observation
-    ? `${observation.positives.length + observation.negatives.length}`
-    : '-';
+  const observationCount = observation
+    ? observation.positives.length + observation.negatives.length
+    : 0;
 
-  // Display value for nutrition partial state
-  const nutritionValue =
-    nutritionStatus === 'partial'
-      ? t('dashboard.indicators.mealsEntered', { count: mealCount })
-      : mealValue;
+  const items = useMemo<IndicatorItem[]>(() => {
+    const list: IndicatorItem[] = [
+      {
+        key: 'sleep',
+        icon: Moon,
+        label: t('dashboard.indicators.sleep'),
+        value: sleepHours > 0 ? formatSleep(sleepHours) : '—',
+        level: sleepQuality,
+        isEmpty: sleepEntries.length === 0,
+      },
+      {
+        key: 'nutrition',
+        icon: Utensils,
+        label: t('dashboard.indicators.nutrition'),
+        value: mealCount > 0 ? `${mealCount}/4` : '—',
+        level: Math.min(mealCount, 5),
+        isEmpty: mealCount === 0,
+      },
+      {
+        key: 'sport',
+        icon: Dumbbell,
+        label: t('dashboard.indicators.sport'),
+        value: totalSportMinutes > 0 ? `${totalSportMinutes} min` : '—',
+        level: avgSportIntensity,
+        isEmpty: sportEntries.length === 0,
+      },
+      {
+        key: 'stress',
+        icon: Smile,
+        label: t('dashboard.indicators.stress'),
+        value: stressLevel > 0 ? t(`journal.stress.level.${STRESS_LEVEL_KEYS[stressLevel]}`) : '—',
+        level: stressLevel,
+        isEmpty: stressEntries.length === 0,
+      },
+      {
+        key: 'observations',
+        icon: Search,
+        label: t('dashboard.indicators.observations'),
+        value: observation ? `${observationCount}` : '—',
+        level: Math.min(observationCount, 5),
+        isEmpty: !observation,
+      },
+    ];
+    return list.sort((a, b) => Number(a.isEmpty) - Number(b.isEmpty));
+  }, [
+    t,
+    sleepHours,
+    sleepQuality,
+    sleepEntries.length,
+    mealCount,
+    totalSportMinutes,
+    avgSportIntensity,
+    sportEntries.length,
+    stressLevel,
+    stressEntries.length,
+    observation,
+    observationCount,
+  ]);
 
-  // Sleep: quality stars ★★★☆☆
-  const sleepQuality = sleepEntries[0]?.quality ?? 0;
-  const sleepVisual =
-    sleepQuality > 0 ? '★'.repeat(sleepQuality) + '☆'.repeat(5 - sleepQuality) : undefined;
+  const navigateToJournal = (type: IndicatorType): void => {
+    router.push({ pathname: JOURNAL_PATHS[type], params: { date } });
+  };
 
-  // Nutrition: meal types as secondary text, first photo as thumbnail
-  const mealTypes = [...new Set(mealEntries.map((m) => m.meal_type).filter(Boolean))] as string[];
-  const nutritionSecondary =
-    mealTypes.length > 0
-      ? mealTypes.map((type) => t(`dashboard.summary.mealType.${type}`)).join(', ')
-      : undefined;
-  const nutritionThumbnail = mealEntries.find((m) => m.photo_url)?.photo_url ?? undefined;
-
-  // Sport: activity name as secondary, intensity dots as visual
-  const activityCount = sportEntries.length;
-  const avgIntensity =
-    activityCount > 0
-      ? Math.round(sportEntries.reduce((sum, s) => sum + s.intensity, 0) / activityCount)
-      : 0;
-  const sportVisual =
-    activityCount > 0 ? '●'.repeat(avgIntensity) + '○'.repeat(5 - avgIntensity) : undefined;
-  const sportNames = [
-    ...new Set(sportEntries.map((s) => s.sportType?.name).filter(Boolean)),
-  ] as string[];
-  const sportSecondary =
-    sportNames.length > 0
-      ? sportNames.map((name) => t(`journal.sport.activities.${name}`)).join(', ')
-      : undefined;
-
-  // Stress: emoji as visual, note as secondary
-  const stressVisual = stressEntries[0] ? STRESS_EMOJIS[stressEntries[0].level] : undefined;
-  const stressSecondary = stressEntries[0]?.note?.substring(0, 40) ?? undefined;
-
-  const MAX_CHIPS = 3;
-  const observationChips = observation
-    ? [
-        ...observation.positives.map((key) => ({
-          key,
-          label: t(`journal.observations.positive.${key}`),
-          type: 'positive' as const,
-        })),
-        ...observation.negatives.map((key) => ({
-          key,
-          label: t(`journal.observations.negative.${key}`),
-          type: 'negative' as const,
-        })),
-      ]
-    : [];
-  const visibleChips = observationChips.slice(0, MAX_CHIPS);
-  const overflowCount = observationChips.length - MAX_CHIPS;
-
-  const observationCustomContent =
-    observationChips.length > 0 ? (
-      <View className="flex-row flex-wrap items-center gap-1.5">
-        {visibleChips.map(({ key, label, type }) => (
-          <View
-            key={key}
-            className="rounded-full px-2.5 py-1"
-            style={{
-              backgroundColor: type === 'positive' ? `${colors.success}18` : `${colors.error}18`,
-            }}
-          >
-            <Text
-              className="text-xs font-medium"
-              style={{ color: type === 'positive' ? colors.success : colors.error }}
-            >
-              {label}
-            </Text>
-          </View>
-        ))}
-        {overflowCount > 0 && (
-          <Text className="text-xs text-text-muted">
-            {t('dashboard.indicators.andMore', { count: overflowCount })}
-          </Text>
-        )}
-      </View>
-    ) : undefined;
-
-  // Only show cards with data
-  const showSleep = sleepEntries.length > 0;
-  const showNutrition = mealEntries.length > 0;
-  const showSport = sportEntries.length > 0;
-  const showStress = stressEntries.length > 0;
-  const showObservations = observationEntries.length > 0;
-
-  if (layout === 'grid') {
-    return (
-      <View className="px-4 gap-2">
-        {/* Top row: Sleep + Nutrition */}
-        <View className="flex-row gap-2">
-          <View style={{ width: CARD_WIDTH }}>
-            <IndicatorCard
-              icon={Moon}
-              label={t('dashboard.indicators.sleep')}
-              value={sleepValue}
-              onPress={() => navigateToJournal('sleep')}
-              status={sleepStatus}
-              layout="grid"
-            />
-          </View>
-          <View style={{ width: CARD_WIDTH }}>
-            <IndicatorCard
-              icon={Utensils}
-              label={t('dashboard.indicators.nutrition')}
-              value={nutritionValue}
-              onPress={() => navigateToJournal('nutrition')}
-              status={nutritionStatus}
-              layout="grid"
-            />
-          </View>
-        </View>
-
-        {/* Middle row: Sport + Stress */}
-        <View className="flex-row gap-2">
-          <View style={{ width: CARD_WIDTH }}>
-            <IndicatorCard
-              icon={Dumbbell}
-              label={t('dashboard.indicators.sport')}
-              value={sportValue}
-              onPress={() => navigateToJournal('sport')}
-              status={sportStatus}
-              layout="grid"
-            />
-          </View>
-          <View style={{ width: CARD_WIDTH }}>
-            <IndicatorCard
-              icon={Smile}
-              label={t('dashboard.indicators.stress')}
-              value={stressValue}
-              onPress={() => navigateToJournal('stress')}
-              status={stressStatus}
-              layout="grid"
-            />
-          </View>
-        </View>
-
-        {/* Bottom row: Observations */}
-        <View className="flex-row gap-2">
-          <View style={{ width: CARD_WIDTH }}>
-            <IndicatorCard
-              icon={Search}
-              label={t('dashboard.indicators.observations')}
-              value={observationValue}
-              onPress={() => navigateToJournal('observations')}
-              status={observationStatus}
-              layout="grid"
-            />
-          </View>
-        </View>
-      </View>
-    );
-  }
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+      const maxOffset = contentSize.width - layoutMeasurement.width;
+      if (maxOffset <= 0) {
+        setActiveIndex(0);
+        return;
+      }
+      if (contentOffset.x >= maxOffset - 1) {
+        setActiveIndex(items.length - 1);
+        return;
+      }
+      const idx = Math.round(contentOffset.x / SNAP_INTERVAL);
+      setActiveIndex(Math.max(0, Math.min(items.length - 1, idx)));
+    },
+    [items.length],
+  );
 
   return (
-    <View className="px-4 gap-3">
-      {showSleep && (
-        <IndicatorCard
-          icon={Moon}
-          label={t('dashboard.indicators.sleep')}
-          value={sleepValue}
-          visualIndicator={sleepVisual}
-          onPress={() => navigateToJournal('sleep')}
-          status={sleepStatus}
-          layout="list"
-        />
-      )}
-      {showNutrition && (
-        <IndicatorCard
-          icon={Utensils}
-          label={t('dashboard.indicators.nutrition')}
-          value={nutritionValue}
-          secondaryText={nutritionSecondary}
-          thumbnailUrl={nutritionThumbnail}
-          onPress={() => navigateToJournal('nutrition')}
-          status={nutritionStatus}
-          layout="list"
-        />
-      )}
-      {showSport && (
-        <IndicatorCard
-          icon={Dumbbell}
-          label={t('dashboard.indicators.sport')}
-          value={sportValue}
-          secondaryText={sportSecondary}
-          visualIndicator={sportVisual}
-          onPress={() => navigateToJournal('sport')}
-          status={sportStatus}
-          layout="list"
-        />
-      )}
-      {showStress && (
-        <IndicatorCard
-          icon={Smile}
-          label={t('dashboard.indicators.stress')}
-          value={stressValue}
-          secondaryText={stressSecondary}
-          visualIndicator={stressVisual}
-          onPress={() => navigateToJournal('stress')}
-          status={stressStatus}
-          layout="list"
-        />
-      )}
-      {showObservations && (
-        <IndicatorCard
-          icon={Search}
-          label={t('dashboard.indicators.observations')}
-          value={observationValue}
-          customContent={observationCustomContent}
-          onPress={() => navigateToJournal('observations')}
-          status={observationStatus}
-          layout="list"
-        />
-      )}
+    <View>
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item.key}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={SNAP_INTERVAL}
+        decelerationRate="fast"
+        contentContainerStyle={{ paddingHorizontal: HORIZONTAL_PADDING }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        renderItem={({ item, index }) => (
+          <View
+            style={{
+              width: CARD_WIDTH,
+              marginRight: index === items.length - 1 ? 0 : GAP,
+            }}
+          >
+            <IndicatorCard
+              icon={item.icon}
+              label={item.label}
+              value={item.value}
+              level={item.level}
+              isEmpty={item.isEmpty}
+              onPress={() => navigateToJournal(item.key)}
+            />
+          </View>
+        )}
+      />
+
+      <View className="flex-row justify-center items-center gap-1.5 mt-3">
+        {items.map((item, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <View
+              key={item.key}
+              style={{
+                width: isActive ? 16 : 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: isActive ? colors.brownDark : colors.textLight,
+              }}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 }

@@ -16,7 +16,7 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps): React.ReactElement {
   return (
-    <View className={cn('flex-row items-center gap-2 px-4 mb-5', className)}>
+    <View className={cn('flex-row items-center gap-2 mb-5', className)}>
       <View
         className="p-2 rounded-md items-center justify-center border border-brown-dark/20"
         style={{ backgroundColor: colors.brownDark + '0a' }}

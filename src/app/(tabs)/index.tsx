@@ -6,7 +6,6 @@ import { ScrollView, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddIndicatorSheet } from '@features/dashboard/components/AddIndicatorSheet';
 import { DateNavigation } from '@features/dashboard/components/DateNavigation';
 import { DayProgressDots } from '@features/dashboard/components/DayProgressDots';
 import { IndicatorsList } from '@features/dashboard/components/IndicatorsList';
@@ -35,7 +34,6 @@ export default function DashboardScreen(): React.ReactElement {
 
   // Selected date state
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [sheetVisible, setSheetVisible] = useState(false);
 
   // Convert selected date to UTC string for API
   const dateString = toUTCDateString(selectedDate);
@@ -94,27 +92,21 @@ export default function DashboardScreen(): React.ReactElement {
 
           {/* Score Container */}
           <Animated.View style={animStyles[2]}>
-            <ScoreContainer
-              score={score}
-              missingCount={missingCount}
-              onPlusPress={() => setSheetVisible(true)}
-            />
+            <ScoreContainer score={score} missingCount={missingCount} />
           </Animated.View>
 
           {/* Indicators Section */}
-          {missingCount < 5 && (
-            <Animated.View style={animStyles[3]}>
-              <SectionHeader icon={Layers} title={t('dashboard.indicators.title')} />
-              <IndicatorsList
-                sleepEntries={sleepEntries}
-                mealEntries={mealEntries}
-                sportEntries={sportEntries}
-                stressEntries={stressEntries}
-                observationEntries={observationEntries}
-                date={dateString}
-              />
-            </Animated.View>
-          )}
+          <Animated.View style={animStyles[3]}>
+            <SectionHeader icon={Layers} title={t('dashboard.indicators.title')} />
+            <IndicatorsList
+              sleepEntries={sleepEntries}
+              mealEntries={mealEntries}
+              sportEntries={sportEntries}
+              stressEntries={stressEntries}
+              observationEntries={observationEntries}
+              date={dateString}
+            />
+          </Animated.View>
 
           {/* Recipe of the Day */}
           <Animated.View style={animStyles[5]}>
@@ -127,12 +119,6 @@ export default function DashboardScreen(): React.ReactElement {
           </Animated.View>
         </View>
       </ScrollView>
-
-      <AddIndicatorSheet
-        visible={sheetVisible}
-        onClose={() => setSheetVisible(false)}
-        date={dateString}
-      />
     </SafeAreaView>
   );
 }
