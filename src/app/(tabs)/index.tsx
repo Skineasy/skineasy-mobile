@@ -97,7 +97,7 @@ export default function DashboardScreen(): React.ReactElement {
 
           {/* Indicators Section */}
           <Animated.View style={animStyles[3]}>
-            <SectionHeader icon={Layers} title={t('dashboard.indicators.title')} />
+            <SectionHeader className="px-4" icon={Layers} title={t('dashboard.indicators.title')} />
             <IndicatorsList
               sleepEntries={sleepEntries}
               mealEntries={mealEntries}

@@ -2,8 +2,8 @@ import { ChevronRight, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ImageBackground, Text, View } from 'react-native';
 
-import { SectionHeader } from '@shared/components/section-header';
 import { Button } from '@shared/components/button';
+import { SectionHeader } from '@shared/components/section-header';
 
 // Placeholder recipe data
 const PLACEHOLDER_RECIPE = {
@@ -21,7 +21,7 @@ export function RecipeOfTheDay(): React.ReactElement {
 
   return (
     <View className="py-2">
-      <SectionHeader icon={UtensilsCrossed} title={t('dashboard.recipe.title')} />
+      <SectionHeader className="px-4" icon={UtensilsCrossed} title={t('dashboard.recipe.title')} />
 
       <View className="px-4">
         <ImageBackground

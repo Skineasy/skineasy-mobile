@@ -104,7 +104,7 @@ export function RoutineBannerContainer(): React.ReactElement | null {
 
   return (
     <View>
-      <SectionHeader icon={Sun} title={t('routine.title')} />
+      <SectionHeader className="px-4" icon={Sun} title={t('routine.title')} />
       <View className="px-4">{renderBanner()}</View>
     </View>
   );
