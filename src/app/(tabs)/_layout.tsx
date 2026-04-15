@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
+import { FloatingAddButton } from '@shared/components/floating-add-button';
 import { FloatingTabBar, SPRING_CONFIG } from '@shared/components/floating-tab-bar';
 import { TabBarContext, useTabBarContext } from '@shared/contexts/TabBarContext';
 import { useAuthStore } from '@shared/stores/auth.store';
@@ -85,6 +86,7 @@ export default function TabsLayout(): React.ReactElement | null {
             {hasRoutineAccess && <TabTrigger name="routine" href="/routine" />}
           </TabList>
           <FloatingTabBar />
+          <FloatingAddButton />
         </Tabs>
       </View>
     </TabBarContext.Provider>

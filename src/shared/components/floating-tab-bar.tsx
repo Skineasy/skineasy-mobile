@@ -97,7 +97,7 @@ export function FloatingTabBar(): React.ReactElement {
   };
 
   return (
-    <View className="absolute left-[15%] right-[15%]" style={{ bottom: bottomPosition }}>
+    <View className="absolute" style={{ bottom: bottomPosition, left: 16, right: 16 + 48 + 8 }}>
       <GlassContainer style={styles.glassContainer} glassStyle="regular" onLayout={handleLayout}>
         {containerWidth > 0 && <TabBarContent containerWidth={containerWidth} />}
       </GlassContainer>
