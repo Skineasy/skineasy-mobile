@@ -34,6 +34,8 @@ import {
   useMealEntries,
   useUpdateMeal,
 } from '@features/journal/hooks/useJournal';
+import { journalService } from '@features/journal/services/journal.service';
+import { toast } from '@lib/toast';
 import { mealFormSchema, type MealFormInput } from '@features/journal/schemas/journal.schema';
 import { Button } from '@shared/components/button';
 import { Input } from '@shared/components/input';
@@ -69,6 +71,7 @@ export default function NutritionScreen() {
   // Track if user has changed the image from the original
   const [localImageUri, setLocalImageUri] = useState<string | null>(null);
   const [imageWasModified, setImageWasModified] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Compute effective image URI: use local if modified, else use existing entry's image
   const imageUri = imageWasModified ? localImageUri : (existingEntry?.photo_url ?? null);
@@ -123,9 +126,20 @@ export default function NutritionScreen() {
     setImageUri(null);
   };
 
-  const onSubmit = (data: MealFormInput): void => {
-    // TODO Phase 4.2: image upload via Supabase Storage
-    const photoUrl: string | null = imageWasModified ? null : (existingEntry?.photo_url ?? null);
+  const onSubmit = async (data: MealFormInput): Promise<void> => {
+    let photoUrl: string | null = imageWasModified ? null : (existingEntry?.photo_url ?? null);
+
+    if (imageWasModified && localImageUri) {
+      setIsUploading(true);
+      try {
+        photoUrl = await journalService.meal.uploadPhoto(localImageUri, toISODateString(dateToUse));
+      } catch {
+        toast.error(t('common.error'), t('journal.nutrition.uploadError'));
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
 
     const dto = {
       date: toISODateString(dateToUse),
@@ -145,7 +159,7 @@ export default function NutritionScreen() {
     }
   };
 
-  const isLoading = createMeal.isPending || updateMeal.isPending;
+  const isLoading = isUploading || createMeal.isPending || updateMeal.isPending;
 
   const handleDelete = (): void => {
     if (!existingEntry) return;

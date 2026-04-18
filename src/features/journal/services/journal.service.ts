@@ -1,5 +1,7 @@
 import { mapSupabaseError } from '@lib/error-mapper';
 import { supabase } from '@lib/supabase';
+import { uploadFile } from '@lib/upload';
+import { compressImage } from '@shared/utils/image';
 import type {
   CreateMealEntryDto,
   CreateObservationEntryDto,
@@ -16,12 +18,22 @@ import type {
 } from '@shared/types/journal.types';
 import type { Database } from '@lib/supabase.types';
 
+const MEAL_PHOTO_SIGNED_URL_EXPIRY = 3600; // 1 hour
+
 async function getUserId(): Promise<string> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error('common.sessionExpired');
   return user.id;
+}
+
+async function signMealEntry(entry: MealEntry): Promise<MealEntry> {
+  if (!entry.photo_url) return entry;
+  const { data } = await supabase.storage
+    .from('meal-photos')
+    .createSignedUrl(entry.photo_url, MEAL_PHOTO_SIGNED_URL_EXPIRY);
+  return { ...entry, photo_url: data?.signedUrl ?? null };
 }
 
 export const sleepService = {
@@ -102,6 +114,12 @@ export const sportService = {
   },
 };
 
+async function getMealSignedUrl(path: string): Promise<string | null> {
+  const { data, error } = await supabase.storage.from('meal-photos').createSignedUrl(path, 3600);
+  if (error || !data) return null;
+  return data.signedUrl;
+}
+
 export const mealService = {
   async getByDate(date: string): Promise<MealEntry[]> {
     const userId = await getUserId();
@@ -111,7 +129,24 @@ export const mealService = {
       .eq('user_id', userId)
       .eq('date', date);
     if (error) throw mapSupabaseError(error);
-    return data as MealEntry[];
+    const entries = (data ?? []) as MealEntry[];
+    return Promise.all(
+      entries.map(async (entry) => {
+        if (!entry.photo_url) return entry;
+        const signedUrl = await getMealSignedUrl(entry.photo_url);
+        return signedUrl ? { ...entry, photo_url: signedUrl } : entry;
+      }),
+    );
+  },
+
+  async uploadPhoto(uri: string, date: string): Promise<string> {
+    const userId = await getUserId();
+    const compressed = await compressImage(uri);
+    const path = `${userId}/${date}/${Date.now()}.jpg`;
+    const { path: storagePath } = await uploadFile('meal-photos', path, compressed, {
+      contentType: 'image/jpeg',
+    });
+    return storagePath;
   },
 
   async create(dto: CreateMealEntryDto): Promise<MealEntry> {
