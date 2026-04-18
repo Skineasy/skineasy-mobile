@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@shared/components/button';
 import { Pressable } from '@shared/components/pressable';
 import { haptic } from '@shared/utils/haptic';
+import { toast } from '@lib/toast';
 import { colors } from '@theme/colors';
 import { CompletionScreen } from '@features/questionnaire-demo/components/completion-screen';
 import { QuestionCard } from '@features/questionnaire-demo/components/question-card';
@@ -89,6 +90,7 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
   };
   const handleCompletion = (): void => {
     haptic.success();
+    if (__DEV__) toast.success('Démo terminée', undefined, { haptic: false });
     setTimeout(() => router.back(), 1500);
   };
 
