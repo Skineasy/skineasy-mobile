@@ -87,7 +87,7 @@ function TappableCard({
 
   const handlePress = (): void => {
     animateCardTap(scale);
-    haptic.light();
+    haptic.selection();
     onPress();
   };
 

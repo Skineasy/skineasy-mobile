@@ -206,7 +206,7 @@ All labels via i18n keys under `questionnaireDemo.*`.
 - [x] Rounded cards with subtle shadows (use existing `Card` component + bolder border on selected)
 - [x] Add emoji or inline SVG icons to each answer card for visual punch
 - [x] Background: subtle gradient or soft color wash (vs. the flat backgrounds elsewhere)
-- [ ] Use `haptic.selection()` on answer pick, `haptic.success()` on completion
+- [x] Use `haptic.selection()` on answer pick, `haptic.success()` on completion
 
 ### 10.7 Component breakdown
 
