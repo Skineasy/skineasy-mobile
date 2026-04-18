@@ -26,6 +26,7 @@ import { useForceUpdate } from '@shared/hooks/useForceUpdate';
 import { useNetworkStatus } from '@shared/hooks/useNetworkStatus';
 import { useAuthStore } from '@shared/stores/auth.store';
 import { useHealthKitStore } from '@shared/stores/healthkit.store';
+import { usePushTokenRegistration } from '@shared/hooks/usePushTokenRegistration';
 import { logger } from '@shared/utils/logger';
 import { supabase } from '@lib/supabase';
 import '@/global.css';
@@ -57,6 +58,7 @@ function RootLayoutContent() {
   const loadHealthKitState = useHealthKitStore((state) => state.loadPersistedState);
 
   useHealthKitAutoSync(isAuthenticated);
+  usePushTokenRegistration(isAuthenticated);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
