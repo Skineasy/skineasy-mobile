@@ -13,6 +13,7 @@ import { Toaster } from 'sonner-native';
 import assets from '@assets';
 import { useInitializeUser } from '@features/auth/data/auth.queries';
 import { useHealthKitAutoSync } from '@features/healthkit/hooks/useHealthKitAutoSync';
+import { resolveRoutine } from '@features/routine/data/resolve-routine.api';
 import * as Sentry from '@sentry/react-native';
 import { ErrorBoundary } from '@shared/components/error-boundary';
 import { ForceUpdateModal } from '@shared/components/force-update-modal';
@@ -26,6 +27,7 @@ import { useForceUpdate } from '@shared/hooks/useForceUpdate';
 import { useNetworkStatus } from '@shared/hooks/useNetworkStatus';
 import { useAuthStore } from '@shared/stores/auth.store';
 import { useHealthKitStore } from '@shared/stores/healthkit.store';
+import { useUserStore } from '@shared/stores/user.store';
 import { usePushTokenRegistration } from '@shared/hooks/usePushTokenRegistration';
 import { logger } from '@shared/utils/logger';
 import { supabase } from '@lib/supabase';
@@ -40,6 +42,7 @@ function RootLayoutContent() {
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
   const isAuthLoading = useAuthStore((state) => state.isLoading);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const setRoutineResolution = useUserStore((state) => state.setRoutineResolution);
 
   useNetworkStatus();
   useAppUpdates();
@@ -71,6 +74,11 @@ function RootLayoutContent() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       logger.info('[_layout] Auth state changed:', _event, !!session);
       setAuthenticated(!!session);
+      if (_event === 'SIGNED_IN') {
+        resolveRoutine()
+          .then(setRoutineResolution)
+          .catch((err: unknown) => logger.error('[_layout] resolveRoutine failed:', err));
+      }
     });
 
     if (Platform.OS === 'ios') {
@@ -78,7 +86,7 @@ function RootLayoutContent() {
     }
 
     return () => subscription.unsubscribe();
-  }, [setAuthenticated, loadHealthKitState]);
+  }, [setAuthenticated, loadHealthKitState, setRoutineResolution]);
 
   useEffect(() => {
     if (fontsLoaded && !isAuthLoading && !isUserLoading) {

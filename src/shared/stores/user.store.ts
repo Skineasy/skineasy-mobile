@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { ResolveRoutineResult } from '@features/routine/data/resolve-routine.api';
 import type { UserProfile } from '@shared/types/user.types';
 import { logger } from '@shared/utils/logger';
 
@@ -10,11 +11,13 @@ interface UserState {
   rspid: string | null;
   routineStatus: RoutineStatus;
   hasRoutineAccess: boolean;
+  routineResolution: ResolveRoutineResult | null;
   setUser: (user: UserProfile) => void;
   setHasDiagnosis: (value: boolean) => void;
   setRspid: (rspid: string) => void;
   setRoutineStatus: (status: RoutineStatus) => void;
   setHasRoutineAccess: (value: boolean) => void;
+  setRoutineResolution: (result: ResolveRoutineResult | null) => void;
   clearUser: () => void;
 }
 
@@ -24,6 +27,7 @@ export const useUserStore = create<UserState>((set) => ({
   rspid: null,
   routineStatus: 'none',
   hasRoutineAccess: false,
+  routineResolution: null,
 
   setUser: (user) => {
     logger.info('[userStore] setUser called with:', user);
@@ -50,6 +54,11 @@ export const useUserStore = create<UserState>((set) => ({
     set({ hasRoutineAccess });
   },
 
+  setRoutineResolution: (routineResolution) => {
+    logger.info('[userStore] setRoutineResolution called with status:', routineResolution?.status);
+    set({ routineResolution });
+  },
+
   clearUser: () => {
     logger.info('[userStore] clearUser called');
     set({
@@ -58,6 +67,7 @@ export const useUserStore = create<UserState>((set) => ({
       rspid: null,
       routineStatus: 'none',
       hasRoutineAccess: false,
+      routineResolution: null,
     });
   },
 }));
