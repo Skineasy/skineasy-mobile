@@ -20,6 +20,7 @@ export {
   useCreateMeal,
   useUpdateMeal,
   useDeleteMeal,
+  useUploadMealPhoto,
 } from '@features/journal/hooks/useMeal';
 
 export {

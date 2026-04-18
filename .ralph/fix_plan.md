@@ -306,7 +306,7 @@ if (error) toast.error(t(error.message));
 
 ### 4.4 Types update
 
-- [ ] Align `src/shared/types/journal.types.ts` with generated Supabase types
+- [x] Align `src/shared/types/journal.types.ts` with generated Supabase types
 - [ ] Note: `date` field is now ISO date string `YYYY-MM-DD` (from Postgres `date`), not ISO timestamp -- audit all consumers of `entry.date`
 - [ ] Update `src/shared/utils/date.ts` if needed
 

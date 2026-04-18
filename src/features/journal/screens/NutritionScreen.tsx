@@ -127,12 +127,15 @@ export default function NutritionScreen() {
   };
 
   const onSubmit = async (data: MealFormInput): Promise<void> => {
-    let photoUrl: string | null = imageWasModified ? null : (existingEntry?.photo_url ?? null);
+    let uploadedPath: string | null = null;
 
     if (imageWasModified && localImageUri) {
       setIsUploading(true);
       try {
-        photoUrl = await journalService.meal.uploadPhoto(localImageUri, toISODateString(dateToUse));
+        uploadedPath = await journalService.meal.uploadPhoto(
+          localImageUri,
+          toISODateString(dateToUse),
+        );
       } catch {
         toast.error(t('common.error'), t('journal.nutrition.uploadError'));
         setIsUploading(false);
@@ -141,21 +144,25 @@ export default function NutritionScreen() {
       setIsUploading(false);
     }
 
-    const dto = {
+    const baseDto = {
       date: toISODateString(dateToUse),
-      photo_url: photoUrl,
       food_name: data.food_name,
       note: data.note || null,
       meal_type: data.meal_type,
     };
 
     if (isEditMode && existingEntry) {
+      // Only update photo_url when image was modified (avoids overwriting storage path with signed URL)
+      const updateDto = imageWasModified ? { ...baseDto, photo_url: uploadedPath } : baseDto;
       updateMeal.mutate(
-        { id: existingEntry.id, dto, date: dateToUse },
+        { id: existingEntry.id, dto: updateDto, date: dateToUse },
         { onSuccess: () => router.back() },
       );
     } else {
-      createMeal.mutate(dto, { onSuccess: () => router.back() });
+      createMeal.mutate(
+        { ...baseDto, photo_url: uploadedPath },
+        { onSuccess: () => router.back() },
+      );
     }
   };
 
