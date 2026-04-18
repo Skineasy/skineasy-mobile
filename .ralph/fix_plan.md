@@ -212,7 +212,7 @@ All labels via i18n keys under `questionnaireDemo.*`.
 
 - [x] `src/features/questionnaire-demo/components/progress-bar.tsx` -- animated segmented bar
 - [x] `src/features/questionnaire-demo/components/question-card.tsx` -- wrapper with enter/exit animation
-- [ ] `src/features/questionnaire-demo/components/answer-card.tsx` -- tappable card with icon/emoji, label, selected state
+- [x] `src/features/questionnaire-demo/components/answer-card.tsx` -- tappable card with icon/emoji, label, selected state
 - [ ] `src/features/questionnaire-demo/components/completion-screen.tsx` -- success animation + CTA
 - [ ] `src/features/questionnaire-demo/hooks/use-demo-state.ts` -- step + answers state machine
 
