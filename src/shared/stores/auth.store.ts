@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { supabase } from '@lib/supabase';
-import { pushTokensService } from '@shared/services/push-tokens.service';
+import { unregisterCurrentToken } from '@shared/data/push-tokens.api';
 import { useUserStore } from '@shared/stores/user.store';
 import { logger } from '@shared/utils/logger';
 
@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   clearAuth: async () => {
     logger.info('[authStore] clearAuth');
-    await pushTokensService.unregisterCurrentToken().catch((err: unknown) => {
+    await unregisterCurrentToken().catch((err: unknown) => {
       logger.warn('[authStore] Failed to unregister push token:', err);
     });
     await supabase.auth.signOut();

@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { useEffect, useRef } from 'react';
 import { AppState, Platform } from 'react-native';
 
-import { pushTokensService } from '@shared/services/push-tokens.service';
+import { registerToken } from '@shared/data/push-tokens.api';
 import { logger } from '@shared/utils/logger';
 
 async function registerPushToken(): Promise<void> {
@@ -12,7 +12,7 @@ async function registerPushToken(): Promise<void> {
   const { data: token } = await Notifications.getExpoPushTokenAsync();
   const platform = Platform.OS === 'ios' ? 'ios' : 'android';
 
-  await pushTokensService.registerToken(token, platform);
+  await registerToken(token, platform);
   logger.info('[usePushTokenRegistration] Token registered');
 }
 

@@ -15,10 +15,8 @@ vi.mock('@shared/stores/user.store', () => ({
   },
 }));
 
-vi.mock('@shared/services/push-tokens.service', () => ({
-  pushTokensService: {
-    unregisterCurrentToken: vi.fn().mockResolvedValue(undefined),
-  },
+vi.mock('@shared/data/push-tokens.api', () => ({
+  unregisterCurrentToken: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe('useAuthStore', () => {
