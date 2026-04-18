@@ -324,7 +324,44 @@ Existing RLS already handles `clients_select_own`, `clients_update_own`, `client
 
 ---
 
-## 8. Open Questions
+## 8. Account Deletion RPC
+
+The mobile `profileService.deleteAccount()` calls `supabase.rpc('delete_own_account')`.
+
+This PostgreSQL function **must exist** in the Supabase project. It must use `SECURITY DEFINER` so it runs with elevated privileges that allow deleting from `auth.users` (which the client SDK cannot do directly).
+
+### Required SQL
+
+```sql
+CREATE OR REPLACE FUNCTION delete_own_account()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- Deletes the auth.users row; cascades to clients and all FK journal data
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$;
+
+-- Grant execute to authenticated users only
+REVOKE ALL ON FUNCTION delete_own_account() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION delete_own_account() TO authenticated;
+```
+
+### Cascades (ON DELETE CASCADE already set)
+
+- `auth.users` -> `clients` (user_id FK)
+- `clients` -> all journal entries via `user_id` FK on `sleep_entries`, `sport_entries`, `meal_entries`, `stress_entries`, `observation_entries`, `diagnoses`, `push_tokens`
+
+### Apply via MCP
+
+Run the SQL above via the Supabase MCP tool (`execute_sql`) on project `lyhhipvipgbqsytfqwdw`. Do NOT add it to a migration file.
+
+---
+
+## 9. Open Questions
 
 _None remaining for this doc. Routine/products/Typeform questions are tracked in `routine-migration.md`._
 
