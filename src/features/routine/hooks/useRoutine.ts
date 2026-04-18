@@ -5,12 +5,6 @@ import type { RoutineDto } from '@features/routine/types/routine.types';
 import { queryKeys } from '@shared/config/queryKeys';
 import { useAuthStore } from '@shared/stores/auth.store';
 
-/**
- * Hook to fetch the authenticated user's last routine
- *
- * Uses /api/v1/routine/last endpoint (requires auth)
- * Returns null if user has no routine (404)
- */
 export function useRoutine() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
