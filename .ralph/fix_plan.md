@@ -234,7 +234,7 @@ if (error) toast.error(t(error.message));
 
 ---
 
-> **Remaining phases** (Phase 5-10) are parked in `fix_plan_backlog.md`. When ALL items in Phase 4 are `[x]`, promote Phase 5.
+> **Remaining phases** (Phase 6-10) are parked in `fix_plan_backlog.md`. When ALL items in Phase 5 are `[x]`, promote Phase 6.
 
 ---
 
@@ -313,3 +313,22 @@ if (error) toast.error(t(error.message));
 ### 4.5 Tests
 
 - [x] Update journal tests in `src/features/journal/__tests__/` with Supabase mocks
+
+---
+
+## Phase 5 -- Profile Migration
+
+### 5.1 Profile service rewrite
+
+- [x] Rewrite `src/features/profile/services/profile.service.ts`
+  - `updateProfile(data)` -> `supabase.from('clients').update(data).eq('user_id', uid).select().single()`
+  - `uploadAvatar(uri)`: compress, upload to `avatars/{user_id}/`, get public URL, update `clients.avatar_url`
+  - `deleteAccount()` -> `supabase.rpc('delete_own_account')` (Postgres security definer function)
+
+### 5.2 Delete account RPC documentation
+
+- [x] Document `delete_own_account` RPC requirement in `docs/supabase-migration.md` §4 -- must be a `SECURITY DEFINER` function that deletes the `auth.users` row (cascades to `clients` and all FK data)
+
+### 5.3 Tests
+
+- [x] Create profile tests in `src/features/profile/__tests__/` with Supabase mocks
