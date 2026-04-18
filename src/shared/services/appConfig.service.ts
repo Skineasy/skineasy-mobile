@@ -1,5 +1,4 @@
-import { api } from '@shared/services/api';
-import type { ApiResponse } from '@shared/types/api.types';
+import { supabase } from '@lib/supabase';
 
 interface AppConfig {
   minimumVersion: string;
@@ -11,9 +10,19 @@ interface AppConfig {
 
 export const appConfigService = {
   getConfig: async (): Promise<AppConfig> => {
-    const response = await api.get<ApiResponse<AppConfig>>('/api/v1/app/config', {
-      skipAuth: true,
-    });
-    return response.data;
+    const { data, error } = await supabase
+      .from('app_config')
+      .select('key, value')
+      .in('key', ['minimum_version', 'store_urls']);
+
+    if (error) throw new Error('common.error');
+
+    const rows = data ?? [];
+    const configMap = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+
+    return {
+      minimumVersion: (configMap['minimum_version'] as string) ?? '0.0.0',
+      storeUrls: (configMap['store_urls'] as AppConfig['storeUrls']) ?? { ios: '', android: '' },
+    };
   },
 };

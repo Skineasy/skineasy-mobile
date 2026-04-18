@@ -15,12 +15,11 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (data: EditProfileInput) => {
-      // Remove email from the request (not editable via API)
       const { email: _, ...updateData } = data;
       logger.info('[useUpdateProfile] Updating profile with:', updateData);
-      const response = await profileService.updateProfile(updateData);
-      logger.info('[useUpdateProfile] Profile updated:', response.data);
-      return response.data;
+      const updated = await profileService.updateProfile(updateData);
+      logger.info('[useUpdateProfile] Profile updated:', updated);
+      return updated;
     },
     onSuccess: (updatedUser) => {
       setUser(updatedUser);
@@ -42,8 +41,8 @@ export function useUploadAvatar() {
 
   return useMutation({
     mutationFn: async (uri: string) => {
-      const response = await profileService.uploadAvatar(uri);
-      return response.data.avatar;
+      const { avatar } = await profileService.uploadAvatar(uri);
+      return avatar;
     },
     onSuccess: (avatarUrl) => {
       toast.success(t('profile.updateSuccess'));
