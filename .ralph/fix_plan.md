@@ -218,8 +218,8 @@ All labels via i18n keys under `questionnaireDemo.*`.
 
 ### 10.8 Fake completion
 
-- [ ] On "Voir ma routine" tap at the end: play success animation 1.5s, then navigate back to profile
-- [ ] No API call, no `questionnaire_responses` insert, no routine generation
+- [x] On "Voir ma routine" tap at the end: play success animation 1.5s, then navigate back to profile
+- [x] No API call, no `questionnaire_responses` insert, no routine generation
 - [ ] Toast: "Démo terminée" (dev-only message)
 
 ### 10.9 i18n + tests
