@@ -10,7 +10,8 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CloudOff, Wifi, WifiOff } from 'lucide-react-native';
+import { CloudOff, RefreshCw, Wifi, WifiOff } from 'lucide-react-native';
+import { useIsMutating, useQueryClient } from '@tanstack/react-query';
 
 import { useNetworkStore } from '@shared/stores/network.store';
 import { colors } from '@theme/colors';
@@ -22,7 +23,13 @@ const SPRING_CONFIG = {
   mass: 0.8,
 };
 
-type BannerState = 'hidden' | 'offline' | 'back-online' | 'server-unavailable' | 'server-restored';
+type BannerState =
+  | 'hidden'
+  | 'offline'
+  | 'syncing'
+  | 'back-online'
+  | 'server-unavailable'
+  | 'server-restored';
 
 /**
  * Connection banner that slides down from the top when connectivity is lost
@@ -31,6 +38,8 @@ type BannerState = 'hidden' | 'offline' | 'back-online' | 'server-unavailable' |
 export function OfflineBanner() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const isMutating = useIsMutating();
   const isConnected = useNetworkStore((state) => state.isConnected);
   const isInternetReachable = useNetworkStore((state) => state.isInternetReachable);
   const isBackendReachable = useNetworkStore((state) => state.isBackendReachable);
@@ -69,16 +78,23 @@ export function OfflineBanner() {
         setBannerState('offline');
         progress.value = withSpring(1, SPRING_CONFIG);
       } else if (bannerState === 'offline') {
-        // Coming back online
-        setBannerState('back-online');
-        progress.value = withDelay(
-          1500,
-          withSpring(0, SPRING_CONFIG, (finished) => {
-            if (finished) {
-              runOnJS(setBannerState)('hidden');
-            }
-          }),
-        );
+        const hasPausedMutations = queryClient
+          .getMutationCache()
+          .getAll()
+          .some((m) => m.state.isPaused);
+        if (hasPausedMutations) {
+          setBannerState('syncing');
+        } else {
+          setBannerState('back-online');
+          progress.value = withDelay(
+            1500,
+            withSpring(0, SPRING_CONFIG, (finished) => {
+              if (finished) {
+                runOnJS(setBannerState)('hidden');
+              }
+            }),
+          );
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,6 +131,22 @@ export function OfflineBanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBackendReachable, isOnline]);
 
+  // Transition from syncing to back-online when all mutations complete
+  useEffect(() => {
+    if (bannerState === 'syncing' && isMutating === 0) {
+      setBannerState('back-online');
+      progress.value = withDelay(
+        1500,
+        withSpring(0, SPRING_CONFIG, (finished) => {
+          if (finished) {
+            runOnJS(setBannerState)('hidden');
+          }
+        }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bannerState, isMutating]);
+
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(progress.value, [0, 1], [-(BANNER_HEIGHT + insets.top), 0]);
 
@@ -135,6 +167,12 @@ export function OfflineBanner() {
           backgroundColor: colors.error,
           Icon: WifiOff,
           message: t('common.offline'),
+        };
+      case 'syncing':
+        return {
+          backgroundColor: colors.warning,
+          Icon: RefreshCw,
+          message: t('common.syncing'),
         };
       case 'back-online':
         return {
