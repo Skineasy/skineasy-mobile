@@ -440,7 +440,8 @@
     "tryQuestionnaire": "Tester le nouveau questionnaire"
   },
   "questionnaireDemo": {
-    "title": "Découvre ta peau"
+    "title": "Découvre ta peau",
+    "next": "Suivant"
   },
   "diagnosis": {
     "required": "Diagnostic requis",

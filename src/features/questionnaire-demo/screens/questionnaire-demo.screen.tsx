@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@shared/components/button';
 import { Pressable } from '@shared/components/pressable';
 import { colors } from '@theme/colors';
 
@@ -52,12 +54,20 @@ function QuestionCard({ step }: { step: DemoStep }): React.ReactElement {
   );
 }
 
+function hasAnswer(step: DemoStep, answers: DemoAnswers): boolean {
+  if (step === 0) return answers.skinType !== null;
+  if (step === 1) return answers.concerns.length > 0;
+  if (step === 2) return answers.ageRange !== null;
+  return false;
+}
+
 export function QuestionnaireDemoScreen(): React.ReactElement {
   const router = useRouter();
+  const { t } = useTranslation();
   const [step, setStep] = useState<DemoStep>(0);
-  const [_answers, _setAnswers] = useState<DemoAnswers>(INITIAL_ANSWERS);
+  const [answers, _setAnswers] = useState<DemoAnswers>(INITIAL_ANSWERS);
 
-  const _advance = (): void => setStep((s) => Math.min(s + 1, 3) as DemoStep);
+  const advance = (): void => setStep((s) => Math.min(s + 1, 3) as DemoStep);
   const _goBack = (): void => setStep((s) => Math.max(s - 1, 0) as DemoStep);
 
   return (
@@ -70,6 +80,15 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
       </View>
 
       <QuestionCard step={step} />
+
+      <View className="px-6 pb-6 pt-4">
+        <Button
+          title={t('questionnaireDemo.next')}
+          onPress={advance}
+          disabled={!hasAnswer(step, answers)}
+          haptic="medium"
+        />
+      </View>
     </SafeAreaView>
   );
 }

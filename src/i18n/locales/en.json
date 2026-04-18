@@ -439,7 +439,8 @@
     "tryQuestionnaire": "Try new questionnaire"
   },
   "questionnaireDemo": {
-    "title": "Discover your skin"
+    "title": "Discover your skin",
+    "next": "Next"
   },
   "diagnosis": {
     "required": "Diagnosis Required",
