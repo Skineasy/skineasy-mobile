@@ -3,6 +3,13 @@ import { ArrowLeft, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@shared/components/button';
@@ -10,6 +17,7 @@ import { Pressable } from '@shared/components/pressable';
 import { colors } from '@theme/colors';
 
 const TOTAL_STEPS = 3;
+const SPRING_CONFIG = { damping: 20, stiffness: 300 };
 
 type DemoStep = 0 | 1 | 2 | 3;
 
@@ -41,15 +49,13 @@ function StepProgressBar({ step }: { step: DemoStep }): React.ReactElement {
 
 function QuestionCard({ step }: { step: DemoStep }): React.ReactElement {
   return (
-    <View className="flex-1 px-6 pt-4">
-      <View
-        className="flex-1 rounded-2xl bg-surface p-6 justify-center items-center"
-        style={{ borderWidth: 1, borderColor: colors.border }}
-      >
-        <Text className="text-lg font-medium text-textMuted text-center">
-          {`Question ${step + 1}`}
-        </Text>
-      </View>
+    <View
+      className="flex-1 rounded-2xl bg-surface p-6 justify-center items-center"
+      style={{ borderWidth: 1, borderColor: colors.border }}
+    >
+      <Text className="text-lg font-medium text-textMuted text-center">
+        {`Question ${step + 1}`}
+      </Text>
     </View>
   );
 }
@@ -61,14 +67,48 @@ function hasAnswer(step: DemoStep, answers: DemoAnswers): boolean {
   return false;
 }
 
+function runStepTransition(
+  tx: SharedValue<number>,
+  opacity: SharedValue<number>,
+  setVisible: (s: DemoStep) => void,
+  next: DemoStep,
+  dir: 'forward' | 'backward',
+): void {
+  const exitX = dir === 'forward' ? -30 : 30;
+  const enterX = dir === 'forward' ? 30 : -30;
+  opacity.value = withSpring(0, SPRING_CONFIG);
+  tx.value = withSpring(exitX, SPRING_CONFIG, () => {
+    tx.value = enterX;
+    opacity.value = 0;
+    runOnJS(setVisible)(next);
+    tx.value = withSpring(0, SPRING_CONFIG);
+    opacity.value = withSpring(1, SPRING_CONFIG);
+  });
+}
+
 export function QuestionnaireDemoScreen(): React.ReactElement {
   const router = useRouter();
   const { t } = useTranslation();
   const [step, setStep] = useState<DemoStep>(0);
+  const [visibleStep, setVisibleStep] = useState<DemoStep>(0);
   const [answers, _setAnswers] = useState<DemoAnswers>(INITIAL_ANSWERS);
+  const tx = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const cardStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: tx.value }],
+    opacity: opacity.value,
+  }));
 
-  const advance = (): void => setStep((s) => Math.min(s + 1, 3) as DemoStep);
-  const goBack = (): void => setStep((s) => Math.max(s - 1, 0) as DemoStep);
+  const advance = (): void => {
+    const next = Math.min(step + 1, 3) as DemoStep;
+    setStep(next);
+    runStepTransition(tx, opacity, setVisibleStep, next, 'forward');
+  };
+  const goBack = (): void => {
+    const next = Math.max(step - 1, 0) as DemoStep;
+    setStep(next);
+    runStepTransition(tx, opacity, setVisibleStep, next, 'backward');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -84,7 +124,11 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
         <StepProgressBar step={step} />
       </View>
 
-      <QuestionCard step={step} />
+      <View className="flex-1 px-6 pt-4">
+        <Animated.View style={[cardStyle, { flex: 1 }]}>
+          <QuestionCard step={visibleStep} />
+        </Animated.View>
+      </View>
 
       <View className="px-6 pb-6 pt-4">
         <Button
