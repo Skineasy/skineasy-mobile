@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { authService } from '@features/auth/services/auth.service';
 import type { RegisterInput } from '@features/auth/schemas/auth.schema';
+import { trackAuth } from '@lib/analytics';
 import { toast } from '@lib/toast';
 import { logger } from '@shared/utils/logger';
 
@@ -17,6 +18,7 @@ export function useRegister() {
       await authService.register(registerData);
     },
     onSuccess: () => {
+      trackAuth('signup');
       toast.success(t('auth.registerSuccess'));
     },
   });

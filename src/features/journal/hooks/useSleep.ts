@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { journalService } from '@features/journal/services/journal.service';
+import { trackMutation } from '@lib/analytics';
 import { toast } from '@lib/toast';
 import { queryKeys } from '@shared/config/queryKeys';
 import type { CreateSleepEntryDto } from '@shared/types/journal.types';
@@ -24,6 +25,7 @@ export function useUpsertSleep() {
     mutationFn: (dto: CreateSleepEntryDto) => journalService.sleep.upsert(dto),
     onSuccess: (data, variables) => {
       logger.info('[useUpsertSleep] Success:', data);
+      trackMutation('sleep', 'create', true);
 
       const dateKey = fromISOToDateString(variables.date);
       queryClient.invalidateQueries({ queryKey: queryKeys.journalSleep(dateKey) });
@@ -33,6 +35,7 @@ export function useUpsertSleep() {
     },
     onError: (error) => {
       logger.error('[useUpsertSleep] Error:', error);
+      trackMutation('sleep', 'create', false);
       toast.error(t('common.error'), t('journal.sleep.saveError'));
     },
   });
@@ -43,7 +46,7 @@ export function useDeleteSleep() {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: ({ id }: { id: number; date: string }) => journalService.sleep.delete(id),
+    mutationFn: ({ id }: { id: string; date: string }) => journalService.sleep.delete(id),
     onSuccess: (_, variables) => {
       logger.info('[useDeleteSleep] Success');
 
