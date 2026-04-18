@@ -4,6 +4,9 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
+  __InternalSupabase: {
+    PostgrestVersion: '12';
+  };
   public: {
     Tables: {
       clients: {
@@ -49,140 +52,135 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       sleep_entries: {
         Row: {
           id: string;
           user_id: string;
           date: string;
-          duration: number | null;
-          quality: number | null;
-          notes: string | null;
+          hours: number;
+          quality: number;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           date: string;
-          duration?: number | null;
-          quality?: number | null;
-          notes?: string | null;
+          hours: number;
+          quality: number;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
           date?: string;
-          duration?: number | null;
-          quality?: number | null;
-          notes?: string | null;
+          hours?: number;
+          quality?: number;
           created_at?: string;
-          updated_at?: string;
         };
+        Relationships: [];
       };
       sport_entries: {
         Row: {
           id: string;
           user_id: string;
+          sport_type_id: string;
           date: string;
-          sport_type_id: string | null;
-          duration: number | null;
-          intensity: number | null;
-          notes: string | null;
+          duration: number;
+          intensity: number;
+          note: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
+          sport_type_id: string;
           date: string;
-          sport_type_id?: string | null;
-          duration?: number | null;
-          intensity?: number | null;
-          notes?: string | null;
+          duration: number;
+          intensity: number;
+          note?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
+          sport_type_id?: string;
           date?: string;
-          sport_type_id?: string | null;
-          duration?: number | null;
-          intensity?: number | null;
-          notes?: string | null;
+          duration?: number;
+          intensity?: number;
+          note?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: 'sport_entries_sport_type_id_fkey';
+            columns: ['sport_type_id'];
+            isOneToOne: false;
+            referencedRelation: 'sport_types';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       meal_entries: {
         Row: {
           id: string;
           user_id: string;
           date: string;
-          meal_type: string | null;
-          description: string | null;
+          food_name: string | null;
           photo_url: string | null;
-          quality: number | null;
-          notes: string | null;
+          note: string | null;
+          meal_type: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           date: string;
-          meal_type?: string | null;
-          description?: string | null;
+          food_name?: string | null;
           photo_url?: string | null;
-          quality?: number | null;
-          notes?: string | null;
+          note?: string | null;
+          meal_type?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
           date?: string;
-          meal_type?: string | null;
-          description?: string | null;
+          food_name?: string | null;
           photo_url?: string | null;
-          quality?: number | null;
-          notes?: string | null;
+          note?: string | null;
+          meal_type?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
+        Relationships: [];
       };
       stress_entries: {
         Row: {
           id: string;
           user_id: string;
           date: string;
-          level: number | null;
-          notes: string | null;
+          level: number;
+          note: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           date: string;
-          level?: number | null;
-          notes?: string | null;
+          level: number;
+          note?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
           date?: string;
-          level?: number | null;
-          notes?: string | null;
+          level?: number;
+          note?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
+        Relationships: [];
       };
       observation_entries: {
         Row: {
@@ -191,9 +189,7 @@ export interface Database {
           date: string;
           positives: string[];
           negatives: string[];
-          notes: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -201,9 +197,7 @@ export interface Database {
           date: string;
           positives?: string[];
           negatives?: string[];
-          notes?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -211,30 +205,27 @@ export interface Database {
           date?: string;
           positives?: string[];
           negatives?: string[];
-          notes?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
+        Relationships: [];
       };
       sport_types: {
         Row: {
           id: string;
           name: string;
-          icon: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           name: string;
-          icon?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
-          icon?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       diagnoses: {
         Row: {
@@ -255,6 +246,7 @@ export interface Database {
           result_url?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       push_tokens: {
         Row: {
@@ -284,6 +276,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       app_config: {
         Row: {
@@ -307,6 +300,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

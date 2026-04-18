@@ -44,6 +44,14 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-require-imports': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "CallExpression[callee.object.name='toast'][callee.property.name='error'] > Literal",
+          message: 'toast.error() must use i18n keys via t(), not raw string literals.',
+        },
+      ],
     },
   },
   {
