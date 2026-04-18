@@ -16,8 +16,10 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@shared/components/button';
+import { Card } from '@shared/components/card';
 import { Pressable } from '@shared/components/pressable';
 import { haptic } from '@shared/utils/haptic';
+import { cn } from '@shared/utils/cn';
 import { colors } from '@theme/colors';
 
 const TOTAL_STEPS = 3;
@@ -96,18 +98,23 @@ function TappableCard({
   );
 }
 
-function QuestionCard({ step }: { step: DemoStep }): React.ReactElement {
+function QuestionCard({
+  step,
+  selected,
+}: {
+  step: DemoStep;
+  selected: string | null;
+}): React.ReactElement {
   return (
     <View className="flex-1 gap-3 pt-4">
       <Text className="text-4xl font-bold text-primary text-center mb-2">{`Q${step + 1}`}</Text>
       {['Option A', 'Option B', 'Option C'].map((opt) => (
         <TappableCard key={opt} onPress={() => {}}>
-          <View
-            className="p-4 rounded-xl bg-surface"
-            style={{ borderWidth: 1, borderColor: colors.border }}
-          >
-            <Text className="text-xl text-text">{opt}</Text>
-          </View>
+          <Card isPressed={opt === selected}>
+            <Text className={cn('text-xl', opt === selected ? 'text-white' : 'text-text')}>
+              {opt}
+            </Text>
+          </Card>
         </TappableCard>
       ))}
     </View>
@@ -271,7 +278,7 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
         <>
           <View className="flex-1 px-6 pt-4">
             <Animated.View style={[cardStyle, { flex: 1 }]}>
-              <QuestionCard step={visibleStep} />
+              <QuestionCard step={visibleStep} selected={null} />
             </Animated.View>
           </View>
           <Animated.View style={ctaStyle} className="px-6 pb-6 pt-4">
