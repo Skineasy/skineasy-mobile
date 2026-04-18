@@ -436,7 +436,8 @@
     "chooseFromGallery": "Choisir dans la galerie",
     "cameraPermissionRequired": "L'accès à l'appareil photo est requis",
     "galleryPermissionRequired": "L'accès à la galerie est requis",
-    "avatarUploadError": "Échec du téléchargement de la photo"
+    "avatarUploadError": "Échec du téléchargement de la photo",
+    "tryQuestionnaire": "Tester le nouveau questionnaire"
   },
   "diagnosis": {
     "required": "Diagnostic requis",

@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   Bug,
   ChevronRight,
+  ClipboardList,
   Download,
   FileText,
   Languages,
@@ -285,6 +286,22 @@ export default function ProfileScreen(): React.ReactElement {
       {/* DEV Only - Test Buttons */}
       {__DEV__ && (
         <View className="bg-surface mt-4 mb-8 -mx-4">
+          <Pressable
+            onPress={() => router.push('/profile/questionnaire-demo')}
+            haptic="medium"
+            className="flex-row items-center justify-between p-4 border-b border-border"
+          >
+            <View className="flex-row items-center gap-3">
+              <ClipboardList size={20} color={colors.primary} />
+              <Text className="text-base text-text">{t('profile.tryQuestionnaire')}</Text>
+            </View>
+            <View className="flex-row items-center gap-2">
+              <View className="bg-primary px-2 py-0.5 rounded-full">
+                <Text className="text-xs text-white font-medium">BETA</Text>
+              </View>
+              <ChevronRight size={20} color={colors.textMuted} />
+            </View>
+          </Pressable>
           <HealthKitSyncButton />
           <Pressable
             onPress={handleTestSentry}

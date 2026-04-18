@@ -149,231 +149,121 @@ const { mutate, error } = useUpsertSleep();
 if (error) toast.error(t(error.message));
 ```
 
-## Phase 2 -- Foundations (cross-cutting concerns)
+## Phase 10 -- Demo: Native Questionnaire Preview (dev-only, parallel, non-blocking)
 
-> These patterns are set up BEFORE migrating any feature, then reused everywhere.
+> Standalone demo for showing the client what an in-app questionnaire could look like. Does NOT interact with any backend. Fully fake completion.
+>
+> Can be worked on in parallel with any other phase. Independent of migration state.
 
-### 2.1 TanStack Query client with global error handler
+### 10.1 Scope
 
-- [x] Create `src/lib/query-client.ts` that exports a configured `QueryClient` instance
-- [x] Configure `QueryCache` + `MutationCache` with `onError` auto-toast handler:
-  ```ts
-  new QueryClient({
-    queryCache: new QueryCache({ onError: (error) => toast.error(t(error.message)) }),
-    mutationCache: new MutationCache({ onError: (error) => toast.error(t(error.message)) }),
-    defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
-  });
-  ```
-- [x] Individual mutations/queries can opt out via their own `onError: () => {}` handler
-- [x] Replace any existing QueryClient setup in `src/app/_layout.tsx`
-- [x] Document in `CLAUDE.md`: mutations auto-toast errors by default
+- Dev-only entry point in Settings (hidden in production builds)
+- 3 short questions, full-screen wizard (Option 1 from discussion)
+- Playful visual style -- stronger than the rest of the app (bolder colors, bigger typography, more animation)
+- No data persisted -- all state local, disposed on close
+- Fake success animation at the end
 
-### 2.2 Toast + haptic auto-pairing
+### 10.2 Entry point
 
-- [x] Update `src/lib/toast.ts` so `toast.success(...)` auto-triggers `haptic.success()`
-- [x] Same for `toast.error(...)` -> `haptic.error()`
-- [x] Keep a way to opt-out if needed (optional arg `{ haptic: false }`)
-- [x] Remove any manual `haptic.success()` calls next to `toast.success()` in existing code (audit: `rg "haptic\.(success|error)" src/`)
+- [x] Add a new row in `src/app/profile` settings screen: label "Tester le nouveau questionnaire" with a "BETA" badge
+- [x] Wrap the row in `if (__DEV__)` so it only shows on dev builds
+- [x] On tap: navigate to a new route `/profile/questionnaire-demo` (modal or stack screen)
 
-### 2.3 UI primitives for async states
+### 10.3 Wizard screen structure
 
-- [x] Create `src/shared/components/query-boundary.tsx`
-  - Props: `{ query: UseQueryResult, children: (data) => ReactNode, emptyState?, loadingState?, errorState? }`
-  - Shows loader on `isPending`, error+retry on `isError`, empty on `data.length === 0`, else renders children with data
-- [x] Create `src/shared/components/error-state.tsx`
-  - Props: `{ messageKey: string, onRetry?: () => void }`
-  - Standard error UI (icon + translated message + optional retry button)
-- [x] Create `src/shared/components/empty-state.tsx`
-  - Props: `{ icon?, titleKey: string, descriptionKey?: string, actionKey?: string, onAction?: () => void }`
-  - Standard empty UI
-- [x] Create `src/shared/components/loading-state.tsx` (simple centered spinner with optional label)
-- [x] Use these components in all screens migrated in later phases
+- [ ] Create `src/features/questionnaire-demo/screens/questionnaire-demo.screen.tsx`
+- [ ] Local state machine: current step (0 | 1 | 2 | 3 = complete), answers object
+- [ ] Top bar: close button (X) on left, segmented progress bar (3 segments) on right
+- [ ] Content area: animated question card (one at a time)
+- [ ] Bottom: "Suivant" CTA button (disabled until an answer is selected)
+- [ ] Back arrow (except on step 0) -- animates previous step back in
 
-### 2.4 Session restoration UX
+### 10.4 Questions (fake, demo purposes)
 
-- [x] Keep splash screen visible until `supabase.auth.getSession()` resolves on app start
-- [x] Update `src/app/_layout.tsx` to:
-  1. Import `SplashScreen` from `expo-splash-screen`, call `preventAutoHideAsync()` early
-  2. Hydrate auth store with session from Supabase (sync with MMKV)
-  3. Call `SplashScreen.hideAsync()` after session check + fonts loaded
-- [x] Update `src/app/index.tsx` redirect logic: if session exists -> `/(tabs)`, else `/(auth)/login`
-- [x] Handle auth state changes via `supabase.auth.onAuthStateChange` -> update auth store -> router auto-redirects on state change
+Define in `src/features/questionnaire-demo/constants.ts`:
 
-### 2.5 Offline-first mutations (journal writes)
+1. **Type de peau ressenti** -- single-choice
+   - Très sèche / Sèche / Normale / Mixte / Grasse (5 options, big emoji-accented cards)
+2. **Tes préoccupations principales** -- multi-choice (pick up to 3)
+   - Imperfections, Rides, Sensibilité, Taches, Points noirs, Éclat (icon + label cards)
+3. **Ton âge** -- single-choice range
+   - < 20 / 20-29 / 30-39 / 40-49 / 50+ (horizontal pill selector)
 
-- [x] Configure `networkMode: 'offlineFirst'` globally or per-mutation for journal writes
-- [x] Enable TanStack Query mutation persistence via `@tanstack/query-async-storage-persister` (adapter-based) backed by MMKV
-  - Install `@tanstack/query-async-storage-persister` + `@tanstack/react-query-persist-client`
-  - Create an MMKV-backed persister in `src/lib/query-persister.ts`
-- [x] Wire `PersistQueryClientProvider` in `src/app/_layout.tsx`
-- [x] Mutations queued while offline will auto-retry when connectivity returns
-- [x] Test: toggle airplane mode, create a sleep entry, turn network on, verify it syncs
-- [x] Update `OfflineBanner` to show "syncing..." state when there are pending mutations
+All labels via i18n keys under `questionnaireDemo.*`.
 
-### 2.6 File upload UX (reusable)
+### 10.5 Animations (Reanimated 3)
 
-- [x] Create `src/lib/upload.ts` helper wrapping Supabase Storage upload
-  - Accepts: `bucket, path, fileUri, options?: { onProgress?, contentType? }`
-  - Returns: `{ path, publicUrl? }` or throws mapped error
-  - Uses `FileSystem.uploadAsync` from `expo-file-system` for progress support (Supabase SDK in RN doesn't stream)
-- [x] Preserve the `onProgress` callback pattern from the old `postFormData`
-- [x] Add retry logic: 3 attempts with exponential backoff for network errors
-- [x] Map storage errors (413 too large, 415 unsupported type, 403 unauthorized) via `mapSupabaseError`
-- [x] Use for meal photo upload (`meal-photos` bucket) and avatar upload (`avatars` bucket)
+- [ ] **Step transition**: slide + fade. Current card animates `translateX: 0 -> -30, opacity: 1 -> 0`, new card `translateX: 30 -> 0, opacity: 0 -> 1`. Spring physics.
+- [ ] **Progress bar**: segments fill with a `withSpring` width animation on each step advance
+- [ ] **Answer selection**: tapped card scales up briefly (0.97 -> 1.0) with spring + haptic.light
+- [ ] **CTA button**: animates enabled state (opacity 0.4 -> 1.0) when answer is selected
+- [ ] **Completion screen**: confetti / sparkle burst (use `react-native-reanimated` particle animation or a simple ring of animated dots pulsing outward), big checkmark, "Merci !" heading, "Tu as l'air d'avoir une super peau ✨" subtitle, "Retour" CTA
 
-### 2.7 Analytics / telemetry (PostHog)
+### 10.6 Visual style (playful)
 
-- [x] Verify PostHog is already integrated (check `src/lib/` or `src/shared/`)
-- [x] Create `src/lib/analytics.ts` with typed event helpers:
-  - `trackAuth(action: 'signup' | 'login' | 'logout')`
-  - `trackMutation(entity: string, action: 'create' | 'update' | 'delete', success: boolean)`
-  - `trackRoutineGenerated(skinType: string, productCount: number)`
-  - `trackSubscriptionPurchased(productId: string)`
-- [x] Call from `.queries.ts` mutation `onSuccess` / `onError` callbacks (not from components)
-- [x] Never log PII (email, names) to PostHog -- only counts and enums
+- [ ] Use larger typography than the default h1/h2 -- go up one level for this flow
+- [ ] Use a brand accent color from `src/theme/colors.ts` for highlights (consult the theme, don't hardcode)
+- [ ] Rounded cards with subtle shadows (use existing `Card` component + bolder border on selected)
+- [ ] Add emoji or inline SVG icons to each answer card for visual punch
+- [ ] Background: subtle gradient or soft color wash (vs. the flat backgrounds elsewhere)
+- [ ] Use `haptic.selection()` on answer pick, `haptic.success()` on completion
 
----
+### 10.7 Component breakdown
 
-> **Remaining phases** (Phase 9-10) are parked in `fix_plan_backlog.md`. Phase 9 (Routine Migration) is blocked pending DB tables.
+- [ ] `src/features/questionnaire-demo/components/progress-bar.tsx` -- animated segmented bar
+- [ ] `src/features/questionnaire-demo/components/question-card.tsx` -- wrapper with enter/exit animation
+- [ ] `src/features/questionnaire-demo/components/answer-card.tsx` -- tappable card with icon/emoji, label, selected state
+- [ ] `src/features/questionnaire-demo/components/completion-screen.tsx` -- success animation + CTA
+- [ ] `src/features/questionnaire-demo/hooks/use-demo-state.ts` -- step + answers state machine
+
+### 10.8 Fake completion
+
+- [ ] On "Voir ma routine" tap at the end: play success animation 1.5s, then navigate back to profile
+- [ ] No API call, no `questionnaire_responses` insert, no routine generation
+- [ ] Toast: "Démo terminée" (dev-only message)
+
+### 10.9 i18n + tests
+
+- [ ] Add all strings to `src/i18n/locales/fr.json` and `en.json` under `questionnaireDemo.*`
+- [ ] Unit test the state machine (step advance, answer validation, completion)
+- [ ] No integration tests needed (fake flow)
+
+### 10.10 Cleanup consideration
+
+- This code is explicitly flagged dev-only. If the client approves the direction, it becomes the foundation for Phase 6.5 of `routine-migration.md` (native form real implementation).
+- If the client rejects it, simply delete `src/features/questionnaire-demo/` and the settings row.
 
 ---
 
-## Phase 3 -- Auth Migration
 
-### 3.1 Auth service rewrite
+## Phase 9 -- Routine Migration (blocked, later)
 
-- [x] Rewrite `src/features/auth/services/auth.service.ts` to use Supabase Auth
-  - `login(email, password)` -> `supabase.auth.signInWithPassword({ email, password })`
-  - `register({ firstname, lastname, email, password })` -> `supabase.auth.signUp({ email, password, options: { data: { first_name, last_name } } })`
-  - `getMe()` -> `supabase.auth.getUser()` + `supabase.from('clients').select().eq('user_id', user.id).single()`
-  - Remove `devLogin` entirely
-- [x] Update `src/shared/stores/auth.store.ts` to work with Supabase session
-  - Replace manual token state with `supabase.auth.getSession()`
-  - Listen to `supabase.auth.onAuthStateChange` for real-time updates
-  - Remove `handleSessionExpiry` manual logic (SDK handles it)
+> Blocked until `skincare_products`, `product_type_content`, `routines`, `routine_products`, `routine_steps` tables are created (separate MCP task) AND `generate-routine` Edge Function is deployed.
+>
+> See `docs/routine-migration.md` for full context.
 
-### 3.2 Client profile auto-creation
+### 8.1 Routine service rewrite (mobile only)
 
-- [x] Verify the DB trigger `handle_new_user` exists (creates `clients` row on `auth.users` insert). If missing, document for manual creation via MCP.
-- [x] Ensure `first_name`, `last_name`, `email` flow from signup metadata into `clients`
+- [ ] Rewrite `src/features/routine/services/routine.service.ts`
+  - `getLastRoutine()` -> `supabase.from('routines').select('*, routine_products(*), routine_steps(*)').eq('user_id', uid).eq('status', 'active').order('created_at', { ascending: false }).limit(1).single()`
+  - Remove `getByRspid` (Typeform webhook flow, server-side only)
 
-### 3.3 Remove old API infrastructure
+### 8.2 Catalog caching
 
-- [x] Delete `src/shared/services/api.ts` (custom fetch + JWT refresh)
-- [x] Delete `RefreshTokenResponse` type
-- [x] Remove `getRefreshToken`/`setRefreshToken`/`getToken`/`setToken` from storage utils if unused
-- [x] Remove `API_URL` from `ENV`
+- [ ] Create `src/features/routine/hooks/use-skincare-products.ts` (TanStack Query, 24h staleTime)
+- [ ] Create `src/features/routine/hooks/use-product-type-content.ts` (TanStack Query, 24h staleTime)
+- [ ] Build client-side resolver: `routine_products.product_id` -> full `SkincareProduct` via cached Map
 
-### 3.4 Types update
+### 8.3 Derived values
 
-- [x] Replace `AuthUser`/`LoginResponse`/`RegisterResponse` in `src/shared/types/api.types.ts` with Supabase-derived types
-- [x] Update `UserProfile` in `src/shared/types/user.types.ts` to match `clients` row shape
-  - Fields: `id`, `user_id`, `first_name`, `last_name`, `email`, `phone`, `birthday`, `skin_type`, `avatar_url`, `has_routine_access`
+- [ ] Compute `totalPrice`, `productCount`, `productUsage`, `summary` client-side
+- [ ] Remove any types referring to server-computed summary data
 
-### 3.5 Tests
+### 8.4 Types & tests
 
-- [x] Update auth tests in `src/features/auth/__tests__/` with Supabase mocks
-- [x] Verify login, register, logout, session persistence, auto-refresh
+- [ ] Regenerate Supabase types after routine tables exist
+- [ ] Align `src/features/routine/types/routine.types.ts`
+- [ ] Update routine tests
 
 ---
 
-## Phase 4 -- Journal Migration
-
-### 4.1 Journal service rewrite
-
-- [x] Rewrite `src/features/journal/services/journal.service.ts`
-  - Remove all `api.get/post/put/delete` calls
-  - `sleepService.getByDate(date)` -> `supabase.from('sleep_entries').select().eq('user_id', uid).eq('date', date)`
-  - `sleepService.upsert(dto)` -> `supabase.from('sleep_entries').upsert({...dto, user_id}, { onConflict: 'user_id,date' }).select().single()`
-  - `sleepService.delete(id)` -> `supabase.from('sleep_entries').delete().eq('id', id)`
-  - Same pattern for `sport`, `meal`, `stress` services
-  - `observationsService.upsert` -- note: `positives`/`negatives` are now `text[]` (Postgres arrays), not JSON strings
-  - `entriesService.getByDateRange(start, end)` -> 5 parallel `supabase` queries with `.gte('date', start).lte('date', end)`, returned as `JournalWeekResponse`
-
-### 4.2 Meal image upload
-
-- [x] Replace `mealService.uploadImage` with Supabase Storage upload
-  - Path: `{user_id}/{date}/{uuid}.jpg`
-  - Bucket: `meal-photos` (private)
-  - Return a **signed URL** (`createSignedUrl`, 1h expiry) for display
-  - Store the storage path (not URL) in `meal_entries.photo_url`, regenerate signed URLs on read
-- [x] Update `src/shared/utils/image.ts` to compress before upload as before
-
-### 4.3 Sport types
-
-- [x] Rewrite `sportTypesService.getAll` -> `supabase.from('sport_types').select()`
-- [x] Wrap in TanStack Query hook `useSportTypes()` with `staleTime: 24h` (reference data)
-
-### 4.4 Types update
-
-- [x] Align `src/shared/types/journal.types.ts` with generated Supabase types
-- [x] Note: `date` field is now ISO date string `YYYY-MM-DD` (from Postgres `date`), not ISO timestamp -- audit all consumers of `entry.date`
-- [x] Update `src/shared/utils/date.ts` if needed
-
-### 4.5 Tests
-
-- [x] Update journal tests in `src/features/journal/__tests__/` with Supabase mocks
-
----
-
-## Phase 5 -- Profile Migration
-
-### 5.1 Profile service rewrite
-
-- [x] Rewrite `src/features/profile/services/profile.service.ts`
-  - `updateProfile(data)` -> `supabase.from('clients').update(data).eq('user_id', uid).select().single()`
-  - `uploadAvatar(uri)`: compress, upload to `avatars/{user_id}/`, get public URL, update `clients.avatar_url`
-  - `deleteAccount()` -> `supabase.rpc('delete_own_account')` (Postgres security definer function)
-
-### 5.2 Delete account RPC documentation
-
-- [x] Document `delete_own_account` RPC requirement in `docs/supabase-migration.md` §4 -- must be a `SECURITY DEFINER` function that deletes the `auth.users` row (cascades to `clients` and all FK data)
-
-### 5.3 Tests
-
-- [x] Create profile tests in `src/features/profile/__tests__/` with Supabase mocks
-
----
-
-## Phase 6 -- App Config Migration
-
-### 6.1 App config service rewrite
-
-- [x] Rewrite `src/shared/services/appConfig.service.ts`
-  - `getConfig()` -> `supabase.from('app_config').select()` (returns all rows)
-  - Parse `min_version` and `store_urls` rows from jsonb `value`
-  - Use `mapSupabaseError` for error handling
-- [x] No auth required (app_config has anon SELECT policy) -- verify no getSession call
-
----
-
-## Phase 7 -- Push Notifications
-
-### 7.1 Push token registration service
-
-- [x] Create `src/shared/services/push-tokens.service.ts`
-  - `registerToken(token, platform, deviceId?)` -> upsert into `push_tokens` on `(user_id, token)`
-  - `unregisterToken(token)` -> delete row
-- [x] Call `registerToken` after login + on app foreground (when permissions are granted)
-- [x] Call `unregisterToken` on logout
-
-### 7.2 Wire into existing flow
-
-- [x] Audit current push token flow: `rg "push" src/features/ src/shared/`
-- [x] Migrate any existing token registration to the new service
-
----
-
-## Phase 8 -- Cleanup & Documentation
-
-### 8.1 Final cleanup
-
-- [x] Run `rg "api\." src/` to find leftover references to old API client -- remove all
-- [x] Remove any remaining JWT/refresh-token utilities
-- [ ] Audit: `rg "NestJS|backend|api/v1" src/` -- should be empty
-
-### 8.2 Docs
-
-- [ ] Update `CLAUDE.md`: remove "API Endpoints" section, add Supabase reference table
-- [ ] Update README with Supabase setup instructions
-- [ ] Document error code -> i18n key mappings in `src/lib/error-mapper.ts`

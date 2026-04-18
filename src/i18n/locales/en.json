@@ -435,7 +435,8 @@
     "chooseFromGallery": "Choose from Gallery",
     "cameraPermissionRequired": "Permission to access camera is required",
     "galleryPermissionRequired": "Permission to access gallery is required",
-    "avatarUploadError": "Failed to upload photo"
+    "avatarUploadError": "Failed to upload photo",
+    "tryQuestionnaire": "Try new questionnaire"
   },
   "diagnosis": {
     "required": "Diagnosis Required",
