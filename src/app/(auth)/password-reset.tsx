@@ -8,7 +8,7 @@ import { Text, TextInput, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useResetPassword } from '@features/auth/hooks/useResetPassword';
+import { useResetPassword } from '@features/auth/data/auth.queries';
 import { ResetPasswordInput, resetPasswordSchema } from '@features/auth/schemas/auth.schema';
 import { Background } from '@shared/components/background';
 import { Button } from '@shared/components/button';

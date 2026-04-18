@@ -11,7 +11,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { Toaster } from 'sonner-native';
 
 import assets from '@assets';
-import { useInitializeUser } from '@features/auth/hooks/useInitializeUser';
+import { useInitializeUser } from '@features/auth/data/auth.queries';
 import { useHealthKitAutoSync } from '@features/healthkit/hooks/useHealthKitAutoSync';
 import * as Sentry from '@sentry/react-native';
 import { ErrorBoundary } from '@shared/components/error-boundary';

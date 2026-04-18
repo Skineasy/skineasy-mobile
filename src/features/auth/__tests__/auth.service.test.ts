@@ -24,7 +24,7 @@ vi.mock('@lib/supabase', () => ({
   },
 }));
 
-import { authService } from '@features/auth/services/auth.service';
+import * as authApi from '@features/auth/data/auth.api';
 
 const mockClientRow = {
   id: 'client-1',
@@ -44,27 +44,27 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('authService.login', () => {
+describe('authApi.login', () => {
   it('resolves on success', async () => {
     mocks.signInWithPassword.mockResolvedValue({ error: null });
     await expect(
-      authService.login({ email: 'test@example.com', password: 'secret' }),
+      authApi.login({ email: 'test@example.com', password: 'secret' }),
     ).resolves.toBeUndefined();
   });
 
   it('throws mapped error on invalid credentials', async () => {
     mocks.signInWithPassword.mockResolvedValue({ error: { code: 'invalid_credentials' } });
-    await expect(
-      authService.login({ email: 'bad@example.com', password: 'wrong' }),
-    ).rejects.toThrow('auth.invalidCredentials');
+    await expect(authApi.login({ email: 'bad@example.com', password: 'wrong' })).rejects.toThrow(
+      'auth.invalidCredentials',
+    );
   });
 });
 
-describe('authService.register', () => {
+describe('authApi.register', () => {
   it('resolves on success', async () => {
     mocks.signUp.mockResolvedValue({ error: null });
     await expect(
-      authService.register({
+      authApi.register({
         email: 'new@example.com',
         password: 'secret',
         firstname: 'Jane',
@@ -77,7 +77,7 @@ describe('authService.register', () => {
   it('throws mapped error when email already exists', async () => {
     mocks.signUp.mockResolvedValue({ error: { code: 'user_already_exists' } });
     await expect(
-      authService.register({
+      authApi.register({
         email: 'existing@example.com',
         password: 'secret',
         firstname: 'Jane',
@@ -88,31 +88,31 @@ describe('authService.register', () => {
   });
 });
 
-describe('authService.logout', () => {
+describe('authApi.logout', () => {
   it('resolves on success', async () => {
     mocks.signOut.mockResolvedValue({ error: null });
-    await expect(authService.logout()).resolves.toBeUndefined();
+    await expect(authApi.logout()).resolves.toBeUndefined();
   });
 
   it('throws mapped error on failure', async () => {
     mocks.signOut.mockResolvedValue({ error: { code: 'session_expired' } });
-    await expect(authService.logout()).rejects.toThrow('common.sessionExpired');
+    await expect(authApi.logout()).rejects.toThrow('common.sessionExpired');
   });
 });
 
-describe('authService.getMe', () => {
+describe('authApi.getMe', () => {
   it('returns client row when session is valid', async () => {
     mocks.getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mocks.mockSelect.single.mockResolvedValue({ data: mockClientRow, error: null });
     mocks.from.mockReturnValue({ select: () => mocks.mockSelect });
 
-    const result = await authService.getMe();
+    const result = await authApi.getMe();
     expect(result).toEqual(mockClientRow);
   });
 
   it('throws sessionExpired when no user in session', async () => {
     mocks.getUser.mockResolvedValue({ data: { user: null } });
-    await expect(authService.getMe()).rejects.toThrow('common.sessionExpired');
+    await expect(authApi.getMe()).rejects.toThrow('common.sessionExpired');
   });
 
   it('throws mapped error on DB failure', async () => {
@@ -120,6 +120,6 @@ describe('authService.getMe', () => {
     mocks.mockSelect.single.mockResolvedValue({ data: null, error: { code: '42501' } });
     mocks.from.mockReturnValue({ select: () => mocks.mockSelect });
 
-    await expect(authService.getMe()).rejects.toThrow('common.permissionDenied');
+    await expect(authApi.getMe()).rejects.toThrow('common.permissionDenied');
   });
 });

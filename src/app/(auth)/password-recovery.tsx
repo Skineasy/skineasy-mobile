@@ -8,7 +8,7 @@ import { Text, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useForgotPassword } from '@features/auth/hooks/useForgotPassword';
+import { useForgotPassword } from '@features/auth/data/auth.queries';
 import { ForgotPasswordInput, forgotPasswordSchema } from '@features/auth/schemas/auth.schema';
 import { Background } from '@shared/components/background';
 import { Button } from '@shared/components/button';

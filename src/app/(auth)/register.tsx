@@ -3,7 +3,7 @@ import { Step2AboutYou } from '@features/auth/components/onboarding/Step2AboutYo
 import { Step3HealthSync } from '@features/auth/components/onboarding/Step3HealthSync';
 import { Step4Credentials } from '@features/auth/components/onboarding/Step4Credentials';
 import { Step5EmailVerification } from '@features/auth/components/onboarding/Step5EmailVerification';
-import { useRegister } from '@features/auth/hooks/useRegister';
+import { useRegister } from '@features/auth/data/auth.queries';
 import {
   RegisterInput,
   registerSchema,

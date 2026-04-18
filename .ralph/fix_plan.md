@@ -1,269 +1,74 @@
 # Ralph Fix Plan
 
-> **Current focus**: Mobile app migration from NestJS backend to Supabase.
+> Finishing the Supabase migration. Schema is live (`lyhhipvipgbqsytfqwdw`), do NOT run SQL.
 >
-> **Prerequisite** (DONE before Ralph runs): All database schema, RLS policies, storage buckets, and seed data are already applied to the Supabase project via MCP. Do NOT run SQL migrations -- they exist.
->
-> Reference docs:
->
-> - `docs/supabase-migration.md` -- schema reference (auth, journal, profile, storage, RLS)
-> - `docs/routine-migration.md` -- routine/products (Phase 8, later)
->
-> Supabase project ID: `lyhhipvipgbqsytfqwdw`
-> Supabase URL: `https://lyhhipvipgbqsytfqwdw.supabase.co`
->
-> Tables already created in Supabase: `clients` (extended), `sport_types`, `sleep_entries`, `sport_entries`, `meal_entries`, `stress_entries`, `observation_entries`, `diagnoses`, `push_tokens`, `app_config`
-> Storage buckets already created: `avatars` (public), `meal-photos` (private)
+> Docs: `docs/supabase-migration.md`, `docs/routine-migration.md`, `docs/routine-resolution-flow.md`
 
 ---
 
-## Architecture Convention (MANDATORY)
+## Conventions (non-negotiable)
 
-### Data layer structure
-
-Every feature with server communication uses a `data/` folder with paired files:
+**Data layer structure**
 
 ```
-src/features/<feature>/
-├── data/
-│   ├── <entity>.api.ts       # pure Supabase calls, no React
-│   └── <entity>.queries.ts   # TanStack Query hooks + query keys
-├── components/
-├── hooks/                     # UI-only hooks (forms, gestures, local state)
-├── screens/
-├── schemas/
-└── types/
+src/features/<feature>/data/
+├── <entity>.api.ts       # pure Supabase calls, no React. Throws mapSupabaseError(err).
+└── <entity>.queries.ts   # TanStack Query hooks + <entity>Keys. Exports useX hooks.
 ```
 
-### `.api.ts` rules
-
-- Pure async functions -- no React, no hooks, no stores
-- Import only: `@lib/supabase`, `@lib/error-mapper`, types
-- Every function: catches Supabase error -> **throws a mapped, i18n-ready error** (never raw Supabase error)
-- Return typed data, never raw response objects
-
-### `.queries.ts` rules
-
-- Imports only its paired `.api.ts`, TanStack Query, stores, and `@lib/error-mapper` if needed
-- Exports `<entity>Keys` object for query key management
-- Exports `use<Entity><Action>()` hooks wrapping `useQuery`/`useMutation`
-- Mutations: invalidate the relevant `Keys.all` on success
-
-### Components
-
-- Import ONLY from `.queries.ts`, never directly from `.api.ts`
-- Display errors via i18n keys returned by the query/mutation error (see Error Mapping below)
+- Components import ONLY from `.queries.ts`
+- `.api.ts` returns typed data from `@lib/supabase.types`, catches error → throws via `mapSupabaseError`
+- Mutations auto-toast errors (global `MutationCache.onError`). Opt out with `meta: { suppressGlobalError: true }`
+- Error codes: extend `src/lib/error-mapper.ts` + i18n keys in `fr.json` + `en.json`
+- Respect CLAUDE.md: i18n all text, no relative imports, kebab-case files, NativeWind only, zero `any`, no barrel files
 
 ---
 
-## Error Mapping (CRITICAL -- applies to ALL phases)
+## Phase A — Data layer refactor (`services/*.service.ts` → `data/*.api.ts + *.queries.ts`)
 
-**Every user-facing error MUST be translated via i18n. Never display raw Supabase errors. Never hardcode error strings.**
+One feature per commit. Delete the old `.service.ts` when done.
 
-### Flow
-
-```
-Supabase error -> mapSupabaseError() -> error with i18n key -> toast/UI via t(key)
-```
-
-### Supabase error codes to map
-
-Known Supabase auth error codes to add to `src/lib/error-mapper.ts`:
-
-| Supabase code / message         | i18n key                  |
-| ------------------------------- | ------------------------- |
-| `invalid_credentials`           | `auth.invalidCredentials` |
-| `email_not_confirmed`           | `auth.emailNotConfirmed`  |
-| `user_already_exists`           | `auth.emailAlreadyExists` |
-| `weak_password`                 | `auth.weakPassword`       |
-| `over_email_send_rate_limit`    | `auth.tooManyAttempts`    |
-| `email_address_invalid`         | `auth.invalidEmail`       |
-| `same_password`                 | `auth.samePassword`       |
-| `session_expired` / 401         | `common.sessionExpired`   |
-| `PGRST116` (no rows)            | `common.notFound`         |
-| `PGRST301` (jwt expired)        | `common.sessionExpired`   |
-| `23505` (unique violation)      | `common.duplicateEntry`   |
-| `23503` (FK violation)          | `common.invalidReference` |
-| `42501` (RLS denied)            | `common.permissionDenied` |
-| `PGRST204` (column not found)   | `common.serverError`      |
-| Network error / no connectivity | `common.networkError`     |
-| Storage 413 (file too large)    | `storage.fileTooLarge`    |
-| Storage 415 (unsupported type)  | `storage.unsupportedType` |
-| Fallback                        | `common.error`            |
-
-### Tasks (do in Phase 1, enforce in all subsequent phases)
-
-- [x] Extend `src/lib/error-mapper.ts` with Supabase-specific error codes (see table above)
-- [x] Add i18n keys to `src/i18n/locales/fr.json` and `src/i18n/locales/en.json` for every mapped code
-- [x] Create `mapSupabaseError(error: unknown): Error` helper that returns an Error with `.message` = i18n key
-- [x] Every `.api.ts` function must wrap its Supabase call: `if (error) throw mapSupabaseError(error)` (enforce in later phases)
-- [x] Every component catching a query/mutation error must use `t(error.message)` (enforce in later phases)
-- [x] Add a lint rule or review step: no string literals in `toast.error()` calls -- always i18n keys
-
-### Example pattern
-
-**`src/lib/error-mapper.ts`** (extended):
-
-```ts
-import type { PostgrestError, AuthError, StorageError } from '@supabase/supabase-js';
-
-const SUPABASE_ERROR_MAP: Record<string, string> = {
-  invalid_credentials: 'auth.invalidCredentials',
-  email_not_confirmed: 'auth.emailNotConfirmed',
-  user_already_exists: 'auth.emailAlreadyExists',
-  weak_password: 'auth.weakPassword',
-  // ... etc
-  PGRST116: 'common.notFound',
-  '23505': 'common.duplicateEntry',
-  '42501': 'common.permissionDenied',
-};
-
-export function mapSupabaseError(error: unknown): Error {
-  const code = extractSupabaseErrorCode(error);
-  const i18nKey = SUPABASE_ERROR_MAP[code] ?? 'common.error';
-  const mapped = new Error(i18nKey);
-  (mapped as Error & { code: string }).code = code;
-  return mapped;
-}
-```
-
-**`.api.ts` usage**:
-
-```ts
-export async function fetchSleepByDate(userId: string, date: string): Promise<SleepEntry[]> {
-  const { data, error } = await supabase
-    .from('sleep_entries')
-    .select()
-    .eq('user_id', userId)
-    .eq('date', date);
-  if (error) throw mapSupabaseError(error);
-  return data;
-}
-```
-
-**Component usage**:
-
-```ts
-const { mutate, error } = useUpsertSleep();
-// later...
-if (error) toast.error(t(error.message));
-```
-
-## Phase 10 -- Demo: Native Questionnaire Preview (dev-only, parallel, non-blocking)
-
-> Standalone demo for showing the client what an in-app questionnaire could look like. Does NOT interact with any backend. Fully fake completion.
->
-> Can be worked on in parallel with any other phase. Independent of migration state.
-
-### 10.1 Scope
-
-- Dev-only entry point in Settings (hidden in production builds)
-- 3 short questions, full-screen wizard (Option 1 from discussion)
-- Playful visual style -- stronger than the rest of the app (bolder colors, bigger typography, more animation)
-- No data persisted -- all state local, disposed on close
-- Fake success animation at the end
-
-### 10.2 Entry point
-
-- [x] Add a new row in `src/app/profile` settings screen: label "Tester le nouveau questionnaire" with a "BETA" badge
-- [x] Wrap the row in `if (__DEV__)` so it only shows on dev builds
-- [x] On tap: navigate to a new route `/profile/questionnaire-demo` (modal or stack screen)
-
-### 10.3 Wizard screen structure
-
-- [x] Create `src/features/questionnaire-demo/screens/questionnaire-demo.screen.tsx`
-- [x] Local state machine: current step (0 | 1 | 2 | 3 = complete), answers object
-- [x] Top bar: close button (X) on left, segmented progress bar (3 segments) on right
-- [x] Content area: animated question card (one at a time)
-- [x] Bottom: "Suivant" CTA button (disabled until an answer is selected)
-- [x] Back arrow (except on step 0) -- animates previous step back in
-
-### 10.4 Questions (fake, demo purposes)
-
-Define in `src/features/questionnaire-demo/constants.ts`:
-
-1. **Type de peau ressenti** -- single-choice
-   - Très sèche / Sèche / Normale / Mixte / Grasse (5 options, big emoji-accented cards)
-2. **Tes préoccupations principales** -- multi-choice (pick up to 3)
-   - Imperfections, Rides, Sensibilité, Taches, Points noirs, Éclat (icon + label cards)
-3. **Ton âge** -- single-choice range
-   - < 20 / 20-29 / 30-39 / 40-49 / 50+ (horizontal pill selector)
-
-All labels via i18n keys under `questionnaireDemo.*`.
-
-### 10.5 Animations (Reanimated 3)
-
-- [x] **Step transition**: slide + fade. Current card animates `translateX: 0 -> -30, opacity: 1 -> 0`, new card `translateX: 30 -> 0, opacity: 0 -> 1`. Spring physics.
-- [x] **Progress bar**: segments fill with a `withSpring` width animation on each step advance
-- [x] **Answer selection**: tapped card scales up briefly (0.97 -> 1.0) with spring + haptic.light
-- [x] **CTA button**: animates enabled state (opacity 0.4 -> 1.0) when answer is selected
-- [x] **Completion screen**: confetti / sparkle burst (use `react-native-reanimated` particle animation or a simple ring of animated dots pulsing outward), big checkmark, "Merci !" heading, "Tu as l'air d'avoir une super peau ✨" subtitle, "Retour" CTA
-
-### 10.6 Visual style (playful)
-
-- [x] Use larger typography than the default h1/h2 -- go up one level for this flow
-- [x] Use a brand accent color from `src/theme/colors.ts` for highlights (consult the theme, don't hardcode)
-- [x] Rounded cards with subtle shadows (use existing `Card` component + bolder border on selected)
-- [x] Add emoji or inline SVG icons to each answer card for visual punch
-- [x] Background: subtle gradient or soft color wash (vs. the flat backgrounds elsewhere)
-- [x] Use `haptic.selection()` on answer pick, `haptic.success()` on completion
-
-### 10.7 Component breakdown
-
-- [x] `src/features/questionnaire-demo/components/progress-bar.tsx` -- animated segmented bar
-- [x] `src/features/questionnaire-demo/components/question-card.tsx` -- wrapper with enter/exit animation
-- [x] `src/features/questionnaire-demo/components/answer-card.tsx` -- tappable card with icon/emoji, label, selected state
-- [x] `src/features/questionnaire-demo/components/completion-screen.tsx` -- success animation + CTA
-- [x] `src/features/questionnaire-demo/hooks/use-demo-state.ts` -- step + answers state machine
-
-### 10.8 Fake completion
-
-- [x] On "Voir ma routine" tap at the end: play success animation 1.5s, then navigate back to profile
-- [x] No API call, no `questionnaire_responses` insert, no routine generation
-- [x] Toast: "Démo terminée" (dev-only message)
-
-### 10.9 i18n + tests
-
-- [x] Add all strings to `src/i18n/locales/fr.json` and `en.json` under `questionnaireDemo.*`
-- [x] Unit test the state machine (step advance, answer validation, completion)
-- [x] No integration tests needed (fake flow)
-
-### 10.10 Cleanup consideration
-
-- This code is explicitly flagged dev-only. If the client approves the direction, it becomes the foundation for Phase 6.5 of `routine-migration.md` (native form real implementation).
-- If the client rejects it, simply delete `src/features/questionnaire-demo/` and the settings row.
+- [x] **Auth** — `src/features/auth/data/auth.{api,queries}.ts`
+- [ ] **Journal** — `sleep`, `sport`, `meal`, `stress`, `observation`, `entries` (`.api.ts` + `.queries.ts` each)
+- [ ] **Profile** — `src/features/profile/data/profile.{api,queries}.ts`
+- [ ] **App config** — `src/shared/data/app-config.{api,queries}.ts`
+- [ ] **Push tokens** — `src/shared/data/push-tokens.{api,queries}.ts`
 
 ---
 
+## Phase B — Routine resolution (fires on login)
 
-## Phase 9 -- Routine Migration (blocked, later)
+Design: `docs/routine-resolution-flow.md`. `resolve-routine` Edge Function is deployed and waiting.
 
-> Blocked until `skincare_products`, `product_type_content`, `routines`, `routine_products`, `routine_steps` tables are created (separate MCP task) AND `generate-routine` Edge Function is deployed.
->
-> See `docs/routine-migration.md` for full context.
-
-### 8.1 Routine service rewrite (mobile only)
-
-- [ ] Rewrite `src/features/routine/services/routine.service.ts`
-  - `getLastRoutine()` -> `supabase.from('routines').select('*, routine_products(*), routine_steps(*)').eq('user_id', uid).eq('status', 'active').order('created_at', { ascending: false }).limit(1).single()`
-  - Remove `getByRspid` (Typeform webhook flow, server-side only)
-
-### 8.2 Catalog caching
-
-- [ ] Create `src/features/routine/hooks/use-skincare-products.ts` (TanStack Query, 24h staleTime)
-- [ ] Create `src/features/routine/hooks/use-product-type-content.ts` (TanStack Query, 24h staleTime)
-- [ ] Build client-side resolver: `routine_products.product_id` -> full `SkincareProduct` via cached Map
-
-### 8.3 Derived values
-
-- [ ] Compute `totalPrice`, `productCount`, `productUsage`, `summary` client-side
-- [ ] Remove any types referring to server-computed summary data
-
-### 8.4 Types & tests
-
-- [ ] Regenerate Supabase types after routine tables exist
-- [ ] Align `src/features/routine/types/routine.types.ts`
-- [ ] Update routine tests
+- [ ] `src/features/routine/data/resolve-routine.{api,queries}.ts` — calls `supabase.functions.invoke('resolve-routine')`, typed union result (`ready` | `response_found_generation_pending` | `needs_form` | `needs_purchase`)
+- [ ] Fire on `supabase.auth.onAuthStateChange('SIGNED_IN')` in `src/app/_layout.tsx` or auth store — NOT on routine tab open. Stash result in user store.
+- [ ] Clear on `SIGNED_OUT`
+- [ ] Routine screen reads result from store, renders 4 branches (i18n under `routine.resolution.*`)
+- [ ] Header refresh action invalidates the resolution query
+- [ ] Delete `src/features/routine/services/routine.service.ts` (currently throws stubs)
+- [ ] Tests: mock each of the 4 statuses, assert store state + rendered UI
 
 ---
 
+## Phase C — Final cleanup
+
+- [ ] `rg "services/\w+\.service" src/` — should be empty after Phase A
+- [ ] `rg "API_URL|NestJS|/api/v1" src/` — should be empty
+- [ ] `npm run check` passes
+- [ ] `CLAUDE.md` Supabase section matches reality
+- [ ] README: short Supabase setup section pointing at the docs
+
+---
+
+## Phase D — BLOCKED: full routine rendering
+
+Blocked on `generate-routine` Edge Function + backoffice seeding `skincare_products` and `product_type_content`. Do NOT start. See `docs/routine-migration.md` §3 when unblocked.
+
+---
+
+## Notes
+
+- DO NOT run SQL migrations
+- `resolve-routine` URL: `https://lyhhipvipgbqsytfqwdw.supabase.co/functions/v1/resolve-routine` (JWT attached automatically by `supabase.functions.invoke`)
+- Human-only setup: set `TYPEFORM_API_TOKEN` and `TYPEFORM_FORM_ID` as Supabase secrets
+- Protected files: `.ralph/` (except this file), `.ralphrc`

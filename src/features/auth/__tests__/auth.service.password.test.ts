@@ -9,30 +9,30 @@ vi.mock('@lib/supabase', () => ({
   },
 }));
 
-import { authService } from '@features/auth/services/auth.service';
+import * as authApi from '@features/auth/data/auth.api';
 
-describe('authService.requestPasswordReset', () => {
+describe('authApi.requestPasswordReset', () => {
   it('resolves for any email', async () => {
     await expect(
-      authService.requestPasswordReset({ email: 'user@example.com' }),
+      authApi.requestPasswordReset({ email: 'user@example.com' }),
     ).resolves.toBeUndefined();
   });
 
   it('resolves even for unknown email (no enumeration)', async () => {
     await expect(
-      authService.requestPasswordReset({ email: 'unknown@example.com' }),
+      authApi.requestPasswordReset({ email: 'unknown@example.com' }),
     ).resolves.toBeUndefined();
   });
 });
 
-describe('authService.resetPassword', () => {
+describe('authApi.resetPassword', () => {
   it('resolves with a non-empty token', async () => {
     await expect(
-      authService.resetPassword({ token: 'abc', password: 'secret123' }),
+      authApi.resetPassword({ token: 'abc', password: 'secret123' }),
     ).resolves.toBeUndefined();
   });
 
   it('rejects with an empty token', async () => {
-    await expect(authService.resetPassword({ token: '', password: 'secret123' })).rejects.toThrow();
+    await expect(authApi.resetPassword({ token: '', password: 'secret123' })).rejects.toThrow();
   });
 });
