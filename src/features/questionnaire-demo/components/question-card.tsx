@@ -3,12 +3,19 @@ import { Text, View } from 'react-native';
 import { DEMO_QUESTIONS } from '@features/questionnaire-demo/constants';
 import { AnswerCard } from '@features/questionnaire-demo/components/answer-card';
 
+function isSelected(value: string, selected: string | string[] | null): boolean {
+  if (Array.isArray(selected)) return selected.includes(value);
+  return value === selected;
+}
+
 export function QuestionCard({
   step,
   selected,
+  onSelect,
 }: {
   step: number;
-  selected: string | null;
+  selected: string | string[] | null;
+  onSelect: (value: string) => void;
 }): React.ReactElement {
   const question = DEMO_QUESTIONS[step];
   if (!question) return <View className="flex-1" />;
@@ -21,8 +28,8 @@ export function QuestionCard({
           key={opt.value}
           emoji={opt.emoji}
           label={opt.label}
-          selected={opt.value === selected}
-          onPress={() => {}}
+          selected={isSelected(opt.value, selected)}
+          onPress={() => onSelect(opt.value)}
         />
       ))}
     </View>

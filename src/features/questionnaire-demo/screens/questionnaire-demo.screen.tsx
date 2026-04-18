@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, X } from 'lucide-react-native';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import Animated, {
@@ -20,32 +20,16 @@ import { colors } from '@theme/colors';
 import { CompletionScreen } from '@features/questionnaire-demo/components/completion-screen';
 import { QuestionCard } from '@features/questionnaire-demo/components/question-card';
 import { StepProgressBar } from '@features/questionnaire-demo/components/progress-bar';
+import {
+  useDemoState,
+  type DemoStep,
+  type DemoAnswers,
+} from '@features/questionnaire-demo/hooks/use-demo-state';
 
 const SPRING_CONFIG = { damping: 20, stiffness: 300 };
 
-type DemoStep = 0 | 1 | 2 | 3;
-
-type DemoAnswers = {
-  skinType: string | null;
-  concerns: string[];
-  ageRange: string | null;
-};
-
-const INITIAL_ANSWERS: DemoAnswers = {
-  skinType: null,
-  concerns: [],
-  ageRange: null,
-};
-
 function animateCtaEnabled(ctaOpacity: SharedValue<number>, enabled: boolean): void {
   ctaOpacity.value = withSpring(enabled ? 1.0 : 0.4, SPRING_CONFIG);
-}
-
-function hasAnswer(step: DemoStep, answers: DemoAnswers): boolean {
-  if (step === 0) return answers.skinType !== null;
-  if (step === 1) return answers.concerns.length > 0;
-  if (step === 2) return answers.ageRange !== null;
-  return false;
 }
 
 function runStepTransition(
@@ -67,12 +51,18 @@ function runStepTransition(
   });
 }
 
+function getSelected(step: DemoStep, answers: DemoAnswers): string | string[] | null {
+  if (step === 0) return answers.skinType;
+  if (step === 1) return answers.concerns;
+  if (step === 2) return answers.ageRange;
+  return null;
+}
+
 export function QuestionnaireDemoScreen(): React.ReactElement {
   const router = useRouter();
   const { t } = useTranslation();
-  const [step, setStep] = useState<DemoStep>(0);
-  const [visibleStep, setVisibleStep] = useState<DemoStep>(0);
-  const [answers, _setAnswers] = useState<DemoAnswers>(INITIAL_ANSWERS);
+  const { step, setStep, visibleStep, setVisibleStep, answers, setAnswer, canAdvance } =
+    useDemoState();
   const tx = useSharedValue(0);
   const opacity = useSharedValue(1);
   const ctaOpacity = useSharedValue(0.4);
@@ -82,17 +72,19 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
   }));
   const ctaStyle = useAnimatedStyle(() => ({ opacity: ctaOpacity.value }));
 
+  useEffect(() => {
+    animateCtaEnabled(ctaOpacity, canAdvance);
+  }, [canAdvance, ctaOpacity]);
+
   const advance = (): void => {
-    if (!hasAnswer(step, answers)) return;
+    if (!canAdvance) return;
     const next = Math.min(step + 1, 3) as DemoStep;
     setStep(next);
-    animateCtaEnabled(ctaOpacity, false);
     runStepTransition(tx, opacity, setVisibleStep, next, 'forward');
   };
   const goBack = (): void => {
     const prev = Math.max(step - 1, 0) as DemoStep;
     setStep(prev);
-    animateCtaEnabled(ctaOpacity, hasAnswer(prev, answers));
     runStepTransition(tx, opacity, setVisibleStep, prev, 'backward');
   };
   const handleCompletion = (): void => {
@@ -121,14 +113,18 @@ export function QuestionnaireDemoScreen(): React.ReactElement {
           <>
             <View className="flex-1 px-6 pt-4">
               <Animated.View style={[cardStyle, { flex: 1 }]}>
-                <QuestionCard step={visibleStep} selected={null} />
+                <QuestionCard
+                  step={visibleStep}
+                  selected={getSelected(visibleStep, answers)}
+                  onSelect={setAnswer}
+                />
               </Animated.View>
             </View>
             <Animated.View style={ctaStyle} className="px-6 pb-6 pt-4">
               <Button
                 title={t('questionnaireDemo.next')}
                 onPress={advance}
-                haptic={hasAnswer(step, answers) ? 'medium' : false}
+                haptic={canAdvance ? 'medium' : false}
               />
             </Animated.View>
           </>
