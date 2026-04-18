@@ -302,7 +302,7 @@ if (error) toast.error(t(error.message));
 ### 4.3 Sport types
 
 - [x] Rewrite `sportTypesService.getAll` -> `supabase.from('sport_types').select()`
-- [ ] Wrap in TanStack Query hook `useSportTypes()` with `staleTime: 24h` (reference data)
+- [x] Wrap in TanStack Query hook `useSportTypes()` with `staleTime: 24h` (reference data)
 
 ### 4.4 Types update
 
