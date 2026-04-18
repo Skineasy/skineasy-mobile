@@ -60,6 +60,14 @@ export function useUpdateMeal() {
   });
 }
 
+export function useUploadMealPhoto() {
+  return useMutation({
+    mutationFn: ({ uri, date }: { uri: string; date: string }) =>
+      journalService.meal.uploadPhoto(uri, date),
+    meta: { suppressGlobalError: true },
+  });
+}
+
 export function useDeleteMeal() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();

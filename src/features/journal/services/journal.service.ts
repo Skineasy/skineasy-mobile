@@ -18,22 +18,12 @@ import type {
 } from '@shared/types/journal.types';
 import type { Database } from '@lib/supabase.types';
 
-const MEAL_PHOTO_SIGNED_URL_EXPIRY = 3600; // 1 hour
-
 async function getUserId(): Promise<string> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error('common.sessionExpired');
   return user.id;
-}
-
-async function signMealEntry(entry: MealEntry): Promise<MealEntry> {
-  if (!entry.photo_url) return entry;
-  const { data } = await supabase.storage
-    .from('meal-photos')
-    .createSignedUrl(entry.photo_url, MEAL_PHOTO_SIGNED_URL_EXPIRY);
-  return { ...entry, photo_url: data?.signedUrl ?? null };
 }
 
 export const sleepService = {

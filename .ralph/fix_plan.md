@@ -234,7 +234,7 @@ if (error) toast.error(t(error.message));
 
 ---
 
-> **Remaining phases** (Phase 4-10) are parked in `fix_plan_backlog.md`. When ALL items in Phase 3 are `[x]`, promote Phase 4.
+> **Remaining phases** (Phase 5-10) are parked in `fix_plan_backlog.md`. When ALL items in Phase 4 are `[x]`, promote Phase 5.
 
 ---
 
@@ -272,5 +272,44 @@ if (error) toast.error(t(error.message));
 
 ### 3.5 Tests
 
-- [ ] Update auth tests in `src/features/auth/__tests__/` with Supabase mocks
-- [ ] Verify login, register, logout, session persistence, auto-refresh
+- [x] Update auth tests in `src/features/auth/__tests__/` with Supabase mocks
+- [x] Verify login, register, logout, session persistence, auto-refresh
+
+---
+
+## Phase 4 -- Journal Migration
+
+### 4.1 Journal service rewrite
+
+- [x] Rewrite `src/features/journal/services/journal.service.ts`
+  - Remove all `api.get/post/put/delete` calls
+  - `sleepService.getByDate(date)` -> `supabase.from('sleep_entries').select().eq('user_id', uid).eq('date', date)`
+  - `sleepService.upsert(dto)` -> `supabase.from('sleep_entries').upsert({...dto, user_id}, { onConflict: 'user_id,date' }).select().single()`
+  - `sleepService.delete(id)` -> `supabase.from('sleep_entries').delete().eq('id', id)`
+  - Same pattern for `sport`, `meal`, `stress` services
+  - `observationsService.upsert` -- note: `positives`/`negatives` are now `text[]` (Postgres arrays), not JSON strings
+  - `entriesService.getByDateRange(start, end)` -> 5 parallel `supabase` queries with `.gte('date', start).lte('date', end)`, returned as `JournalWeekResponse`
+
+### 4.2 Meal image upload
+
+- [x] Replace `mealService.uploadImage` with Supabase Storage upload
+  - Path: `{user_id}/{date}/{uuid}.jpg`
+  - Bucket: `meal-photos` (private)
+  - Return a **signed URL** (`createSignedUrl`, 1h expiry) for display
+  - Store the storage path (not URL) in `meal_entries.photo_url`, regenerate signed URLs on read
+- [x] Update `src/shared/utils/image.ts` to compress before upload as before
+
+### 4.3 Sport types
+
+- [x] Rewrite `sportTypesService.getAll` -> `supabase.from('sport_types').select()`
+- [ ] Wrap in TanStack Query hook `useSportTypes()` with `staleTime: 24h` (reference data)
+
+### 4.4 Types update
+
+- [ ] Align `src/shared/types/journal.types.ts` with generated Supabase types
+- [ ] Note: `date` field is now ISO date string `YYYY-MM-DD` (from Postgres `date`), not ISO timestamp -- audit all consumers of `entry.date`
+- [ ] Update `src/shared/utils/date.ts` if needed
+
+### 4.5 Tests
+
+- [ ] Update journal tests in `src/features/journal/__tests__/` with Supabase mocks
