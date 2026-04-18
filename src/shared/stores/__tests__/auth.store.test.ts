@@ -15,6 +15,12 @@ vi.mock('@shared/stores/user.store', () => ({
   },
 }));
 
+vi.mock('@shared/services/push-tokens.service', () => ({
+  pushTokensService: {
+    unregisterCurrentToken: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 describe('useAuthStore', () => {
   beforeEach(() => {
     useAuthStore.setState({ isAuthenticated: false, isLoading: true });

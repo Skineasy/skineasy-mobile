@@ -1,3 +1,5 @@
+import * as Notifications from 'expo-notifications';
+
 import { mapSupabaseError } from '@lib/error-mapper';
 import { supabase } from '@lib/supabase';
 
@@ -22,6 +24,17 @@ export const pushTokensService = {
   unregisterToken: async (token: string): Promise<void> => {
     const { error } = await supabase.from('push_tokens').delete().eq('token', token);
 
+    if (error) throw mapSupabaseError(error);
+  },
+
+  unregisterCurrentToken: async (): Promise<void> => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') return;
+
+    const { data: token } = await Notifications.getExpoPushTokenAsync();
+    if (!token) return;
+
+    const { error } = await supabase.from('push_tokens').delete().eq('token', token);
     if (error) throw mapSupabaseError(error);
   },
 };
