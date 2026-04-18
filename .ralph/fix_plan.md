@@ -234,7 +234,7 @@ if (error) toast.error(t(error.message));
 
 ---
 
-> **Remaining phases** (Phase 8-10) are parked in `fix_plan_backlog.md`. When ALL items in Phase 7 are `[x]`, promote Phase 8.
+> **Remaining phases** (Phase 9-10) are parked in `fix_plan_backlog.md`. Phase 9 (Routine Migration) is blocked pending DB tables.
 
 ---
 
@@ -361,3 +361,19 @@ if (error) toast.error(t(error.message));
 
 - [x] Audit current push token flow: `rg "push" src/features/ src/shared/`
 - [x] Migrate any existing token registration to the new service
+
+---
+
+## Phase 8 -- Cleanup & Documentation
+
+### 8.1 Final cleanup
+
+- [x] Run `rg "api\." src/` to find leftover references to old API client -- remove all
+- [x] Remove any remaining JWT/refresh-token utilities
+- [ ] Audit: `rg "NestJS|backend|api/v1" src/` -- should be empty
+
+### 8.2 Docs
+
+- [ ] Update `CLAUDE.md`: remove "API Endpoints" section, add Supabase reference table
+- [ ] Update README with Supabase setup instructions
+- [ ] Document error code -> i18n key mappings in `src/lib/error-mapper.ts`
