@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Platform } from 'react-native';
 
-import { appConfigService } from '@shared/services/appConfig.service';
+import { getAppConfig } from '@shared/data/app-config.api';
 import { logger } from '@shared/utils/logger';
 
 interface UseForceUpdateReturn {
@@ -22,7 +22,7 @@ export function useForceUpdate(): UseForceUpdateReturn {
   useEffect(() => {
     const checkVersion = async (): Promise<void> => {
       try {
-        const config = await appConfigService.getConfig();
+        const config = await getAppConfig();
         const currentVersion = Constants.expoConfig?.version ?? '0.0.0';
 
         if (compareVersions(currentVersion, config.minimumVersion) < 0) {
