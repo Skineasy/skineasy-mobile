@@ -387,6 +387,23 @@
     "noRoutineTitle": "Pas encore de routine",
     "noRoutineMessage": "Complète le quiz peau pour obtenir ta routine personnalisée.",
     "noProductForStep": "Aucun produit disponible pour cette étape",
+    "resolution": {
+      "needsForm": {
+        "title": "Complète ton questionnaire",
+        "message": "Tu as accès à ta routine ! Remplis le formulaire pour recevoir tes recommandations personnalisées.",
+        "cta": "Remplir le questionnaire"
+      },
+      "needsPurchase": {
+        "title": "Obtiens ta routine personnalisée",
+        "message": "Accède à tes recommandations de produits en obtenant ta routine SkinEasy.",
+        "cta": "Découvrir l'offre"
+      },
+      "typeformUnavailable": {
+        "title": "Service indisponible",
+        "message": "Impossible de récupérer ton questionnaire pour le moment. Réessaie dans quelques minutes.",
+        "retry": "Réessayer"
+      }
+    },
     "summary": {
       "products": "{{count}} produits",
       "dailyTime": "~{{minutes}} min/jour",
