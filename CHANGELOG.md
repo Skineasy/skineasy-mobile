@@ -2,6 +2,8 @@
 
 ## 1.0.0
 
+- Added Recommendations section on dashboard with up to 3 journal-driven tips
+- Added docs/recommendations.md describing rules, thresholds, and data windows
 - Added SkinEasy existing-account message on welcome screen
 - Changed birthday picker to spinner wheels (day/month/year)
 - Fixed gender selection defaulting to Mrs in onboarding step 2

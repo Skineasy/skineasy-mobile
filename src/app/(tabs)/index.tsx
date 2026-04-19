@@ -10,6 +10,7 @@ import { DateNavigation } from '@features/dashboard/components/DateNavigation';
 import { DayProgressDots } from '@features/dashboard/components/DayProgressDots';
 import { IndicatorsList } from '@features/dashboard/components/IndicatorsList';
 import { RecipeOfTheDay } from '@features/dashboard/components/RecipeOfTheDay';
+import { RecommendationsSection } from '@features/dashboard/components/RecommendationsSection';
 import { RoutineBannerContainer } from '@features/dashboard/components/RoutineBanner';
 import { ScoreContainer } from '@features/dashboard/components/ScoreContainer';
 import { calculateDayScore } from '@features/dashboard/utils/score';
@@ -29,7 +30,7 @@ export default function DashboardScreen(): React.ReactElement {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
   const hasRoutineAccess = useUserStore((state) => state.hasRoutineAccess);
-  const animStyles = useEntranceAnimation(6);
+  const animStyles = useEntranceAnimation(7);
 
   // Selected date state
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -94,8 +95,16 @@ export default function DashboardScreen(): React.ReactElement {
             <ScoreContainer score={score} missingCount={missingCount} />
           </Animated.View>
 
-          {/* Indicators Section */}
+          {/* Recommendations */}
           <Animated.View style={animStyles[3]}>
+            <RecommendationsSection
+              selectedDate={selectedDate}
+              observationEntry={observationEntries[0]}
+            />
+          </Animated.View>
+
+          {/* Indicators Section */}
+          <Animated.View style={animStyles[4]}>
             <SectionHeader className="px-4" icon={Layers} title={t('dashboard.indicators.title')} />
             <IndicatorsList
               sleepEntries={sleepEntries}
@@ -113,7 +122,7 @@ export default function DashboardScreen(): React.ReactElement {
           </Animated.View>
 
           {/* Routine Banner */}
-          <Animated.View style={animStyles[4]}>
+          <Animated.View style={animStyles[6]}>
             <RoutineBannerContainer />
           </Animated.View>
         </View>

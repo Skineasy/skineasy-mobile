@@ -197,6 +197,15 @@
     "addIndicator": {
       "title": "Quel indicateur veux-tu ajouter ?"
     },
+    "recommendations": {
+      "title": "Recommandations",
+      "drinkWater": "Bois 2L d'eau aujourd'hui",
+      "avoidIrritants": "Évite les actifs irritants",
+      "sleepEarlier": "Couche-toi plus tôt",
+      "takeTimeForYou": "Prends du temps pour toi",
+      "move20min": "Bouge 20 min aujourd'hui",
+      "reduceSugarFat": "Réduis le sucre et le gras"
+    },
     "recipe": {
       "title": "La recette du jour",
       "discover": "Découvrir"

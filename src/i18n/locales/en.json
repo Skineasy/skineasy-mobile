@@ -196,6 +196,15 @@
     "addIndicator": {
       "title": "What indicator do you want to add?"
     },
+    "recommendations": {
+      "title": "Recommendations",
+      "drinkWater": "Drink 2L of water today",
+      "avoidIrritants": "Avoid irritating actives",
+      "sleepEarlier": "Go to bed earlier",
+      "takeTimeForYou": "Take time for yourself",
+      "move20min": "Move for 20 min today",
+      "reduceSugarFat": "Cut back on sugar and fat"
+    },
     "recipe": {
       "title": "Recipe of the day",
       "discover": "Discover"
