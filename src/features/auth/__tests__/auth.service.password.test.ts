@@ -4,6 +4,7 @@ vi.mock('@lib/supabase', () => ({
   supabase: {
     auth: {
       resetPasswordForEmail: vi.fn().mockResolvedValue({ error: null }),
+      exchangeCodeForSession: vi.fn().mockResolvedValue({ error: null }),
       updateUser: vi.fn().mockResolvedValue({ error: null }),
     },
   },
@@ -25,14 +26,18 @@ describe('authApi.requestPasswordReset', () => {
   });
 });
 
-describe('authApi.resetPassword', () => {
-  it('resolves with a non-empty token', async () => {
-    await expect(
-      authApi.resetPassword({ token: 'abc', password: 'secret123' }),
-    ).resolves.toBeUndefined();
+describe('authApi.exchangeRecoveryCode', () => {
+  it('resolves with a non-empty code', async () => {
+    await expect(authApi.exchangeRecoveryCode('abc')).resolves.toBeUndefined();
   });
 
-  it('rejects with an empty token', async () => {
-    await expect(authApi.resetPassword({ token: '', password: 'secret123' })).rejects.toThrow();
+  it('rejects with an empty code', async () => {
+    await expect(authApi.exchangeRecoveryCode('')).rejects.toThrow();
+  });
+});
+
+describe('authApi.resetPassword', () => {
+  it('resolves with a valid password', async () => {
+    await expect(authApi.resetPassword({ password: 'secret123' })).resolves.toBeUndefined();
   });
 });

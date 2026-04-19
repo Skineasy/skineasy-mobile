@@ -17,6 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: process.env.BUNDLE_ID ?? 'com.skineasy.app',
+    associatedDomains: ['applinks:skineasy.com'],
     config: {
       usesNonExemptEncryption: false,
     },
@@ -33,6 +34,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: process.env.BUNDLE_ID ?? 'com.skineasy.app',
     edgeToEdgeEnabled: true,
     softwareKeyboardLayoutMode: 'pan',
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [{ scheme: 'https', host: 'skineasy.com', pathPrefix: '/password-reset' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     favicon: './assets/favicon.png',

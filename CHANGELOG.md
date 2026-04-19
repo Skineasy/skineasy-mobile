@@ -2,6 +2,9 @@
 
 ## 1.0.0
 
+- Added Universal Links / App Links on skineasy.com for password-reset deep linking
+- Changed Supabase client to PKCE flow and wired exchangeCodeForSession in password reset screen
+- Updated docs/deeplinking.md with current state, remaining steps, and Nuxt migration notes
 - Fixed autofill on login, signup and password recovery by adding textContentType and passwordRules
 - Changed observations list to 11 positive / 16 negative items with new keys and icons
 - Changed dashboard recommendations to trigger on tightness and new irritant keys

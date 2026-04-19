@@ -33,7 +33,6 @@ interface DevLoginInput {
 }
 
 interface ResetPasswordVariables {
-  token: string;
   password: string;
 }
 
@@ -191,7 +190,7 @@ export function useResetPassword(): UseMutationResult<void, Error, ResetPassword
     },
     onSuccess: () => {
       haptic.success();
-      router.replace('/(auth)/login');
+      router.replace('/(tabs)');
     },
     onError: () => {
       toast.error(t('common.error'), t('auth.passwordReset.error'));

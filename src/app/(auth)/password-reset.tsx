@@ -1,13 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { exchangeRecoveryCode } from '@features/auth/data/auth.api';
 import { useResetPassword } from '@features/auth/data/auth.queries';
 import { ResetPasswordInput, resetPasswordSchema } from '@features/auth/schemas/auth.schema';
 import { Background } from '@shared/components/background';
@@ -16,16 +17,30 @@ import { Input } from '@shared/components/input';
 import { KeyboardScrollView } from '@shared/components/keyboard-scroll-view';
 import { Pressable } from '@shared/components/pressable';
 import { useEntranceAnimation } from '@shared/hooks/useEntranceAnimation';
+import { logger } from '@shared/utils/logger';
 import { colors } from '@theme/colors';
+
+type SessionState = 'exchanging' | 'ready' | 'invalid';
 
 export default function PasswordResetScreen(): React.ReactElement {
   const { t } = useTranslation();
   const router = useRouter();
-  const { token } = useLocalSearchParams<{ token?: string }>();
+  const { code } = useLocalSearchParams<{ code?: string }>();
   const { mutate: resetPassword, isPending } = useResetPassword();
   const confirmRef = useRef<TextInput>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [sessionState, setSessionState] = useState<SessionState>(code ? 'exchanging' : 'invalid');
   const animStyles = useEntranceAnimation(3);
+
+  useEffect(() => {
+    if (!code) return;
+    exchangeRecoveryCode(code)
+      .then(() => setSessionState('ready'))
+      .catch((err) => {
+        logger.warn('[password-reset] exchange failed', { err });
+        setSessionState('invalid');
+      });
+  }, [code]);
 
   const {
     control,
@@ -38,12 +53,21 @@ export default function PasswordResetScreen(): React.ReactElement {
   });
 
   const onSubmit = (data: ResetPasswordInput): void => {
-    if (!token) return;
     setHasAttemptedSubmit(true);
-    resetPassword({ token, password: data.password });
+    resetPassword({ password: data.password });
   };
 
-  if (!token) {
+  if (sessionState === 'exchanging') {
+    return (
+      <Background variant="topBubble">
+        <SafeAreaView className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+        </SafeAreaView>
+      </Background>
+    );
+  }
+
+  if (sessionState === 'invalid') {
     return (
       <Background variant="topBubble">
         <SafeAreaView className="flex-1">
@@ -107,7 +131,9 @@ export default function PasswordResetScreen(): React.ReactElement {
                     secureTextEntry
                     showPasswordToggle
                     autoCapitalize="none"
-                    autoComplete="password-new"
+                    autoComplete="new-password"
+                    textContentType="newPassword"
+                    passwordRules="minlength: 8; required: lower; required: upper; required: digit;"
                     autoFocus
                     returnKeyType="next"
                     onSubmitEditing={() => confirmRef.current?.focus()}
@@ -133,7 +159,9 @@ export default function PasswordResetScreen(): React.ReactElement {
                     secureTextEntry
                     showPasswordToggle
                     autoCapitalize="none"
-                    autoComplete="password-new"
+                    autoComplete="new-password"
+                    textContentType="newPassword"
+                    passwordRules="minlength: 8; required: lower; required: upper; required: digit;"
                     returnKeyType="done"
                     onSubmitEditing={handleSubmit(onSubmit)}
                     onBlur={onBlur}

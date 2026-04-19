@@ -1,13 +1,13 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, usePathname } from 'expo-router';
 
 import { useAuthStore } from '@shared/stores/auth.store';
 import { colors } from '@theme/colors';
 
 export default function AuthLayout() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const pathname = usePathname();
 
-  // Redirect to tabs if already authenticated
-  if (isAuthenticated) {
+  if (isAuthenticated && pathname !== '/password-reset') {
     return <Redirect href="/(tabs)" />;
   }
 

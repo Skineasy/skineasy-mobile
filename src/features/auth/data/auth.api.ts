@@ -91,12 +91,19 @@ export async function logout(): Promise<void> {
 }
 
 export async function requestPasswordReset(data: { email: string }): Promise<void> {
-  const { error } = await supabase.auth.resetPasswordForEmail(data.email);
+  const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+    redirectTo: 'https://skineasy.com/password-reset',
+  });
   if (error) throw mapSupabaseError(error);
 }
 
-export async function resetPassword(data: { token: string; password: string }): Promise<void> {
-  if (!data.token) throw new Error('auth.invalidCredentials');
+export async function exchangeRecoveryCode(code: string): Promise<void> {
+  if (!code) throw new Error('auth.invalidCredentials');
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) throw mapSupabaseError(error);
+}
+
+export async function resetPassword(data: { password: string }): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password: data.password });
   if (error) throw mapSupabaseError(error);
 }
