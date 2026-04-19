@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, Moon, Search, Smile, type LucideIcon, Utensils } from 'lucide-react-native';
+import { Dumbbell, type LucideIcon, Moon, Search, Smile, Utensils } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import { IndicatorCard } from '@features/dashboard/components/IndicatorCard';
-import { colors } from '@theme/colors';
 import type {
   MealEntry,
   ObservationEntry,
@@ -19,6 +18,7 @@ import type {
   SportEntry,
   StressEntry,
 } from '@shared/types/journal.types';
+import { colors } from '@theme/colors';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const HORIZONTAL_PADDING = 16;
