@@ -43,3 +43,8 @@
 - Changed profile subroutes (edit, questionnaire-demo) to live under /account/
 - Added 1-5 meal quality rating at the top of the nutrition form
 - Added quality column on meal_entries and factored it into the nutrition score
+- Changed floating tab bar to iOS 26 liquid glass with GlassView background and taller 64px pill
+- Added liquid glass selection bubble with primary tint rendered as sibling of the bar
+- Changed FAB to a primary gradient design with soft shadow
+- Removed solid and glass FAB variants and the fabVariant prop
+- Changed floating-tab-bar into modular files (constants, tabs, tab-button, fab, use-bubble-style)

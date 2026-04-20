@@ -17,20 +17,14 @@ import {
   FAB_LIFT,
   FAB_NOTCH_WIDTH,
 } from './floating-tab-bar/constants';
-import { Fab, FabVariant } from './floating-tab-bar/fab';
+import { Fab } from './floating-tab-bar/fab';
 import { TabButton } from './floating-tab-bar/tab-button';
 import { BASE_TABS, ROUTINE_TABS, TabConfig } from './floating-tab-bar/tabs';
 import { useBubbleStyle } from './floating-tab-bar/use-bubble-style';
 
 export { SPRING_CONFIG } from './floating-tab-bar/constants';
 
-type FloatingTabBarProps = {
-  fabVariant?: FabVariant;
-};
-
-export function FloatingTabBar({
-  fabVariant = 'solid',
-}: FloatingTabBarProps = {}): React.ReactElement {
+export function FloatingTabBar(): React.ReactElement {
   const insets = useSafeAreaInsets();
   const hasRoutineAccess = useUserStore((state) => state.hasRoutineAccess);
   const [sheetVisible, setSheetVisible] = useState(false);
@@ -85,7 +79,7 @@ export function FloatingTabBar({
       )}
 
       <View pointerEvents="box-none" style={styles.fabWrapper}>
-        <Fab variant={fabVariant} glassAvailable={glassAvailable} onPress={handleFabPress} />
+        <Fab onPress={handleFabPress} />
       </View>
 
       <AddIndicatorSheet
