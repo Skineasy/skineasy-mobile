@@ -75,22 +75,22 @@ export function ScreenHeader({
         style={animStyles[0]}
         className="flex-row items-center justify-between px-4 pt-2 pb-4"
       >
-        {canGoBack ? (
-          <Pressable
-            onPress={() => router.back()}
-            accessibilityLabel={t('common.back')}
-            haptic="light"
-          >
-            <ArrowLeft size={28} color={colors.text} />
-          </Pressable>
-        ) : (
-          <View className="w-7" />
-        )}
+        <View className="flex-1 items-start">
+          {canGoBack && (
+            <Pressable
+              onPress={() => router.back()}
+              accessibilityLabel={t('common.back')}
+              haptic="light"
+            >
+              <ArrowLeft size={28} color={colors.text} />
+            </Pressable>
+          )}
+        </View>
         <View className="flex-row items-center gap-2">
           {Icon && <Icon size={24} color={colors.brownDark} />}
           <Text className="text-xl font-bold text-brown-dark">{title}</Text>
         </View>
-        {rightAction ?? <View className="w-7" />}
+        <View className="flex-1 items-end">{rightAction}</View>
       </Animated.View>
 
       <KeyboardAvoidingView

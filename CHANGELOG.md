@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed ScreenHeader title centering by giving left/right wrappers equal flex-1 widths
 - Added Universal Links / App Links on skineasy.com for password-reset deep linking
 - Changed Supabase client to PKCE flow and wired exchangeCodeForSession in password reset screen
 - Updated docs/deeplinking.md with current state, remaining steps, and Nuxt migration notes
