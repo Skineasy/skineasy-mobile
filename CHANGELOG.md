@@ -2,6 +2,8 @@
 
 ## 1.0.0
 
+- Changed routine step cards to per-product rows with a square checkbox top-right
+- Changed routine completion tracking to per-product keys persisted in MMKV
 - Fixed ScreenHeader title centering by giving left/right wrappers equal flex-1 widths
 - Added Universal Links / App Links on skineasy.com for password-reset deep linking
 - Changed Supabase client to PKCE flow and wired exchangeCodeForSession in password reset screen

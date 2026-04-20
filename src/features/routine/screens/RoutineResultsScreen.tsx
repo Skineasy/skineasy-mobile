@@ -11,33 +11,18 @@ import { RoutineSummaryCard } from '@features/routine/components/RoutineSummaryC
 import { RoutineToggle } from '@features/routine/components/RoutineToggle';
 import { useRoutine } from '@features/routine/hooks/useRoutine';
 import { useTodayRoutine } from '@features/routine/hooks/useTodayRoutine';
-import { useRoutineCompletionStore } from '@features/routine/stores/routineCompletionStore';
 import type { TimeOfDay } from '@features/routine/types/routine.types';
 import { Pressable } from '@shared/components/pressable';
 import { ScreenHeader } from '@shared/components/screen-header';
 import { ENV } from '@shared/config/env';
-import { getTodayUTC } from '@shared/utils/date';
 
-/**
- * Main Routine Results Screen
- *
- * Displays the authenticated user's skincare routine with:
- * - Morning/Evening toggle
- * - Step-by-step product cards
- * - Shop buttons for each product
- */
-export default function RoutineResultsScreen() {
+export default function RoutineResultsScreen(): React.ReactElement {
   const { t } = useTranslation();
   const [selectedTime, setSelectedTime] = useState<TimeOfDay>('morning');
 
   const { data: routine, isLoading, isError } = useRoutine();
   const todayRoutine = useTodayRoutine(routine);
 
-  const { isCompleted } = useRoutineCompletionStore();
-  const today = getTodayUTC();
-
-  // Compute category counts and occurrences for ordinal labels
-  // Sort completed items to the end
   const stepsWithOrdinal = useMemo(() => {
     if (!todayRoutine) return [];
 
@@ -50,7 +35,7 @@ export default function RoutineResultsScreen() {
     });
 
     const occurrenceTracker = new Map<string, number>();
-    const stepsWithMeta = currentSteps.map((stepWithProducts) => {
+    return currentSteps.map((stepWithProducts) => {
       const cat = stepWithProducts.step.category;
       const occurrence = (occurrenceTracker.get(cat) || 0) + 1;
       occurrenceTracker.set(cat, occurrence);
@@ -58,14 +43,10 @@ export default function RoutineResultsScreen() {
         stepWithProducts,
         categoryOccurrence: occurrence,
         totalCategoryCount: categoryCount.get(cat) || 1,
-        completed: isCompleted(today, selectedTime, stepWithProducts.step.order),
       };
     });
+  }, [todayRoutine, selectedTime]);
 
-    return stepsWithMeta;
-  }, [todayRoutine, selectedTime, isCompleted, today]);
-
-  // Loading state
   if (isLoading) {
     return (
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
@@ -74,7 +55,6 @@ export default function RoutineResultsScreen() {
     );
   }
 
-  // Error state
   if (isError) {
     return (
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
@@ -83,7 +63,6 @@ export default function RoutineResultsScreen() {
     );
   }
 
-  // No routine found
   if (!routine || !todayRoutine) {
     return (
       <ScreenHeader canGoBack={false} title={t('routine.resultsTitle')}>
@@ -110,14 +89,12 @@ export default function RoutineResultsScreen() {
         </Pressable>
       }
     >
-      {/* Skin Profile Summary */}
       <RoutineSummaryCard
         summary={routine.summary}
         analysis={routine.analysis}
         productSelection={routine.productSelection}
       />
 
-      {/* Morning/Evening Toggle */}
       <RoutineToggle
         selected={selectedTime}
         onSelect={setSelectedTime}
@@ -125,13 +102,11 @@ export default function RoutineResultsScreen() {
         eveningStepCount={todayRoutine.evening.steps.length}
       />
 
-      {/* Scrollable Step Cards */}
       <ScrollView
         className="flex-1"
         contentContainerClassName="pt-2 pb-32"
         showsVerticalScrollIndicator={false}
       >
-        {/* Day Header */}
         <Animated.View entering={FadeInDown.delay(100).springify()} className="mb-4">
           <Text className="text-lg font-semibold text-text">{todayRoutine.dayName}</Text>
           <Text className="text-sm text-textMuted">
@@ -141,7 +116,6 @@ export default function RoutineResultsScreen() {
           </Text>
         </Animated.View>
 
-        {/* Step Cards */}
         {stepsWithOrdinal.map(
           ({ stepWithProducts, categoryOccurrence, totalCategoryCount }, index) => (
             <RoutineStepCard
@@ -155,7 +129,6 @@ export default function RoutineResultsScreen() {
           ),
         )}
 
-        {/* Empty state for current time */}
         {currentSteps.length === 0 && (
           <View className="items-center py-8">
             <Text className="text-textMuted">{t('routine.noProducts')}</Text>

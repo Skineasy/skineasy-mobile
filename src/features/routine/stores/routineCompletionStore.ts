@@ -14,24 +14,24 @@ const mmkvStorage = {
 type TimeOfDay = 'morning' | 'evening';
 
 interface RoutineCompletionState {
-  // Key format: "YYYY-MM-DD_morning/evening_stepOrder"
+  // Key format: "YYYY-MM-DD_morning/evening_productId"
   completions: Record<string, boolean>;
 
-  toggleCompletion: (date: string, timeOfDay: TimeOfDay, stepOrder: number) => void;
-  isCompleted: (date: string, timeOfDay: TimeOfDay, stepOrder: number) => boolean;
+  toggleProductCompletion: (date: string, timeOfDay: TimeOfDay, productId: string) => void;
+  isProductCompleted: (date: string, timeOfDay: TimeOfDay, productId: string) => boolean;
   cleanupOldEntries: () => void;
 }
 
-const getKey = (date: string, timeOfDay: TimeOfDay, stepOrder: number): string =>
-  `${date}_${timeOfDay}_${stepOrder}`;
+const getKey = (date: string, timeOfDay: TimeOfDay, productId: string): string =>
+  `${date}_${timeOfDay}_${productId}`;
 
 export const useRoutineCompletionStore = create<RoutineCompletionState>()(
   persist(
     (set, get) => ({
       completions: {},
 
-      toggleCompletion: (date, timeOfDay, stepOrder) => {
-        const key = getKey(date, timeOfDay, stepOrder);
+      toggleProductCompletion: (date, timeOfDay, productId) => {
+        const key = getKey(date, timeOfDay, productId);
         set((state) => ({
           completions: {
             ...state.completions,
@@ -40,8 +40,8 @@ export const useRoutineCompletionStore = create<RoutineCompletionState>()(
         }));
       },
 
-      isCompleted: (date, timeOfDay, stepOrder) => {
-        const key = getKey(date, timeOfDay, stepOrder);
+      isProductCompleted: (date, timeOfDay, productId) => {
+        const key = getKey(date, timeOfDay, productId);
         return !!get().completions[key];
       },
 
