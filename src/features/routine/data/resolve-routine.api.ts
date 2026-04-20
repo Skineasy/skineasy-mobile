@@ -17,9 +17,10 @@ export interface ResolvedRoutineProduct {
     url: string | null;
     illustration: string | null;
     feature: string | null;
-    fonction: string | null;
     type: string | null;
     contenance: string | null;
+    application: string | null;
+    actifs: string | null;
   } | null;
 }
 

@@ -120,6 +120,22 @@ const ALL_CATEGORIES: ProductCategory[] = [
   'complements',
 ];
 
+function buildTypeContent(p: NonNullable<ResolvedRoutineProduct['product']>) {
+  const hasAny = p.type || p.application || p.actifs;
+  if (!hasAny) return null;
+  return {
+    title: p.name,
+    subtitle: p.type ?? '',
+    description: '',
+    howToUse: '',
+    application: p.application ?? '',
+    frequency: '',
+    badge: '',
+    keyIngredient: p.actifs ?? '',
+    irritationPotential: '',
+  };
+}
+
 function toProductDto(rp: ResolvedRoutineProduct): ProductDto | null {
   if (!rp.product) return null;
   const p = rp.product;
@@ -135,7 +151,7 @@ function toProductDto(rp: ResolvedRoutineProduct): ProductDto | null {
     feature: p.feature,
     url: p.url,
     contenance: p.contenance,
-    typeContent: null,
+    typeContent: buildTypeContent(p),
   };
 }
 

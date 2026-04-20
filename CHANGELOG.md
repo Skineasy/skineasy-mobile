@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Added product detail sheet content by mapping skincare_products columns (type, application, actifs) to typeContent
 - Added routine_generation_failed status wired through resolve-routine, UI and i18n
 - Added ResolvedRoutine type with embedded product data and routine_products
 - Added resolved-to-dto adapter mapping Edge Function payload to legacy RoutineDto
