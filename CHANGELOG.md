@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed TestFlight startup crash by switching babel plugin to react-native-worklets/plugin for Reanimated v4
 - Added product detail sheet content by mapping skincare_products columns (type, application, actifs) to typeContent
 - Added routine_generation_failed status wired through resolve-routine, UI and i18n
 - Added ResolvedRoutine type with embedded product data and routine_products
