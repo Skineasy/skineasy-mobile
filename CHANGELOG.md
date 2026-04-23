@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed bottom sheet rendering at reduced width on first open by wrapping children in a screen-wide View
 - Fixed JUMP_TO navigation errors by always registering routine/profile TabTriggers
 - Fixed silent failures in gallery/camera pickers by letting errors propagate instead of swallowing them
 - Added pick/take photo error toasts and processing overlay during meal photo upload

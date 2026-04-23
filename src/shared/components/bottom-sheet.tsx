@@ -7,8 +7,9 @@
 
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { useEffect, useRef } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, View } from 'react-native';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 interface BottomSheetProps {
@@ -51,7 +52,7 @@ export function BottomSheet({
       style={{ paddingTop: 24 }}
       backgroundColor={backgroundColor}
     >
-      {children}
+      <View style={{ width: SCREEN_WIDTH }}>{children}</View>
     </TrueSheet>
   );
 }
