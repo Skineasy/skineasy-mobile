@@ -6,7 +6,7 @@ import { cn } from '@shared/utils/cn';
 import { colors } from '@theme/colors';
 
 const SIZE = 40;
-const STROKE_WIDTH = 3;
+const STROKE_WIDTH = 5;
 const ROW_PADDING = 0;
 
 type CalendarDayCircleProps = {
