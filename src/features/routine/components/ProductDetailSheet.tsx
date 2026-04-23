@@ -5,7 +5,7 @@ import { Image, Linking, ScrollView, Text, useWindowDimensions, View } from 'rea
 import RenderHtml, { type MixedStyleDeclaration } from 'react-native-render-html';
 
 import { useHiddenProductsStore } from '@features/routine/stores/hiddenProductsStore';
-import type { ProductDto } from '@features/routine/types/routine.types';
+import type { ProductCategory, ProductDto } from '@features/routine/types/routine.types';
 import { BottomSheet } from '@shared/components/bottom-sheet';
 import { Card } from '@shared/components/card';
 import { Pressable } from '@shared/components/pressable';
@@ -20,11 +20,17 @@ const HTML_BASE_STYLE: MixedStyleDeclaration = {
 
 interface ProductDetailSheetProps {
   product: ProductDto | null;
+  category?: ProductCategory;
   visible: boolean;
   onClose: () => void;
 }
 
-export function ProductDetailSheet({ product, visible, onClose }: ProductDetailSheetProps) {
+export function ProductDetailSheet({
+  product,
+  category,
+  visible,
+  onClose,
+}: ProductDetailSheetProps) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const hideProduct = useHiddenProductsStore((s) => s.hideProduct);
@@ -45,10 +51,14 @@ export function ProductDetailSheet({ product, visible, onClose }: ProductDetailS
   if (!product) return null;
 
   const { typeContent } = product;
-  const hasHowToUse = typeContent?.howToUse && typeContent.howToUse.length > 0;
-  const hasKeyIngredient = typeContent?.keyIngredient && typeContent.keyIngredient.length > 0;
+  const isSerum = category === 'serum';
+  const hasHowToUse = !isSerum && !!typeContent?.howToUse && typeContent.howToUse.length > 0;
+  const hasApplication = !!typeContent?.application && typeContent.application.length > 0;
+  const hasFrequency = !!typeContent?.frequency && typeContent.frequency.length > 0;
+  const hasKeyIngredient =
+    isSerum && !!typeContent?.keyIngredient && typeContent.keyIngredient.length > 0;
   const hasIrritation =
-    typeContent?.irritationPotential && typeContent.irritationPotential.length > 0;
+    isSerum && !!typeContent?.irritationPotential && typeContent.irritationPotential.length > 0;
 
   return (
     <BottomSheet visible={visible} onClose={onClose} scrollable backgroundColor={colors.surface}>
@@ -79,27 +89,52 @@ export function ProductDetailSheet({ product, visible, onClose }: ProductDetailS
         </View>
 
         {/* Application & Frequency */}
-        {(typeContent?.application || typeContent?.frequency) && (
+        {(hasApplication || hasFrequency) && (
           <View className="flex-row mb-4">
-            {typeContent?.application && (
+            {hasApplication && (
               <Card padding="sm" className="flex-1 mr-2">
                 <Text className="text-xs text-secondary mb-1">
                   {t('routine.productDetail.application')}
                 </Text>
-                <Text className="text-sm font-medium text-text">{typeContent.application}</Text>
+                <Text className="text-sm font-medium text-text">{typeContent!.application}</Text>
               </Card>
             )}
-            {typeContent?.frequency && (
+            {hasFrequency && (
               <Card padding="sm" className="flex-1 ml-2">
                 <Text className="text-xs text-secondary mb-1">
                   {t('routine.productDetail.frequency')}
                 </Text>
-                <Text className="text-sm font-medium text-text">{typeContent.frequency}</Text>
+                <Text className="text-sm font-medium text-text">{typeContent!.frequency}</Text>
               </Card>
             )}
           </View>
         )}
-        {/* How to Use */}
+
+        {/* Serum-only: Key Ingredient & Irritation */}
+        {(hasKeyIngredient || hasIrritation) && (
+          <View className="flex-row mb-4">
+            {hasKeyIngredient && (
+              <Card padding="sm" className="flex-1 mr-2">
+                <Text className="text-xs text-secondary mb-1">
+                  {t('routine.productDetail.keyIngredient')}
+                </Text>
+                <Text className="text-sm font-medium text-text">{typeContent!.keyIngredient}</Text>
+              </Card>
+            )}
+            {hasIrritation && (
+              <Card padding="sm" className="flex-1 ml-2">
+                <Text className="text-xs text-secondary mb-1">
+                  {t('routine.productDetail.irritation')}
+                </Text>
+                <Text className="text-sm font-medium text-text">
+                  {typeContent!.irritationPotential}
+                </Text>
+              </Card>
+            )}
+          </View>
+        )}
+
+        {/* How to Use (non-serum) */}
         {hasHowToUse && (
           <View className="mb-4">
             <Card padding="sm">
@@ -108,32 +143,10 @@ export function ProductDetailSheet({ product, visible, onClose }: ProductDetailS
               </Text>
               <RenderHtml
                 contentWidth={width - 56}
-                source={{ html: typeContent.howToUse }}
+                source={{ html: typeContent!.howToUse }}
                 baseStyle={HTML_BASE_STYLE}
               />
             </Card>
-          </View>
-        )}
-
-        {/* Key Ingredient & Irritation */}
-        {(hasKeyIngredient || hasIrritation) && (
-          <View className="flex-row mb-4">
-            {hasKeyIngredient && (
-              <View className="flex-1 mr-2">
-                <Text className="text-xs text-textMuted mb-1">
-                  {t('routine.productDetail.keyIngredient')}
-                </Text>
-                <Text className="text-sm text-text">{typeContent.keyIngredient}</Text>
-              </View>
-            )}
-            {hasIrritation && (
-              <View className="flex-1 ml-2">
-                <Text className="text-xs text-textMuted mb-1">
-                  {t('routine.productDetail.irritation')}
-                </Text>
-                <Text className="text-sm text-text">{typeContent.irritationPotential}</Text>
-              </View>
-            )}
           </View>
         )}
 

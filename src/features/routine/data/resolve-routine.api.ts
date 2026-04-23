@@ -21,6 +21,27 @@ export interface ResolvedRoutineProduct {
     contenance: string | null;
     application: string | null;
     actifs: string | null;
+    type_content?: {
+      name: string;
+      title: string | null;
+      subtitle: string | null;
+      description: string | null;
+      how_to_use: string | null;
+      application: string | null;
+      frequency: string | null;
+      badge: string | null;
+      key_ingredient: string | null;
+      irritation_potential: string | null;
+      title_en: string | null;
+      subtitle_en: string | null;
+      description_en: string | null;
+      how_to_use_en: string | null;
+      application_en: string | null;
+      frequency_en: string | null;
+      badge_en: string | null;
+      key_ingredient_en: string | null;
+      irritation_potential_en: string | null;
+    } | null;
   } | null;
 }
 

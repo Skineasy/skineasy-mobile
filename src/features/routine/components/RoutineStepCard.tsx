@@ -177,6 +177,7 @@ export function RoutineStepCard({
 
       <ProductDetailSheet
         product={selectedProduct}
+        category={step.category}
         visible={selectedProduct !== null}
         onClose={() => setSelectedProduct(null)}
       />

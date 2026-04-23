@@ -2,6 +2,10 @@
 
 ## 1.0.0
 
+- Added product_type_content lookup in resolve-routine edge function and plumbed type_content through the adapter
+- Added locale-aware FR/EN selection in resolved-to-dto adapter for type content, skin labels, states, conditions and day names
+- Changed ProductDetailSheet to show How to use + Application + Frequency by default and Application + Key ingredient + Frequency + Irritation for serums
+- Changed FR i18n keyIngredient to "Actif clé" and irritation to "Potentiel irritant"
 - Fixed bottom sheet rendering at reduced width on first open by wrapping children in a screen-wide View
 - Fixed JUMP_TO navigation errors by always registering routine/profile TabTriggers
 - Fixed silent failures in gallery/camera pickers by letting errors propagate instead of swallowing them

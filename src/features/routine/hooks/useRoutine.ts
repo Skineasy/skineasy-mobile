@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { resolvedRoutineToDto } from '@features/routine/data/resolved-to-dto.adapter';
 import type { RoutineDto } from '@features/routine/types/routine.types';
@@ -17,11 +18,12 @@ export function useRoutine(): {
   isError: boolean;
 } {
   const routineResolution = useUserStore((state) => state.routineResolution);
+  const { i18n } = useTranslation();
 
   const data = useMemo<RoutineDto | null>(() => {
     if (!routineResolution || routineResolution.status !== 'ready') return null;
-    return resolvedRoutineToDto(routineResolution.routine);
-  }, [routineResolution]);
+    return resolvedRoutineToDto(routineResolution.routine, i18n.language);
+  }, [routineResolution, i18n.language]);
 
   return {
     data,

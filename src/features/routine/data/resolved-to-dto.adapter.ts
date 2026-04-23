@@ -27,7 +27,7 @@ import type {
 const STORAGE_PUBLIC_BASE =
   'https://lyhhipvipgbqsytfqwdw.supabase.co/storage/v1/object/public/product-images/';
 
-const SKIN_TYPE_LABELS: Record<string, string> = {
+const SKIN_TYPE_LABELS_FR: Record<string, string> = {
   tres_seche: 'Très sèche',
   seche: 'Sèche',
   normale: 'Normale',
@@ -39,7 +39,19 @@ const SKIN_TYPE_LABELS: Record<string, string> = {
   generique: 'Classique',
 };
 
-const SKIN_STATE_LABELS: Record<SkinStateType, string> = {
+const SKIN_TYPE_LABELS_EN: Record<string, string> = {
+  tres_seche: 'Very dry',
+  seche: 'Dry',
+  normale: 'Normal',
+  normale_mixte: 'Normal to combination',
+  mixte_seche_grasse: 'Combination (dry and oily)',
+  mixte_normale_grasse: 'Combination (normal and oily)',
+  grasse: 'Oily',
+  tres_grasse: 'Very oily',
+  generique: 'Classic',
+};
+
+const SKIN_STATE_LABELS_FR: Record<SkinStateType, string> = {
   sensible: 'Peau sensible',
   tres_sensible: 'Peau très sensible',
   mature: 'Peau mature',
@@ -47,6 +59,16 @@ const SKIN_STATE_LABELS: Record<SkinStateType, string> = {
   deshydratee: 'Peau déshydratée',
   acneique: 'Peau acnéique',
   acne_hormonale: 'Acné hormonale',
+};
+
+const SKIN_STATE_LABELS_EN: Record<SkinStateType, string> = {
+  sensible: 'Sensitive skin',
+  tres_sensible: 'Very sensitive skin',
+  mature: 'Mature skin',
+  atopique: 'Atopic skin',
+  deshydratee: 'Dehydrated skin',
+  acneique: 'Acne-prone skin',
+  acne_hormonale: 'Hormonal acne',
 };
 
 // Step order mirrors backend config/product-category.ts. Lower = applied earlier.
@@ -100,7 +122,8 @@ const STEP_TIME_ESTIMATES: Partial<Record<ProductCategory, number>> = {
   creme_solaire: 1,
 };
 
-const DAY_NAMES = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const DAY_NAMES_FR = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const DAY_NAMES_EN = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const ALL_CATEGORIES: ProductCategory[] = [
   'demaquillant',
@@ -120,7 +143,23 @@ const ALL_CATEGORIES: ProductCategory[] = [
   'complements',
 ];
 
-function buildTypeContent(p: NonNullable<ResolvedRoutineProduct['product']>) {
+function buildTypeContent(p: NonNullable<ResolvedRoutineProduct['product']>, isEnglish: boolean) {
+  const tc = p.type_content;
+  if (tc) {
+    const pick = (fr: string | null, en: string | null): string =>
+      (isEnglish ? en || fr : fr || en) ?? '';
+    return {
+      title: pick(tc.title, tc.title_en) || p.name,
+      subtitle: pick(tc.subtitle, tc.subtitle_en) || p.type || '',
+      description: pick(tc.description, tc.description_en),
+      howToUse: pick(tc.how_to_use, tc.how_to_use_en),
+      application: pick(tc.application, tc.application_en) || p.application || '',
+      frequency: pick(tc.frequency, tc.frequency_en),
+      badge: pick(tc.badge, tc.badge_en),
+      keyIngredient: pick(tc.key_ingredient, tc.key_ingredient_en) || p.actifs || '',
+      irritationPotential: pick(tc.irritation_potential, tc.irritation_potential_en),
+    };
+  }
   const hasAny = p.type || p.application || p.actifs;
   if (!hasAny) return null;
   return {
@@ -136,7 +175,7 @@ function buildTypeContent(p: NonNullable<ResolvedRoutineProduct['product']>) {
   };
 }
 
-function toProductDto(rp: ResolvedRoutineProduct): ProductDto | null {
+function toProductDto(rp: ResolvedRoutineProduct, isEnglish: boolean): ProductDto | null {
   if (!rp.product) return null;
   const p = rp.product;
   const illustrationUrl = p.illustration ? `${STORAGE_PUBLIC_BASE}${p.illustration}` : '';
@@ -151,18 +190,18 @@ function toProductDto(rp: ResolvedRoutineProduct): ProductDto | null {
     feature: p.feature,
     url: p.url,
     contenance: p.contenance,
-    typeContent: buildTypeContent(p),
+    typeContent: buildTypeContent(p, isEnglish),
   };
 }
 
-function groupProducts(routine: ResolvedRoutine): ProductSelectionProducts {
+function groupProducts(routine: ResolvedRoutine, isEnglish: boolean): ProductSelectionProducts {
   const empty: ProductSelectionProducts = ALL_CATEGORIES.reduce((acc, c) => {
     acc[c] = [];
     return acc;
   }, {} as ProductSelectionProducts);
 
   for (const rp of routine.routine_products ?? []) {
-    const dto = toProductDto(rp);
+    const dto = toProductDto(rp, isEnglish);
     if (!dto) continue;
     const cat = rp.category as ProductCategory;
     if (!empty[cat]) empty[cat] = [];
@@ -197,13 +236,17 @@ function buildDaySteps(
   return steps.map((s, i) => ({ ...s, order: i + 1 }));
 }
 
-function buildWeeklySchedule(products: ProductSelectionProducts): DailyRoutineDto[] {
+function buildWeeklySchedule(
+  products: ProductSelectionProducts,
+  isEnglish: boolean,
+): DailyRoutineDto[] {
   const morningSteps = buildDaySteps(products, MORNING_CATEGORIES);
   const eveningSteps = buildDaySteps(products, EVENING_CATEGORIES);
   const morningMinutes = morningSteps.reduce((s, x) => s + x.estimatedMinutes, 0);
   const eveningMinutes = eveningSteps.reduce((s, x) => s + x.estimatedMinutes, 0);
+  const dayNames = isEnglish ? DAY_NAMES_EN : DAY_NAMES_FR;
 
-  return DAY_NAMES.map((name, idx) => ({
+  return dayNames.map((name, idx) => ({
     dayOfWeek: idx,
     dayName: name,
     morning: { steps: morningSteps, estimatedMinutes: morningMinutes },
@@ -211,9 +254,12 @@ function buildWeeklySchedule(products: ProductSelectionProducts): DailyRoutineDt
   }));
 }
 
-export function resolvedRoutineToDto(routine: ResolvedRoutine): RoutineDto {
-  const products = groupProducts(routine);
-  const weeklySchedule = buildWeeklySchedule(products);
+export function resolvedRoutineToDto(routine: ResolvedRoutine, locale?: string): RoutineDto {
+  const isEnglish = !!locale && locale.toLowerCase().startsWith('en');
+  const skinTypeLabels = isEnglish ? SKIN_TYPE_LABELS_EN : SKIN_TYPE_LABELS_FR;
+  const skinStateLabelsMap = isEnglish ? SKIN_STATE_LABELS_EN : SKIN_STATE_LABELS_FR;
+  const products = groupProducts(routine, isEnglish);
+  const weeklySchedule = buildWeeklySchedule(products, isEnglish);
 
   const totalPrice = Object.values(products)
     .flat()
@@ -221,7 +267,7 @@ export function resolvedRoutineToDto(routine: ResolvedRoutine): RoutineDto {
   const productCount = Object.values(products).reduce((sum, arr) => sum + arr.length, 0);
 
   const skinStates = (routine.analysis?.skinStates ?? []) as SkinStateType[];
-  const skinStateLabels = skinStates.map((s) => SKIN_STATE_LABELS[s] ?? s);
+  const skinStateLabels = skinStates.map((s) => skinStateLabelsMap[s] ?? s);
 
   const healthConditions = routine.analysis?.healthConditions as
     | Record<string, boolean>
@@ -230,9 +276,15 @@ export function resolvedRoutineToDto(routine: ResolvedRoutine): RoutineDto {
   const isUnder15 = healthConditions?.isUnder15 === true;
   const isAtopic = healthConditions?.isAtopic === true;
   const conditionsLabels: string[] = [];
-  if (isPregnant) conditionsLabels.push('Grossesse');
-  if (isUnder15) conditionsLabels.push('Moins de 15 ans');
-  if (isAtopic) conditionsLabels.push('Peau atopique');
+  if (isEnglish) {
+    if (isPregnant) conditionsLabels.push('Pregnancy');
+    if (isUnder15) conditionsLabels.push('Under 15');
+    if (isAtopic) conditionsLabels.push('Atopic skin');
+  } else {
+    if (isPregnant) conditionsLabels.push('Grossesse');
+    if (isUnder15) conditionsLabels.push('Moins de 15 ans');
+    if (isAtopic) conditionsLabels.push('Peau atopique');
+  }
 
   return {
     id: routine.id,
@@ -241,7 +293,7 @@ export function resolvedRoutineToDto(routine: ResolvedRoutine): RoutineDto {
     analysis: {
       skinType: {
         primaryType: routine.skin_type as SkinType,
-        label: SKIN_TYPE_LABELS[routine.skin_type] ?? routine.skin_type,
+        label: skinTypeLabels[routine.skin_type] ?? routine.skin_type,
         confidence: 0,
       },
       skinStates: { states: skinStates, labels: skinStateLabels },
@@ -262,7 +314,7 @@ export function resolvedRoutineToDto(routine: ResolvedRoutine): RoutineDto {
       productUsage: [],
     },
     summary: {
-      skinTypeLabel: SKIN_TYPE_LABELS[routine.skin_type] ?? routine.skin_type,
+      skinTypeLabel: skinTypeLabels[routine.skin_type] ?? routine.skin_type,
       primaryConcerns: skinStateLabels.slice(0, 3),
       hasRestrictions: conditionsLabels.length > 0,
       totalProducts: productCount,
