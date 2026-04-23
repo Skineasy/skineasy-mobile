@@ -25,7 +25,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Alert, Image, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native';
 
 import { uploadMealPhoto } from '@features/journal/data/meal.api';
 import {
@@ -45,6 +45,7 @@ import type { MealQuality } from '@shared/types/journal.types';
 import { cn } from '@shared/utils/cn';
 import { getTodayUTC, toISODateString } from '@shared/utils/date';
 import { pickImageFromGallery, takePhoto } from '@shared/utils/image';
+import { logger } from '@shared/utils/logger';
 import { colors } from '@theme/colors';
 
 const MEAL_TYPES = [
@@ -75,6 +76,7 @@ export default function NutritionScreen() {
   const [localImageUri, setLocalImageUri] = useState<string | null>(null);
   const [imageWasModified, setImageWasModified] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isPickingImage, setIsPickingImage] = useState(false);
 
   // Compute effective image URI: use local if modified, else use existing entry's image
   const imageUri = imageWasModified ? localImageUri : (existingEntry?.photo_url ?? null);
@@ -115,17 +117,35 @@ export default function NutritionScreen() {
   }, [existingEntry, params.mealType, reset]);
 
   const handlePickImage = async () => {
-    const uri = await pickImageFromGallery(() => {
-      Alert.alert(t('common.error'), t('journal.nutrition.galleryPermissionRequired'));
-    });
-    if (uri) setImageUri(uri);
+    if (isPickingImage) return;
+    setIsPickingImage(true);
+    try {
+      const uri = await pickImageFromGallery(() => {
+        toast.error(t('common.error'), t('journal.nutrition.galleryPermissionRequired'));
+      });
+      if (uri) setImageUri(uri);
+    } catch (error) {
+      logger.error('[Nutrition] pickImageFromGallery failed', error);
+      toast.error(t('common.error'), t('journal.nutrition.pickError'));
+    } finally {
+      setIsPickingImage(false);
+    }
   };
 
   const handleTakePhoto = async () => {
-    const uri = await takePhoto(() => {
-      Alert.alert(t('common.error'), t('journal.nutrition.cameraPermissionRequired'));
-    });
-    if (uri) setImageUri(uri);
+    if (isPickingImage) return;
+    setIsPickingImage(true);
+    try {
+      const uri = await takePhoto(() => {
+        toast.error(t('common.error'), t('journal.nutrition.cameraPermissionRequired'));
+      });
+      if (uri) setImageUri(uri);
+    } catch (error) {
+      logger.error('[Nutrition] takePhoto failed', error);
+      toast.error(t('common.error'), t('journal.nutrition.takePhotoError'));
+    } finally {
+      setIsPickingImage(false);
+    }
   };
 
   const removeImage = () => {
@@ -170,7 +190,7 @@ export default function NutritionScreen() {
     }
   };
 
-  const isLoading = isUploading || createMeal.isPending || updateMeal.isPending;
+  const isLoading = isUploading || isPickingImage || createMeal.isPending || updateMeal.isPending;
 
   const handleDelete = (): void => {
     if (!existingEntry) return;
@@ -194,189 +214,228 @@ export default function NutritionScreen() {
     <ScreenHeader
       title={t('journal.nutrition.screenTitle')}
       icon={Utensils}
-      childrenClassName="pt-2 gap-6"
+      childrenClassName="pt-2"
+      noScroll
     >
-      {/* Meal Quality Rating (prominent, at top) */}
-      <View>
-        <SectionHeader
-          icon={Star}
-          title={t('journal.nutrition.quality.label')}
-          className="px-0 mb-3"
-        />
-        <Controller
-          control={control}
-          name="quality"
-          render={({ field: { onChange, value } }) => {
-            const current = (value ?? DEFAULT_QUALITY) as MealQuality;
-            return (
-              <View className="items-center">
-                <View className="flex-row gap-2">
-                  {QUALITY_LEVELS.map((level) => {
-                    const isActive = level <= current;
-                    return (
-                      <Pressable
-                        key={level}
-                        onPress={() => onChange(level)}
-                        haptic="light"
-                        className="p-1"
-                        accessibilityLabel={t(`journal.nutrition.quality.level.${level}`)}
-                      >
-                        <Star
-                          size={36}
-                          color={isActive ? colors.secondary : colors.border}
-                          fill={isActive ? colors.secondary : 'transparent'}
-                          strokeWidth={2}
-                        />
-                      </Pressable>
-                    );
-                  })}
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-6 pb-6"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Meal Quality Rating (prominent, at top) */}
+        <View>
+          <SectionHeader
+            icon={Star}
+            title={t('journal.nutrition.quality.label')}
+            className="px-0 mb-3"
+          />
+          <Controller
+            control={control}
+            name="quality"
+            render={({ field: { onChange, value } }) => {
+              const current = (value ?? DEFAULT_QUALITY) as MealQuality;
+              return (
+                <View className="items-center">
+                  <View className="flex-row gap-2">
+                    {QUALITY_LEVELS.map((level) => {
+                      const isActive = level <= current;
+                      return (
+                        <Pressable
+                          key={level}
+                          onPress={() => onChange(level)}
+                          haptic="light"
+                          className="p-1"
+                          accessibilityLabel={t(`journal.nutrition.quality.level.${level}`)}
+                        >
+                          <Star
+                            size={36}
+                            color={isActive ? colors.secondary : colors.border}
+                            fill={isActive ? colors.secondary : 'transparent'}
+                            strokeWidth={2}
+                          />
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                  <Text className="text-sm text-textMuted mt-2">
+                    {t(`journal.nutrition.quality.level.${current}`)}
+                  </Text>
                 </View>
-                <Text className="text-sm text-textMuted mt-2">
-                  {t(`journal.nutrition.quality.level.${current}`)}
-                </Text>
-              </View>
-            );
-          }}
-        />
-      </View>
+              );
+            }}
+          />
+        </View>
 
-      {/* Food Name Input */}
-      <View>
-        <Controller
-          control={control}
-          name="food_name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              label={t('journal.nutrition.foodName')}
-              value={value || ''}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              maxLength={200}
-              error={errors.food_name?.message ? t(errors.food_name.message as string) : undefined}
-            />
-          )}
-        />
-      </View>
+        {/* Food Name Input */}
+        <View>
+          <Controller
+            control={control}
+            name="food_name"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                label={t('journal.nutrition.foodName')}
+                value={value || ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                maxLength={200}
+                error={
+                  errors.food_name?.message ? t(errors.food_name.message as string) : undefined
+                }
+              />
+            )}
+          />
+        </View>
 
-      {/* Meal Type Selector */}
-      <View>
-        <SectionHeader icon={Clock} title={t('journal.nutrition.mealType')} className="px-0 mb-3" />
-        <Controller
-          control={control}
-          name="meal_type"
-          render={({ field: { onChange, value } }) => (
-            <View className="flex-row gap-2">
-              {MEAL_TYPES.map((mealType) => {
-                const Icon = mealType.icon;
-                const isSelected = value === mealType.id;
-                return (
-                  <Pressable
-                    key={mealType.id}
-                    onPress={() => onChange(isSelected ? null : mealType.id)}
-                    haptic="light"
-                    className={cn(
-                      'flex-1 items-center justify-center py-3 rounded-xl border',
-                      isSelected ? 'bg-secondary border-secondary' : 'bg-surface border-border',
-                    )}
-                    accessibilityLabel={t(`dashboard.summary.mealType.${mealType.id}`)}
-                  >
-                    <Icon
-                      size={24}
-                      color={isSelected ? '#FFF' : colors.textMuted}
-                      strokeWidth={2}
-                    />
-                    <Text
+        {/* Meal Type Selector */}
+        <View>
+          <SectionHeader
+            icon={Clock}
+            title={t('journal.nutrition.mealType')}
+            className="px-0 mb-3"
+          />
+          <Controller
+            control={control}
+            name="meal_type"
+            render={({ field: { onChange, value } }) => (
+              <View className="flex-row gap-2">
+                {MEAL_TYPES.map((mealType) => {
+                  const Icon = mealType.icon;
+                  const isSelected = value === mealType.id;
+                  return (
+                    <Pressable
+                      key={mealType.id}
+                      onPress={() => onChange(isSelected ? null : mealType.id)}
+                      haptic="light"
                       className={cn(
-                        'text-xs mt-1',
-                        isSelected ? 'text-white font-medium' : 'text-textMuted',
+                        'flex-1 items-center justify-center py-3 rounded-xl border',
+                        isSelected ? 'bg-secondary border-secondary' : 'bg-surface border-border',
                       )}
+                      accessibilityLabel={t(`dashboard.summary.mealType.${mealType.id}`)}
                     >
-                      {t(`dashboard.summary.mealType.${mealType.id}`)}
+                      <Icon
+                        size={24}
+                        color={isSelected ? '#FFF' : colors.textMuted}
+                        strokeWidth={2}
+                      />
+                      <Text
+                        className={cn(
+                          'text-xs mt-1',
+                          isSelected ? 'text-white font-medium' : 'text-textMuted',
+                        )}
+                      >
+                        {t(`dashboard.summary.mealType.${mealType.id}`)}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
+          />
+        </View>
+
+        {/* Image Picker */}
+        <View>
+          <SectionHeader
+            icon={ImageIcon}
+            title={t('journal.nutrition.addMeal')}
+            className="px-0 mb-3"
+          />
+
+          {imageUri ? (
+            <View className="relative">
+              <Image
+                source={{ uri: imageUri }}
+                className="w-full h-64 rounded-xl"
+                resizeMode="cover"
+              />
+              {isUploading && (
+                <View className="absolute inset-0 bg-black/40 rounded-xl items-center justify-center">
+                  <ActivityIndicator size="large" color="#FFF" />
+                  <Text className="text-white text-sm mt-2">
+                    {t('journal.nutrition.processingPhoto')}
+                  </Text>
+                </View>
+              )}
+              <Pressable
+                onPress={removeImage}
+                disabled={isUploading}
+                className="absolute top-2 right-2 bg-error rounded-full p-2"
+                accessibilityLabel={t('common.delete')}
+                haptic="light"
+              >
+                <X size={20} color="#FFF" />
+              </Pressable>
+            </View>
+          ) : (
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={handleTakePhoto}
+                disabled={isPickingImage}
+                className="flex-1 bg-surface border-2 border-dashed border-border rounded-xl py-8 items-center justify-center"
+                accessibilityLabel={t('journal.nutrition.takePhoto')}
+                haptic="light"
+              >
+                {isPickingImage ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <>
+                    <Camera size={32} color={colors.primary} />
+                    <Text className="text-sm text-textMuted mt-2">
+                      {t('journal.nutrition.takePhoto')}
                     </Text>
-                  </Pressable>
-                );
-              })}
+                  </>
+                )}
+              </Pressable>
+
+              <Pressable
+                onPress={handlePickImage}
+                disabled={isPickingImage}
+                className="flex-1 bg-surface border-2 border-dashed border-border rounded-xl py-8 items-center justify-center"
+                accessibilityLabel={t('journal.nutrition.gallery')}
+                haptic="light"
+              >
+                {isPickingImage ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <>
+                    <ImageIcon size={32} color={colors.primary} />
+                    <Text className="text-sm text-textMuted mt-2">
+                      {t('journal.nutrition.gallery')}
+                    </Text>
+                  </>
+                )}
+              </Pressable>
             </View>
           )}
-        />
-      </View>
+        </View>
 
-      {/* Image Picker */}
-      <View>
-        <SectionHeader
-          icon={ImageIcon}
-          title={t('journal.nutrition.addMeal')}
-          className="px-0 mb-3"
-        />
+        {/* Note Input */}
+        <View>
+          <SectionHeader
+            icon={MessageSquare}
+            title={t('journal.nutrition.addNote')}
+            className="px-0 mb-3"
+          />
+          <Controller
+            control={control}
+            name="note"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                value={value || ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                multiline
+                numberOfLines={3}
+                error={errors.note?.message ? t(errors.note.message as string) : undefined}
+              />
+            )}
+          />
+        </View>
+      </ScrollView>
 
-        {imageUri ? (
-          <View className="relative">
-            <Image
-              source={{ uri: imageUri }}
-              className="w-full h-64 rounded-xl"
-              resizeMode="cover"
-            />
-            <Pressable
-              onPress={removeImage}
-              className="absolute top-2 right-2 bg-error rounded-full p-2"
-              accessibilityLabel={t('common.delete')}
-              haptic="light"
-            >
-              <X size={20} color="#FFF" />
-            </Pressable>
-          </View>
-        ) : (
-          <View className="flex-row gap-3">
-            <Pressable
-              onPress={handleTakePhoto}
-              className="flex-1 bg-surface border-2 border-dashed border-border rounded-xl py-8 items-center justify-center"
-              accessibilityLabel={t('journal.nutrition.takePhoto')}
-              haptic="light"
-            >
-              <Camera size={32} color={colors.primary} />
-              <Text className="text-sm text-textMuted mt-2">
-                {t('journal.nutrition.takePhoto')}
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={handlePickImage}
-              className="flex-1 bg-surface border-2 border-dashed border-border rounded-xl py-8 items-center justify-center"
-              accessibilityLabel={t('journal.nutrition.gallery')}
-              haptic="light"
-            >
-              <ImageIcon size={32} color={colors.primary} />
-              <Text className="text-sm text-textMuted mt-2">{t('journal.nutrition.gallery')}</Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
-
-      {/* Note Input */}
-      <View>
-        <SectionHeader
-          icon={MessageSquare}
-          title={t('journal.nutrition.addNote')}
-          className="px-0 mb-3"
-        />
-        <Controller
-          control={control}
-          name="note"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Input
-              value={value || ''}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              multiline
-              numberOfLines={3}
-              error={errors.note?.message ? t(errors.note.message as string) : undefined}
-            />
-          )}
-        />
-      </View>
-
-      {/* Save Button */}
-      <View>
+      {/* Sticky Save/Delete actions */}
+      <View className="pt-3 pb-2 bg-surface border-t border-border">
         <Button
           title={t('common.save')}
           onPress={handleSubmit(onSubmit)}
@@ -384,7 +443,6 @@ export default function NutritionScreen() {
           loading={isLoading}
         />
 
-        {/* Delete Button (only when editing) */}
         {existingEntry && (
           <Button
             title={t('common.delete')}
@@ -392,7 +450,7 @@ export default function NutritionScreen() {
             onPress={handleDelete}
             disabled={deleteMeal.isPending}
             loading={deleteMeal.isPending}
-            className="mt-4"
+            className="mt-3"
           />
         )}
       </View>

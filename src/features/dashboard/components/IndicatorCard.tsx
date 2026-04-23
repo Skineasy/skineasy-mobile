@@ -9,6 +9,7 @@ interface IndicatorCardProps {
   icon: LucideIcon;
   label: string;
   value: string;
+  valueIcon?: LucideIcon;
   level: number;
   isEmpty: boolean;
   onPress: () => void;
@@ -41,6 +42,7 @@ export function IndicatorCard({
   icon: Icon,
   label,
   value,
+  valueIcon: ValueIcon,
   level,
   isEmpty,
   onPress,
@@ -59,13 +61,19 @@ export function IndicatorCard({
         </View>
 
         <View className="flex-row items-end justify-between gap-2">
-          <Text
-            className="text-xl font-bold text-text flex-1"
-            numberOfLines={1}
-            style={{ color: isEmpty ? colors.textMuted : colors.text }}
-          >
-            {value}
-          </Text>
+          <View className="flex-1">
+            {ValueIcon && !isEmpty ? (
+              <ValueIcon size={26} color={colors.text} />
+            ) : (
+              <Text
+                className="text-xl font-bold text-text"
+                numberOfLines={1}
+                style={{ color: isEmpty ? colors.textMuted : colors.text }}
+              >
+                {value}
+              </Text>
+            )}
+          </View>
           <BarChart level={level} isEmpty={isEmpty} />
         </View>
       </Card>

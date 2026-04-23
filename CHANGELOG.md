@@ -2,6 +2,8 @@
 
 ## 1.0.0
 
+- Changed nutrition indicator on home to a Lucide smiley (Frown/Meh/Smile) based on average meal quality
+- Changed NutritionScreen save/delete buttons to sticky footer outside the scroll view
 - Added tap on dashboard date label to open the journal CalendarModal for day selection
 - Changed stress indicator icon from Smile to Zap (lightning bolt)
 - Changed routine and profile screens to use bg-background matching home and journal

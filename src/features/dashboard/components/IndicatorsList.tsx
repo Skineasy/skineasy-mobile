@@ -1,5 +1,15 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, type LucideIcon, Moon, Search, Utensils, Zap } from 'lucide-react-native';
+import {
+  Dumbbell,
+  Frown,
+  type LucideIcon,
+  Meh,
+  Moon,
+  Search,
+  Smile,
+  Utensils,
+  Zap,
+} from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -50,6 +60,7 @@ interface IndicatorItem {
   icon: LucideIcon;
   label: string;
   value: string;
+  valueIcon?: LucideIcon;
   level: number;
   isEmpty: boolean;
 }
@@ -70,6 +81,12 @@ function formatSleep(hours: number): string {
   return `${h}h${m}`;
 }
 
+function getNutritionSmileyIcon(avgQuality: number): LucideIcon {
+  if (avgQuality >= 3.5) return Smile;
+  if (avgQuality >= 2.5) return Meh;
+  return Frown;
+}
+
 export function IndicatorsList({
   sleepEntries,
   mealEntries,
@@ -86,6 +103,11 @@ export function IndicatorsList({
   const sleepQuality = sleepEntries[0]?.quality ?? 0;
 
   const mealCount = mealEntries.length;
+  const ratedMeals = mealEntries.filter((m) => m.quality != null);
+  const avgMealQuality =
+    ratedMeals.length > 0
+      ? ratedMeals.reduce((sum, m) => sum + (m.quality as number), 0) / ratedMeals.length
+      : 3;
 
   const totalSportMinutes = sportEntries.reduce((acc, e) => acc + (e.duration || 0), 0);
   const avgSportIntensity =
@@ -114,7 +136,8 @@ export function IndicatorsList({
         key: 'nutrition',
         icon: Utensils,
         label: t('dashboard.indicators.nutrition'),
-        value: mealCount > 0 ? `${mealCount}/4` : '—',
+        value: mealCount > 0 ? '' : '—',
+        valueIcon: mealCount > 0 ? getNutritionSmileyIcon(avgMealQuality) : undefined,
         level: Math.min(mealCount, 5),
         isEmpty: mealCount === 0,
       },
@@ -150,6 +173,7 @@ export function IndicatorsList({
     sleepQuality,
     sleepEntries.length,
     mealCount,
+    avgMealQuality,
     totalSportMinutes,
     avgSportIntensity,
     sportEntries.length,
@@ -217,6 +241,7 @@ export function IndicatorsList({
                 icon={item.icon}
                 label={item.label}
                 value={item.value}
+                valueIcon={item.valueIcon}
                 level={item.level}
                 isEmpty={item.isEmpty}
                 onPress={() => navigateToJournal(item.key)}
