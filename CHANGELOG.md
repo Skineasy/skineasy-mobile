@@ -3,6 +3,8 @@
 ## 1.0.0
 
 - Changed dashboard indicators to a 2-row horizontal carousel with column pagination
+- Changed observations screen to keep save button sticky outside the scroll view
+- Fixed meal photo RCTURLRequestHandler warning by signing photo_url in getEntriesByDateRange
 - Fixed TestFlight startup crash by switching babel plugin to react-native-worklets/plugin for Reanimated v4
 - Added product detail sheet content by mapping skincare_products columns (type, application, actifs) to typeContent
 - Added routine_generation_failed status wired through resolve-routine, UI and i18n

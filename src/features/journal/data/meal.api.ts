@@ -7,7 +7,7 @@ import { compressImage } from '@shared/utils/image';
 
 import { getUserId } from '@features/journal/data/utils';
 
-async function getMealSignedUrl(path: string): Promise<string | null> {
+export async function getMealSignedUrl(path: string): Promise<string | null> {
   const { data, error } = await supabase.storage.from('meal-photos').createSignedUrl(path, 3600);
   if (error || !data) return null;
   return data.signedUrl;

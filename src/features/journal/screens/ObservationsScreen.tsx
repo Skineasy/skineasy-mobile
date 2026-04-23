@@ -147,7 +147,7 @@ export default function ObservationsScreen(): React.ReactElement {
   }
 
   return (
-    <ScreenHeader title={t('journal.observations.screenTitle')} icon={Search}>
+    <ScreenHeader title={t('journal.observations.screenTitle')} icon={Search} noScroll>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="gap-6 pb-6">
           <DateNavigation selectedDate={selectedDate} onDateChange={setSelectedDate} />

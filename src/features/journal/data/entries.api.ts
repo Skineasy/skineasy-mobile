@@ -9,6 +9,7 @@ import type {
   StressEntry,
 } from '@shared/types/journal.types';
 
+import { getMealSignedUrl } from '@features/journal/data/meal.api';
 import { getUserId } from '@features/journal/data/utils';
 
 export async function getEntriesByDateRange(
@@ -56,10 +57,19 @@ export async function getEntriesByDateRange(
   if (stresses.error) throw mapSupabaseError(stresses.error);
   if (observations.error) throw mapSupabaseError(observations.error);
 
+  const rawMeals = (meals.data ?? []) as MealEntry[];
+  const signedMeals = await Promise.all(
+    rawMeals.map(async (meal) => {
+      if (!meal.photo_url) return meal;
+      const signedUrl = await getMealSignedUrl(meal.photo_url);
+      return signedUrl ? { ...meal, photo_url: signedUrl } : meal;
+    }),
+  );
+
   return {
     sleeps: (sleeps.data ?? []) as SleepEntry[],
     sports: (sports.data ?? []) as SportEntry[],
-    meals: (meals.data ?? []) as MealEntry[],
+    meals: signedMeals,
     stresses: (stresses.data ?? []) as StressEntry[],
     observations: (observations.data ?? []) as ObservationEntry[],
   };
