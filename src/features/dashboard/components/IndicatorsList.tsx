@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, type LucideIcon, Moon, Search, Smile, Utensils } from 'lucide-react-native';
+import { Dumbbell, type LucideIcon, Moon, Search, Utensils, Zap } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -128,7 +128,7 @@ export function IndicatorsList({
       },
       {
         key: 'stress',
-        icon: Smile,
+        icon: Zap,
         label: t('dashboard.indicators.stress'),
         value: stressLevel > 0 ? t(`journal.stress.level.${STRESS_LEVEL_KEYS[stressLevel]}`) : '—',
         level: stressLevel,

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, Moon, Search, Smile, Utensils } from 'lucide-react-native';
+import { Dumbbell, Moon, Search, Utensils, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -20,7 +20,7 @@ const INDICATORS = [
   { key: 'sleep', icon: Moon, path: '/journal/sleep' },
   { key: 'nutrition', icon: Utensils, path: '/journal/nutrition' },
   { key: 'sport', icon: Dumbbell, path: '/journal/sport' },
-  { key: 'stress', icon: Smile, path: '/journal/stress' },
+  { key: 'stress', icon: Zap, path: '/journal/stress' },
 ] as const;
 
 export function AddIndicatorSheet({

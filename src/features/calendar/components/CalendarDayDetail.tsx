@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Droplets, Dumbbell, Moon, Plus, Search, Smile, Utensils } from 'lucide-react-native';
+import { Droplets, Dumbbell, Moon, Plus, Search, Utensils, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
@@ -136,7 +136,7 @@ function StressDetail({ entry }: { entry?: StressEntry }): React.ReactElement | 
   return (
     <Card padding="md" className="gap-2">
       <View className="flex-row items-center gap-2">
-        <Smile size={20} color={colors.brownDark} />
+        <Zap size={20} color={colors.brownDark} />
         <Text className="font-semibold text-brown-dark">{t('journal.sectionStress')}</Text>
       </View>
       <View className="flex-row items-center justify-between">
