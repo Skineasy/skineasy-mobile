@@ -14,7 +14,7 @@ import {
   BAR_HEIGHT,
   BAR_RADIUS,
   BUBBLE_INSET_Y,
-  FAB_LIFT,
+  FAB_DIAMETER,
   FAB_NOTCH_WIDTH,
 } from './floating-tab-bar/constants';
 import { Fab } from './floating-tab-bar/fab';
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   fabWrapper: {
     position: 'absolute',
-    top: -FAB_LIFT,
+    top: (BAR_HEIGHT - FAB_DIAMETER) / 2,
     left: 0,
     right: 0,
     alignItems: 'center',

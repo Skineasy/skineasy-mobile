@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Plus } from 'lucide-react-native';
 import { Pressable as RNPressable, StyleSheet } from 'react-native';
 
@@ -12,16 +11,9 @@ type FabProps = {
 
 export function Fab({ onPress }: FabProps): React.ReactElement {
   return (
-    <LinearGradient
-      colors={[colors.primary, colors.primaryDark]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.base}
-    >
-      <RNPressable onPress={onPress} style={styles.hit}>
-        <Plus color={colors.white} size={28} strokeWidth={2.5} />
-      </RNPressable>
-    </LinearGradient>
+    <RNPressable onPress={onPress} style={styles.base}>
+      <Plus color={colors.primary} size={26} strokeWidth={2.5} />
+    </RNPressable>
   );
 }
 
@@ -30,17 +22,7 @@ const styles = StyleSheet.create({
     width: FAB_DIAMETER,
     height: FAB_DIAMETER,
     borderRadius: FAB_RADIUS,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  hit: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: FAB_RADIUS,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
