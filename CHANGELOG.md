@@ -2,6 +2,9 @@
 
 ## 1.0.0
 
+- Changed dependency audit: aligned Expo SDK 54 patches, bumped true-sheet, supabase-js, tanstack-query, i18next, react-i18next, react-hook-form, nativewind, lucide-react-native, and dev tooling
+- Removed unused @expo-google-fonts/roboto and expo-status-bar packages
+- Fixed avatar initials fontFamily reference to a never-loaded Roboto font, replaced with fontWeight
 - Fixed duplicate journal reminder notifications by canceling all scheduled notifications matching the category instead of only the last tracked id
 - Fixed iOS password autofill suggestions on login and register by deferring email autofocus until after entrance animation
 - Fixed Bitwarden/iOS password autofill on login by adding webcredentials associated domain and switching to current-password autoComplete

@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   },
   initials: {
     color: colors.surface,
-    fontFamily: 'Roboto_500Medium',
+    fontWeight: '500',
   },
 });
