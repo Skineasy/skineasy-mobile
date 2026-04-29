@@ -36,11 +36,15 @@ async function hasPermission(): Promise<boolean> {
 }
 
 async function cancelById(kind: NotificationKind): Promise<void> {
-  const ids = getScheduledIds();
-  const id = ids[kind];
-  if (!id) return;
   try {
-    await Notifications.cancelScheduledNotificationAsync(id);
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    const matching = scheduled.filter((n) => {
+      const category = (n.content.data as { category?: string } | null)?.category;
+      return category === kind;
+    });
+    await Promise.all(
+      matching.map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
+    );
   } catch (err) {
     logger.warn('[notifications] cancel failed:', kind, err);
   }

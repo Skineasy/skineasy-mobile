@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed duplicate journal reminder notifications by canceling all scheduled notifications matching the category instead of only the last tracked id
 - Fixed iOS password autofill suggestions on login and register by deferring email autofocus until after entrance animation
 - Fixed Bitwarden/iOS password autofill on login by adding webcredentials associated domain and switching to current-password autoComplete
 - Added product_type_content lookup in resolve-routine edge function and plumbed type_content through the adapter
