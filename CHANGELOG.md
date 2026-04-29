@@ -81,3 +81,15 @@
 - Changed FAB to a primary gradient design with soft shadow
 - Removed solid and glass FAB variants and the fabVariant prop
 - Changed floating-tab-bar into modular files (constants, tabs, tab-button, fab, use-bubble-style)
+- Changed Apple Health lib from react-native-health to @kingstinct/react-native-healthkit for New Architecture support
+- Added HRV + RestingHR derivation to auto-fill StressEntry level from a 7-day baseline
+- Added HR-based workout intensity using avg HR vs 220-age, fallback 3 when age or HR samples missing
+- Added per-category SyncReport with fetched/upserted/failed counts persisted in the healthkit store
+- Added HealthKitDebugSheet (long-press sync button) with native probe, re-sync 7d/30d, reset, share JSON, open Settings
+- Added foreground auto-sync via AppState change listener with 1h throttle in addition to cold-start sync
+- Added invalidateQueries on queryKeys.journal after sync so dashboard and calendar refresh automatically
+- Added Open Settings link in sync button when authorization missing or sync returned zero samples
+- Fixed duplicate sync invocations by guarding with inFlightRef instead of stale isSyncing closure
+- Added docs/healthkit-integration.md updates covering library swap, derivations, diagnostics, and code layout
+- Added docs/products/apple-health.md product spec for cross-platform health sync
+- Added docs/health-sync-cross-platform.md technical study and Android (Health Connect) implementation plan

@@ -550,9 +550,10 @@
     "notAuthorized": "Tap to authorize",
     "syncSuccess": "Health data synced",
     "syncError": "Failed to sync health data",
-    "permissionDenied": "Health access denied",
+    "permissionDenied": "Health access denied. Open Settings → Health to enable.",
     "notAvailable": "Apple Health is not available on this device",
-    "simulatorError": "Apple Health is not available in simulator"
+    "simulatorError": "Apple Health is not available in simulator",
+    "openSettings": "Open Settings → Health to manage permissions"
   },
   "forceUpdate": {
     "title": "Update Required",
