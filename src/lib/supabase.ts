@@ -6,14 +6,6 @@ import { ENV } from '@shared/config/env';
 
 import { storage } from '@lib/storage';
 import type { Database } from '@lib/supabase.types';
-import { logger } from '@shared/utils/logger';
-
-logger.info('[supabase] Initializing client', {
-  url: ENV.SUPABASE_URL,
-  keyPrefix: ENV.SUPABASE_PUBLISHABLE_KEY.slice(0, 16),
-  keyLength: ENV.SUPABASE_PUBLISHABLE_KEY.length,
-  keyLooksPublishable: ENV.SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_'),
-});
 
 const mmkvAdapter = {
   getItem: (key: string): string | null => storage.getString(key) ?? null,
