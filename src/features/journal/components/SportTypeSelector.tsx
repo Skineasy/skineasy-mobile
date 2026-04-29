@@ -10,7 +10,7 @@
 import { Search, X } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 
 import { useSportTypes } from '@features/journal/data/sport.queries';
 import { enrichSportTypes } from '@features/journal/utils/sportMapping';
@@ -130,7 +130,7 @@ export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
         }}
         scrollable
       >
-        <View className="flex-1 px-5">
+        <View className="px-5 pb-8">
           {/* Title */}
           <Text className="text-xl font-bold text-text mb-4">
             {t('journal.sport.selectActivity')}
@@ -138,12 +138,18 @@ export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
 
           {/* Search Input */}
           <View className="mb-4">
-            <View className="flex-row items-center bg-background border border-border rounded-lg px-3 py-2">
+            <View
+              className="flex-row items-center bg-background border border-border rounded-lg px-3"
+              style={{ height: 44 }}
+            >
               <Search size={20} color={colors.textMuted} />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                placeholder={t('journal.sport.searchActivities')}
+                placeholderTextColor={colors.textMuted}
                 className="flex-1 ml-2 text-base text-text"
+                style={{ height: '100%', paddingVertical: 0 }}
                 autoFocus
               />
               {searchQuery.length > 0 && (
@@ -155,27 +161,25 @@ export function SportTypeSelector({ value, onChange }: SportTypeSelectorProps) {
           </View>
 
           {/* Sport Types List */}
-          <ScrollView showsVerticalScrollIndicator={false} className="px-5">
-            {filteredSportTypes.length === 0 ? (
-              <View className="py-8">
-                <Text className="text-center text-textMuted">
-                  {t('journal.sport.noActivitiesFound')}
-                </Text>
-              </View>
-            ) : (
-              filteredSportTypes.map((item) => (
-                <Pressable
-                  key={item.id}
-                  onPress={() => handleSelect(item.id)}
-                  haptic="light"
-                  className="flex-row items-center justify-between py-3 border-b border-border"
-                >
-                  <Text className="text-base text-text">{item.label}</Text>
-                  {value === item.id && <View className="w-2 h-2 rounded-full bg-primary" />}
-                </Pressable>
-              ))
-            )}
-          </ScrollView>
+          {filteredSportTypes.length === 0 ? (
+            <View className="py-8">
+              <Text className="text-center text-textMuted">
+                {t('journal.sport.noActivitiesFound')}
+              </Text>
+            </View>
+          ) : (
+            filteredSportTypes.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => handleSelect(item.id)}
+                haptic="light"
+                className="flex-row items-center justify-between py-3 border-b border-border"
+              >
+                <Text className="text-base text-text">{item.label}</Text>
+                {value === item.id && <View className="w-2 h-2 rounded-full bg-primary" />}
+              </Pressable>
+            ))
+          )}
         </View>
       </BottomSheet>
     </View>

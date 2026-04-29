@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed collapsed search TextInput in SportTypeSelector bottom sheet and added missing placeholder
 - Changed dependency audit: aligned Expo SDK 54 patches, bumped true-sheet, supabase-js, tanstack-query, i18next, react-i18next, react-hook-form, nativewind, lucide-react-native, and dev tooling
 - Removed unused @expo-google-fonts/roboto and expo-status-bar packages
 - Fixed avatar initials fontFamily reference to a never-loaded Roboto font, replaced with fontWeight
