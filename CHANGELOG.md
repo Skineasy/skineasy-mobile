@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Fixed Input text not vertically centered on Android by disabling includeFontPadding and zeroing paddingBottom
 - Fixed Android push token registration log spam by deduping rapid AppState transitions and latching after permanent failures (e.g. missing FCM credentials)
 - Fixed floating tab bar overlapping the Android system navigation bar by basing the bottom offset on safe-area inset
 - Fixed missing active-tab bubble on Android by removing the iOS-only liquid-glass gate
