@@ -2,7 +2,7 @@
 @import 'uniwind';
 
 @theme {
-  /* Colors - keep names identical to NativeWind config so className strings don't change */
+  /* Colors */
   --color-primary: rgb(125 96 78);
   --color-primary-dark: rgb(46 35 25);
   --color-secondary: rgb(232 76 63);

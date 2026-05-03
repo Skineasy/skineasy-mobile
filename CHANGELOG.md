@@ -2,6 +2,10 @@
 
 ## 1.0.0
 
+- Removed leftover NativeWind references in tsconfig.json, CLAUDE.md, src/global.css and deleted nativewind-env.d.ts
+- Changed README and CLAUDE.md to document Expo SDK 55 + Uniwind stack
+- Fixed Metro bundling failure on lucide-react-native v1.x by pinning to ^0.562 (v1 packaging incompatible with SDK 55 strict ESM resolution)
+- Changed expo-dev-client and expo-notifications to SDK 55 patch versions per expo-doctor
 - Changed Expo SDK from 54 to 55 with React Native 0.83.6 and React 19.2 plus aligned native modules
 - Removed app.config.ts newArchEnabled and android.edgeToEdgeEnabled flags now defaulted in SDK 55
 - Fixed KeyboardScrollView ref type from ScrollView to KeyboardAwareScrollViewRef for keyboard-controller 1.x

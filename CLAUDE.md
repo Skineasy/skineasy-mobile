@@ -19,7 +19,7 @@ React Native (Expo) skincare app - iOS & Android
 2. **No barrel files** - Import from source directly, not index.ts re-exports
 3. **No backend errors in UI** - Use i18n keys, backend errors aren't translated
 4. **Date format** - API: `"2025-01-15T00:00:00.000Z"`, birthday only: `"YYYY-MM-DD"`
-5. **NativeWind only** - Always use `className` with Tailwind classes, never `StyleSheet.create()`. Exception: `Animated.View` and `GlassView` require `style` prop
+5. **Uniwind only** - Always use `className` with Tailwind classes, never `StyleSheet.create()`. Exception: `Animated.View` and `GlassView` require `style` prop. Third-party components needing className must be wrapped via `withUniwind` (see `src/shared/components/styled-rn.tsx`)
 6. **Use cn() for dynamic classes** - Never use template literals for className concatenation, use `cn()` from `@shared/utils/cn`
 7. **Mutations auto-toast errors** - Global `MutationCache.onError` shows a translated toast for every mutation error automatically. Do NOT add a manual `toast.error()` in `onError` unless the mutation sets `meta: { suppressGlobalError: true }` to opt out.
 
@@ -37,7 +37,7 @@ React Native (Expo) skincare app - iOS & Android
 
 - **Framework**: Expo SDK (managed), TypeScript strict, Expo Router
 - **State**: Zustand (auth, user, journal stores) + TanStack Query
-- **Styling**: NativeWind (Tailwind)
+- **Styling**: Uniwind v1.6 + Tailwind v4 (`@theme` tokens in `src/global.css`)
 - **Forms**: React Hook Form + Zod
 - **i18n**: i18next + expo-localization (FR/EN)
 - **Testing**: Vitest + React Native Testing Library

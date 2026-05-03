@@ -4,10 +4,10 @@ React Native (Expo) skincare app — iOS & Android.
 
 ## Tech Stack
 
-- **Framework**: Expo SDK 54, TypeScript strict, Expo Router
+- **Framework**: Expo SDK 55 (RN 0.83, React 19.2), TypeScript strict, Expo Router
 - **Backend**: Supabase (Auth, Postgres, Storage, Edge Functions)
 - **State**: Zustand + TanStack Query
-- **Styling**: NativeWind v4 (Tailwind)
+- **Styling**: Uniwind v1.6 + Tailwind v4 (`@theme` tokens in `src/global.css`)
 - **Testing**: Vitest
 
 ## Prerequisites
@@ -80,3 +80,11 @@ Key conventions:
 - All Supabase errors are mapped to i18n keys via `src/lib/error-mapper.ts`
 - Mutations auto-toast errors via the global `MutationCache.onError` handler
 - Push tokens are registered after login and unregistered on logout
+
+## Recent migrations
+
+- **Expo SDK 54 → 55** (RN 0.81 → 0.83, React 19.1 → 19.2). Removed `newArchEnabled` and `android.edgeToEdgeEnabled` (defaults in 55), bumped Sentry / netinfo / babel-preset-expo to v55-aligned versions.
+- **NativeWind v4 → Uniwind v1.6 + Tailwind v3 → v4**. NativeWind 4.x crashed on Metro 0.85 (`addedFiles` undefined) and NativeWind 5 is preview-only. Switched to Uniwind (drop-in `className`, Metro plugin only — no Babel transform, no Tailwind CLI child process). Tokens migrated 1:1 from `tailwind.config.js` to `@theme` block in `src/global.css`. Third-party components needing `className` (e.g. `SafeAreaView`) are wrapped via `withUniwind` in `src/shared/components/styled-rn.tsx`.
+- **lucide-react-native pinned to `^0.562`**. v1.x has a packaging bug (its barrel imports `./icons/*.mjs` paths not declared in its `exports` field), incompatible with SDK 55's strict ESM resolution.
+
+See [`docs/specs/tech/migrate-to-uniwind.md`](docs/specs/tech/migrate-to-uniwind.md) for the full Uniwind migration spec.
