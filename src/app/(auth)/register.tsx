@@ -18,7 +18,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Animated, {
   FadeInLeft,
   FadeInRight,
@@ -90,14 +90,20 @@ export default function RegisterScreen() {
     const isValid = await validateStep(currentStep);
     if (isValid && currentStep < TOTAL_STEPS) {
       setDirection('forward');
-      setCurrentStep((prev) => prev + 1);
+      setCurrentStep((prev) => {
+        const next = prev + 1;
+        return next === 3 && Platform.OS !== 'ios' ? next + 1 : next;
+      });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setDirection('back');
-      setCurrentStep((prev) => prev - 1);
+      setCurrentStep((prev) => {
+        const next = prev - 1;
+        return next === 3 && Platform.OS !== 'ios' ? next - 1 : next;
+      });
     } else {
       router.back();
     }

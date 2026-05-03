@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Changed onboarding to skip the Apple Health sync step on Android
 - Added expo-status-bar with dark style in root layout for the light theme app
 - Fixed Input inner-shadow flicker on Android by removing elevation and gating shadow props to iOS
 - Fixed Card pressed/selected state on Android by removing elevation and aligning shadow across pressed/unpressed states on iOS
