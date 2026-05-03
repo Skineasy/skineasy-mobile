@@ -37,10 +37,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
   },
-  web: {
-    favicon: './assets/favicon.png',
-    bundler: 'metro',
-  },
   extra: {
     eas: {
       projectId: 'dfbff412-fc10-4a77-b170-eb432c2969b9',
