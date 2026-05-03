@@ -172,7 +172,7 @@ The stress category (15% of the daily score) is auto-filled from HealthKit when 
 
 ## UI Affordances
 
-- **Sync Apple Health** button in Profile (DEV only). Tap → manual sync. Long-press → debug sheet.
+- **Sync Apple Health** button in Profile (visible in production). Tap → manual sync. Long-press → debug sheet (DEV only).
 - **Inline summary** under the button, e.g. `✓ Sleep 3 · Workouts 0 · Stress 0 · Nutrition 0`.
   - Glyph: `✓` ok / `⚠` error / `○` all empty.
 - **Open Settings → Health** link surfaces inline when not authorized OR when the last sync returned zero data across all categories (silent denial).

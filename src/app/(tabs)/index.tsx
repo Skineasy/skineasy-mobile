@@ -1,3 +1,4 @@
+import { SafeAreaView } from '@shared/components/styled-rn';
 import { format, parse } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { Layers } from 'lucide-react-native';
@@ -5,16 +6,16 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { SafeAreaView } from '@shared/components/styled-rn';
 
 import { DateNavigation } from '@features/dashboard/components/DateNavigation';
-import { CalendarModal } from '@features/journal/components/CalendarModal';
 import { DayProgressDots } from '@features/dashboard/components/DayProgressDots';
+import { HealthBanner } from '@features/dashboard/components/HealthBanner';
 import { IndicatorsList } from '@features/dashboard/components/IndicatorsList';
 import { RecipeOfTheDay } from '@features/dashboard/components/RecipeOfTheDay';
 import { RecommendationsSection } from '@features/dashboard/components/RecommendationsSection';
 import { ScoreContainer } from '@features/dashboard/components/ScoreContainer';
 import { calculateDayScore } from '@features/dashboard/utils/score';
+import { CalendarModal } from '@features/journal/components/CalendarModal';
 import { useMealEntries } from '@features/journal/data/meal.queries';
 import { useObservationsEntry } from '@features/journal/data/observation.queries';
 import { useSleepEntries } from '@features/journal/data/sleep.queries';
@@ -100,6 +101,8 @@ export default function DashboardScreen(): React.ReactElement {
           <Animated.View style={animStyles[2]}>
             <ScoreContainer score={score} missingCount={missingCount} />
           </Animated.View>
+
+          <HealthBanner />
 
           {/* Recommendations */}
           <Animated.View style={animStyles[3]}>

@@ -213,6 +213,12 @@
       "previousDay": "Previous day",
       "nextDay": "Next day",
       "selectDate": "Select date"
+    },
+    "healthBanner": {
+      "titleQuiet": "Sync Apple Health",
+      "subtitleQuiet": "Auto-fill your daily data.",
+      "ctaShort": "Connect",
+      "dismiss": "Dismiss"
     }
   },
   "journal": {
@@ -553,7 +559,9 @@
     "permissionDenied": "Health access denied. Open Settings → Health to enable.",
     "notAvailable": "Apple Health is not available on this device",
     "simulatorError": "Apple Health is not available in simulator",
-    "openSettings": "Open Settings → Health to manage permissions"
+    "openSettings": "Open Settings → Health to manage permissions",
+    "connectButton": "Connect Apple Health",
+    "syncingShort": "Syncing…"
   },
   "forceUpdate": {
     "title": "Update Required",

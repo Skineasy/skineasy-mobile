@@ -234,6 +234,10 @@ export function ProfileScreen(): React.ReactElement {
       </View>
 
       <View className="bg-surface mb-4 -mx-4">
+        <HealthKitSyncButton />
+      </View>
+
+      <View className="bg-surface mb-4 -mx-4">
         <Pressable
           onPress={() => openUrl(t('profile.termsOfSaleUrl'))}
           haptic="medium"
@@ -313,7 +317,6 @@ export function ProfileScreen(): React.ReactElement {
               <ChevronRight size={20} color={colors.textMuted} />
             </View>
           </Pressable>
-          <HealthKitSyncButton />
           <Pressable
             onPress={handleTestSentry}
             haptic="light"

@@ -2,6 +2,10 @@
 
 ## 1.0.0
 
+- Added HealthBanner on dashboard nudging iOS users without HealthKit authorization to connect, dismissible via MMKV
+- Added Sync Apple Health row in profile (production), state-aware label (Connect/Sync/Syncing) with relative last-sync timestamp
+- Changed HealthKitSyncButton to a minimal single-line UI; debug sheet and long-press now gated behind **DEV**
+- Changed health-sync cross-platform doc to mark Android/Health Connect work as abandoned
 - Removed leftover NativeWind references in tsconfig.json, CLAUDE.md, src/global.css and deleted nativewind-env.d.ts
 - Changed README and CLAUDE.md to document Expo SDK 55 + Uniwind stack
 - Fixed Metro bundling failure on lucide-react-native v1.x by pinning to ^0.562 (v1 packaging incompatible with SDK 55 strict ESM resolution)

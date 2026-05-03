@@ -1,5 +1,11 @@
 # Health Sync — Spec Technique Cross-Platform
 
+> **Statut : ABANDONNÉ — décision 2026-05-03.**
+> L'intégration Android (Health Connect / Google) **ne sera pas réalisée**. SkinEasy reste en synchronisation santé **iOS uniquement** via Apple HealthKit (voir [healthkit-integration.md](./healthkit-integration.md)).
+> Le contenu ci-dessous est conservé à titre de référence si la décision est revisitée plus tard, mais aucune des étapes (renommage `health-sync`, abstraction du service, lib `react-native-health-connect`, page de rationale, etc.) ne doit être implémentée en l'état.
+
+---
+
 Étude et plan d'implémentation pour étendre la synchronisation santé déjà en place sur iOS (HealthKit, voir [healthkit-integration.md](./healthkit-integration.md)) à Android (Health Connect).
 
 ---
