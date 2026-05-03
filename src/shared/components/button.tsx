@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { ActivityIndicator, PressableProps, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, PressableProps, Text, View } from 'react-native';
 
 import { Pressable } from '@shared/components/pressable';
 import { cn } from '@shared/utils/cn';
@@ -73,13 +73,16 @@ export function Button({
         isDisabled && 'opacity-50',
         className,
       )}
-      style={{
-        shadowColor: variant === 'primary' ? colors.primary : '#000',
-        shadowOffset: { width: 0, height: isDisabled ? 0 : 4 },
-        shadowOpacity: isDisabled ? 0 : variant === 'primary' ? 0.25 : 0.1,
-        shadowRadius: isDisabled ? 0 : 8,
-        elevation: isDisabled ? 0 : 4,
-      }}
+      style={
+        Platform.OS === 'ios'
+          ? {
+              shadowColor: variant === 'primary' ? colors.primary : '#000',
+              shadowOffset: { width: 0, height: isDisabled ? 0 : 4 },
+              shadowOpacity: isDisabled ? 0 : variant === 'primary' ? 0.25 : 0.1,
+              shadowRadius: isDisabled ? 0 : 8,
+            }
+          : undefined
+      }
       disabled={isDisabled}
       haptic={isDisabled ? false : haptic} // Disable haptic when button disabled
       {...props}

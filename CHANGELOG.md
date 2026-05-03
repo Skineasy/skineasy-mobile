@@ -2,6 +2,9 @@
 
 ## 1.0.0
 
+- Fixed Card pressed/selected state on Android by removing elevation and aligning shadow across pressed/unpressed states on iOS
+- Fixed Button "inner shadow" artifact on Android (notably outline "Connect as") by skipping elevation and gating shadow to iOS
+- Changed ObservationsScreen padding to live on the ScrollView contentContainer so card/chip shadows are not horizontally clipped
 - Added note input placeholders on Nutrition and Sport screens (FR/EN)
 - Fixed Input text not vertically centered on Android by disabling includeFontPadding and zeroing paddingBottom
 - Fixed Android push token registration log spam by deduping rapid AppState transitions and latching after permanent failures (e.g. missing FCM credentials)

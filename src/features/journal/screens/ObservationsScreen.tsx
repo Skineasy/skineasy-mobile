@@ -147,57 +147,64 @@ export default function ObservationsScreen(): React.ReactElement {
   }
 
   return (
-    <ScreenHeader title={t('journal.observations.screenTitle')} icon={Search} noScroll>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="gap-6 pb-6">
-          <DateNavigation selectedDate={selectedDate} onDateChange={setSelectedDate} />
+    <ScreenHeader
+      title={t('journal.observations.screenTitle')}
+      icon={Search}
+      noScroll
+      childrenClassName="px-0"
+    >
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-4 gap-6 pb-6"
+        showsVerticalScrollIndicator={false}
+      >
+        <DateNavigation selectedDate={selectedDate} onDateChange={setSelectedDate} />
 
-          {/* Positive Points */}
-          <View>
-            <SectionHeader
-              icon={Plus}
-              title={t('journal.observations.positivePoints')}
-              className="mb-3 px-0"
-            />
-            <View className="flex-row flex-wrap gap-3">
-              {POSITIVE_OBSERVATIONS.map((key) => (
-                <ObservationChip
-                  key={key}
-                  selected={selectedPositives.includes(key)}
-                  onPress={() => togglePositive(key)}
-                  label={t(`journal.observations.positive.${key}`)}
-                  icon={POSITIVE_OBSERVATION_ICONS[key]}
-                  variant="positive"
-                />
-              ))}
-            </View>
+        {/* Positive Points */}
+        <View>
+          <SectionHeader
+            icon={Plus}
+            title={t('journal.observations.positivePoints')}
+            className="mb-3 px-0"
+          />
+          <View className="flex-row flex-wrap gap-3">
+            {POSITIVE_OBSERVATIONS.map((key) => (
+              <ObservationChip
+                key={key}
+                selected={selectedPositives.includes(key)}
+                onPress={() => togglePositive(key)}
+                label={t(`journal.observations.positive.${key}`)}
+                icon={POSITIVE_OBSERVATION_ICONS[key]}
+                variant="positive"
+              />
+            ))}
           </View>
+        </View>
 
-          {/* Negative Points */}
-          <View>
-            <SectionHeader
-              icon={Minus}
-              title={t('journal.observations.negativePoints')}
-              className="mb-3 px-0"
-            />
-            <View className="flex-row flex-wrap gap-3">
-              {NEGATIVE_OBSERVATIONS.map((key) => (
-                <ObservationChip
-                  key={key}
-                  selected={selectedNegatives.includes(key)}
-                  onPress={() => toggleNegative(key)}
-                  label={t(`journal.observations.negative.${key}`)}
-                  icon={NEGATIVE_OBSERVATION_ICONS[key]}
-                  variant="negative"
-                />
-              ))}
-            </View>
+        {/* Negative Points */}
+        <View>
+          <SectionHeader
+            icon={Minus}
+            title={t('journal.observations.negativePoints')}
+            className="mb-3 px-0"
+          />
+          <View className="flex-row flex-wrap gap-3">
+            {NEGATIVE_OBSERVATIONS.map((key) => (
+              <ObservationChip
+                key={key}
+                selected={selectedNegatives.includes(key)}
+                onPress={() => toggleNegative(key)}
+                label={t(`journal.observations.negative.${key}`)}
+                icon={NEGATIVE_OBSERVATION_ICONS[key]}
+                variant="negative"
+              />
+            ))}
           </View>
         </View>
       </ScrollView>
 
       {/* Save Button */}
-      <View className="pt-4">
+      <View className="px-4 pt-4">
         <Button
           title={t('common.save')}
           onPress={handleSubmit(onSubmit)}

@@ -1,5 +1,5 @@
 import type { ViewProps, ViewStyle } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { type AnimatedProps } from 'react-native-reanimated';
 
 import { colors } from '@theme/colors';
@@ -32,9 +32,20 @@ function getCardStyle(variant: CardVariant, padding: CardPadding, isPressed: boo
     padding: PADDING_VALUES[padding],
   };
 
+  const shadow: ViewStyle = Platform.select({
+    ios: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+    },
+    default: {},
+  }) as ViewStyle;
+
   if (isPressed) {
     return {
       ...base,
+      ...shadow,
       backgroundColor: colors.primary,
       borderWidth: 1,
       borderColor: colors.primary,
@@ -45,14 +56,10 @@ function getCardStyle(variant: CardVariant, padding: CardPadding, isPressed: boo
     case 'default':
       return {
         ...base,
+        ...shadow,
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 3,
       };
     case 'outlined':
       return {
