@@ -70,19 +70,17 @@ export function Button({
         fitContent ? 'px-4' : 'w-full',
         'h-14 rounded-xl items-center justify-center flex-row gap-1',
         styles.container,
-        isDisabled && 'opacity-50',
         className,
       )}
-      style={
-        Platform.OS === 'ios'
-          ? {
-              shadowColor: variant === 'primary' ? colors.primary : '#000',
-              shadowOffset: { width: 0, height: isDisabled ? 0 : 4 },
-              shadowOpacity: isDisabled ? 0 : variant === 'primary' ? 0.25 : 0.1,
-              shadowRadius: isDisabled ? 0 : 8,
-            }
-          : undefined
-      }
+      style={({ pressed }) => ({
+        opacity: isDisabled ? 0.5 : pressed ? 0.6 : 1,
+        ...(Platform.OS === 'ios' && {
+          shadowColor: variant === 'primary' ? colors.primary : '#000',
+          shadowOffset: { width: 0, height: isDisabled ? 0 : 4 },
+          shadowOpacity: isDisabled ? 0 : variant === 'primary' ? 0.25 : 0.1,
+          shadowRadius: isDisabled ? 0 : 8,
+        }),
+      })}
       disabled={isDisabled}
       haptic={isDisabled ? false : haptic} // Disable haptic when button disabled
       {...props}
